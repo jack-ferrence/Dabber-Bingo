@@ -84,8 +84,7 @@ function GamePage() {
       let players = null
       if (room.game_id) {
         try {
-          const sportParam = room.sport ? `&sport=${room.sport}` : ''
-          const res = await fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}${sportParam}`)
+          const res = await fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`)
           if (res.ok) {
             const roster = await res.json()
             players = (roster.players ?? []).map((p) => ({

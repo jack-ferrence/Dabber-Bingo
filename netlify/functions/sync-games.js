@@ -4,8 +4,9 @@ const ESPN_SCOREBOARD_NBA = 'https://site.api.espn.com/apis/site/v2/sports/baske
 const ESPN_SCOREBOARD_NCAA = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=100&limit=100'
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-// In-memory cache: reused across warm invocations to avoid hammering ESPN
-let scheduleCache = { data: null, ts: 0 }
+// Separate in-memory caches per sport
+let nbaCache  = { data: null, ts: 0 }
+let ncaaCache = { data: null, ts: 0 }
 
 /**
  * Netlify scheduled function (runs every 5 minutes via cron).
@@ -36,35 +37,43 @@ export async function handler() {
   const supabase = createClient(url, serviceKey)
   const log = []
 
-  // ── Step 1: Fetch today's schedule (cached 5 min) ──
-  let games
+  // ── Step 1: Fetch today's schedule (cached 5 min, separate caches per sport) ──
   const now = Date.now()
-  if (scheduleCache.data && now - scheduleCache.ts < CACHE_TTL) {
-    games = scheduleCache.data
-    log.push('schedule: served from cache')
+  let nbaGames, ncaaGames
+
+  if (nbaCache.data && now - nbaCache.ts < CACHE_TTL) {
+    nbaGames = nbaCache.data
   } else {
     try {
-      const [nbaRes, ncaaRes] = await Promise.all([
-        fetch(ESPN_SCOREBOARD_NBA),
-        fetch(ESPN_SCOREBOARD_NCAA),
-      ])
-
-      if (!nbaRes.ok) throw new Error(`ESPN NBA returned ${nbaRes.status}`)
-      if (!ncaaRes.ok) throw new Error(`ESPN NCAA returned ${ncaaRes.status}`)
-
-      const [nbaRaw, ncaaRaw] = await Promise.all([nbaRes.json(), ncaaRes.json()])
-
-      const nbaGames = parseGames(nbaRaw.events ?? [], 'nba')
-      const ncaaGames = parseGames(ncaaRaw.events ?? [], 'ncaa').filter(isTournamentGame)
-
-      games = [...nbaGames, ...ncaaGames]
-      scheduleCache = { data: games, ts: now }
-      log.push(`schedule: fetched ${nbaGames.length} NBA + ${ncaaGames.length} NCAA tournament game(s)`)
+      const res = await fetch(ESPN_SCOREBOARD_NBA)
+      if (!res.ok) throw new Error(`ESPN NBA returned ${res.status}`)
+      const raw = await res.json()
+      nbaGames = parseGames(raw.events ?? [], 'nba')
+      nbaCache = { data: nbaGames, ts: now }
     } catch (err) {
-      console.error('sync-games: ESPN fetch failed', err)
+      console.error('sync-games: ESPN NBA fetch failed', err)
       return { statusCode: 502, body: JSON.stringify({ error: err.message }) }
     }
   }
+
+  if (ncaaCache.data && now - ncaaCache.ts < CACHE_TTL) {
+    ncaaGames = ncaaCache.data
+  } else {
+    try {
+      const res = await fetch(ESPN_SCOREBOARD_NCAA)
+      if (!res.ok) throw new Error(`ESPN NCAA returned ${res.status}`)
+      const raw = await res.json()
+      ncaaGames = parseGames(raw.events ?? [], 'ncaa').filter(isTournamentGame)
+      ncaaCache = { data: ncaaGames, ts: now }
+    } catch (err) {
+      // NCAA fetch failure is non-fatal — continue with NBA only
+      console.warn('sync-games: ESPN NCAA fetch failed', err.message)
+      ncaaGames = []
+    }
+  }
+
+  const games = [...nbaGames, ...ncaaGames]
+  log.push(`schedule: ${nbaGames.length} NBA + ${ncaaGames.length} NCAA tournament game(s)`)
 
   // ── Step 2: Filter to actionable games ──
   const actionable = games.filter(
@@ -168,25 +177,29 @@ function parseGames(events, sport) {
 }
 
 /**
- * Best-effort NCAA tournament filter.
- * The groups=100 ESPN endpoint already scopes to the tournament bracket,
- * so most events from that feed are tournament games. We additionally check
- * the competition notes as a belt-and-suspenders filter.
+ * NCAA tournament filter.
+ * season.type === 3 is ESPN's postseason indicator — the most reliable signal.
+ * Falls back to checking competition notes for tournament keywords.
+ * If neither is available, accept the game (groups=100 already scopes to tournament).
  */
 function isTournamentGame(game) {
   const event = game._event
+
+  // Primary: ESPN season type 3 = postseason (NCAA Tournament)
+  if (event.season?.type === 3) return true
+
   const competition = event.competitions?.[0]
 
-  // Check notes for championship keywords
+  // Secondary: competition notes containing tournament keywords
   const notes = competition?.notes ?? []
   const hasChampNote = notes.some((n) =>
-    /championship|tournament|march madness/i.test(n.headline ?? n.text ?? '')
+    /ncaa|championship|tournament/i.test(n.headline ?? n.text ?? '')
   )
   if (hasChampNote) return true
 
-  // Check if tournamentId is present on the competition
+  // Tertiary: explicit tournamentId field
   if (competition?.tournamentId) return true
 
-  // groups=100 already filters to the tournament — accept all remaining
+  // groups=100 scopes to tournament bracket — accept remaining
   return true
 }

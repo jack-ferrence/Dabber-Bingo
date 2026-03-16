@@ -49,7 +49,7 @@ exports.handler = async function (event) {
     }
   }
 
-  const cacheKey = `${gameId}:${sport}`
+  const cacheKey = `${sport}:${gameId}`
   const now = Date.now()
   const cached = rosterCache.get(cacheKey)
   if (cached && now - cached.ts < CACHE_TTL) {
