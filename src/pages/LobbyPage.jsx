@@ -133,6 +133,7 @@ export default function LobbyPage() {
         {SPORT_SECTIONS.map((section, i) => (
           <div key={section.sport} id={`sport-section-${section.sport}`}>
             <SportSection
+              sport={section.sport}
               label={section.label}
               games={roomsBySport[section.sport] ?? []}
               loading={loading}

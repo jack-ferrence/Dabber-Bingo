@@ -1,4 +1,5 @@
 import { NBA_TEAM_COLORS, hexToRgba } from '../../constants/teamColors.js'
+import { useProfile } from '../../hooks/useProfile.js'
 
 function parseTeams(name) {
   const parts = (name ?? '').split(' vs ')
@@ -22,6 +23,10 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
   const homeColor = NBA_TEAM_COLORS[home] ?? NBA_TEAM_COLORS.DEFAULT
   const awayColor = NBA_TEAM_COLORS[away] ?? NBA_TEAM_COLORS.DEFAULT
   const isLive = game.status === 'live'
+  const { dabsBalance } = useProfile()
+  const isNcaa = game.sport === 'ncaa'
+  const ENTRY_COST = 10
+  const canAfford = isNcaa || dabsBalance === null || dabsBalance >= ENTRY_COST
 
   return (
     <div
@@ -128,14 +133,27 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
             JOINED ✓
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => onJoin(game.id)}
-            disabled={joining}
-            className="btn-join"
-          >
-            {joining ? '…' : 'JOIN'}
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+            <button
+              type="button"
+              onClick={() => onJoin(game.id)}
+              disabled={joining || !canAfford}
+              className="btn-join"
+              title={!canAfford ? `Need ${ENTRY_COST} Dabs to join (you have ${dabsBalance})` : undefined}
+              style={!canAfford ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
+            >
+              {joining ? '…' : 'JOIN'}
+            </button>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.06em' }}>
+              {isNcaa ? (
+                <span style={{ color: '#22c55e' }}>FREE</span>
+              ) : !canAfford ? (
+                <span style={{ color: '#ff2d2d' }}>need {ENTRY_COST} ◈</span>
+              ) : (
+                <span style={{ color: '#555577' }}>{ENTRY_COST} ◈</span>
+              )}
+            </span>
+          </div>
         )}
       </div>
     </div>

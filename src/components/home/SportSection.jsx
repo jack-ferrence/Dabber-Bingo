@@ -4,6 +4,7 @@ import HorizontalSlider from '../ui/HorizontalSlider.jsx'
 const SKELETON_COUNT = 3
 
 export default function SportSection({
+  sport,
   label,
   games,
   loading,
@@ -39,6 +40,25 @@ export default function SportSection({
           >
             {label}
           </h2>
+          {sport === 'ncaa' && (
+            <span
+              style={{
+                background: 'rgba(34,197,94,0.12)',
+                color: '#22c55e',
+                border: '1px solid rgba(34,197,94,0.25)',
+                fontFamily: 'var(--db-font-mono)',
+                fontSize: 9,
+                fontWeight: 700,
+                letterSpacing: '0.10em',
+                textTransform: 'uppercase',
+                borderRadius: 3,
+                padding: '2px 6px',
+                flexShrink: 0,
+              }}
+            >
+              FREE ENTRY
+            </span>
+          )}
           {!loading && games.length > 0 && (
             <span
               style={{

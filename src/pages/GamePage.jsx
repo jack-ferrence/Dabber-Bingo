@@ -106,6 +106,28 @@ function GamePage() {
         }
       }
 
+      // Charge entry fee (no-op if already joined or NCAA)
+      const { data: feeResult, error: feeError } = await supabase.rpc('deduct_entry_fee', {
+        p_user_id: user.id,
+        p_room_id: roomId,
+      })
+
+      if (feeError) {
+        setError('Failed to process entry fee: ' + feeError.message)
+        setLoadingCard(false)
+        return
+      }
+
+      if (feeResult && !feeResult.success) {
+        if (feeResult.reason === 'insufficient_dabs') {
+          setError(`Not enough Dabs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dabs.`)
+        } else {
+          setError('Could not join: ' + feeResult.reason)
+        }
+        setLoadingCard(false)
+        return
+      }
+
       const rpcParams = { p_room_id: roomId }
       if (players && players.length > 0) rpcParams.p_players = players
       if (debug) console.log('[GamePage] calling generate_card_for_room', { playerCount: players?.length ?? 0, usingRoster: !!rpcParams.p_players })
