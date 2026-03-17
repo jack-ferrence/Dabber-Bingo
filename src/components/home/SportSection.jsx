@@ -1,5 +1,5 @@
-import { useRef } from 'react'
 import GameCard from './GameCard.jsx'
+import HorizontalSlider from '../ui/HorizontalSlider.jsx'
 
 const SKELETON_COUNT = 3
 
@@ -13,18 +13,10 @@ export default function SportSection({
   onContinue,
   style,
 }) {
-  const sliderRef = useRef(null)
-
-  const handleSeeAll = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: sliderRef.current.scrollWidth, behavior: 'smooth' })
-    }
-  }
-
   return (
     <section className="sport-section" style={style}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-5 px-1">
+      <div className="flex items-center mb-5 px-1">
         <div className="flex items-center gap-3">
           {/* Cinnabar left-bar accent */}
           <div
@@ -63,22 +55,6 @@ export default function SportSection({
             </span>
           )}
         </div>
-
-        {games.length > 0 && !loading && (
-          <button
-            type="button"
-            className="flex items-center gap-1 text-xs font-semibold transition-colors"
-            style={{ color: '#555577', background: 'none', border: 'none', cursor: 'pointer' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#8888aa' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = '#555577' }}
-            onClick={handleSeeAll}
-          >
-            See all
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </button>
-        )}
       </div>
 
       {/* Horizontal slider */}
@@ -106,13 +82,9 @@ export default function SportSection({
           <p className="text-sm" style={{ color: '#555577' }}>No games scheduled today</p>
         </div>
       ) : (
-        <div
-          ref={sliderRef}
-          className="flex gap-4 overflow-x-scroll no-scrollbar pb-3"
-          style={{ scrollSnapType: 'x mandatory' }}
-        >
+        <HorizontalSlider>
           {games.map((game) => (
-            <div key={game.id} style={{ scrollSnapAlign: 'start' }}>
+            <div key={game.id} style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
               <GameCard
                 game={game}
                 isJoined={joinedRoomIds.has(game.id)}
@@ -122,7 +94,7 @@ export default function SportSection({
               />
             </div>
           ))}
-        </div>
+        </HorizontalSlider>
       )}
     </section>
   )

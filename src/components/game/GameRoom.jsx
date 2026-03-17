@@ -1,4 +1,6 @@
-import { lazy, Suspense, useState, useMemo, useCallback } from 'react'
+import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
 import BingoBoard from './BingoBoard.jsx'
 import PlayerStatsPanel from './PlayerStatsPanel.jsx'
 import Badge from '../ui/Badge.jsx'
@@ -33,10 +35,37 @@ function GameRoom({
   initChatMessages,
   resetStatEvents,
 }) {
+  const navigate = useNavigate()
   const [selectedSquare, setSelectedSquare] = useState(null)
   const [mobileChat, setMobileChat] = useState(false)
   const [mobileLeaderboard, setMobileLeaderboard] = useState(false)
   const [mobileStats, setMobileStats] = useState(false)
+  const [activeRooms, setActiveRooms] = useState([])
+  const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
+  const gamesDropdownRef = useRef(null)
+
+  useEffect(() => {
+    if (!user) return
+    supabase
+      .from('room_participants')
+      .select('room_id, rooms:room_id(id, name, status, sport, game_id)')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        const rooms = data?.map((rp) => rp.rooms).filter((r) => r && (r.status === 'lobby' || r.status === 'live'))
+        setActiveRooms(rooms ?? [])
+      })
+  }, [user])
+
+  useEffect(() => {
+    if (!gamesDropdownOpen) return
+    const handleClick = (e) => {
+      if (gamesDropdownRef.current && !gamesDropdownRef.current.contains(e.target)) {
+        setGamesDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [gamesDropdownOpen])
 
   const bingoResult = useMemo(
     () => (flatSquares.length >= 25 ? checkBingo(card?.squares) : { hasBingo: false, winningLines: [] }),
@@ -130,6 +159,60 @@ function GameRoom({
       {/* ── Header ── */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-border-subtle bg-bg-secondary px-4">
         <div className="flex items-center gap-3 min-w-0">
+          {/* Back button */}
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            aria-label="Back to home"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555577', padding: '4px 6px', display: 'flex', alignItems: 'center', flexShrink: 0, borderRadius: 4 }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#e0e0f0'; e.currentTarget.style.background = '#1a1a2e' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#555577'; e.currentTarget.style.background = 'none' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 3L5 8l5 5" />
+            </svg>
+          </button>
+
+          {/* Active games dropdown */}
+          {activeRooms.length > 1 && (
+            <div className="relative" ref={gamesDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setGamesDropdownOpen((v) => !v)}
+                style={{ background: '#1a1a2e', border: '1px solid #2a2a44', borderRadius: 4, padding: '3px 8px', fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#ff6b35'; e.currentTarget.style.color = '#e0e0f0' }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#2a2a44'; e.currentTarget.style.color = '#8888aa' }}
+              >
+                MY GAMES
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 3l3 3 3-3" />
+                </svg>
+              </button>
+              {gamesDropdownOpen && (
+                <div
+                  className="absolute left-0 top-8 z-50"
+                  style={{ background: '#12121e', border: '1px solid #2a2a44', borderRadius: 6, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', minWidth: 200, maxHeight: 280, overflowY: 'auto' }}
+                >
+                  {activeRooms.map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => { navigate(`/room/${r.id}`); setGamesDropdownOpen(false) }}
+                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', fontFamily: 'var(--db-font-mono)', fontSize: 12, color: r.id === roomId ? '#ff6b35' : '#8888aa', background: r.id === roomId ? 'rgba(255,107,53,0.08)' : 'none', border: 'none', cursor: 'pointer', borderLeft: r.id === roomId ? '2px solid #ff6b35' : '2px solid transparent' }}
+                      onMouseEnter={(e) => { if (r.id !== roomId) { e.currentTarget.style.background = '#1a1a2e'; e.currentTarget.style.color = '#e0e0f0' } }}
+                      onMouseLeave={(e) => { if (r.id !== roomId) { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#8888aa' } }}
+                    >
+                      <span style={{ display: 'block', marginBottom: 2 }}>{r.name}</span>
+                      <span style={{ fontSize: 10, color: r.status === 'live' ? '#ff2d2d' : '#555577' }}>
+                        {r.status === 'live' ? '● LIVE' : 'LOBBY'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <h1 className="truncate text-sm font-semibold text-text-primary sm:text-base">
             {room?.name || 'Game Room'}
           </h1>
