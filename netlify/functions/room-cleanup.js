@@ -43,7 +43,16 @@ exports.handler = async function () {
       console.error('room-cleanup: midnight force-finish failed', forceErr)
       Sentry.captureException(forceErr)
     } else {
-      console.log(`room-cleanup: midnight reset — force-finished ${forceFinished?.length ?? 0} room(s)`)
+      const count = forceFinished?.length ?? 0
+      console.log(`room-cleanup: midnight reset — force-finished ${count} room(s)`)
+
+      // Award Dabs for each force-finished room (idempotent RPC — safe if already awarded)
+      for (const room of forceFinished ?? []) {
+        const { error: dabsErr } = await supabase.rpc('award_game_dabs', { p_room_id: room.id })
+        if (dabsErr) {
+          console.warn(`room-cleanup: award_game_dabs failed for room ${room.id}`, dabsErr.message)
+        }
+      }
     }
 
     // ── Step 2: Stale room cleanup (belt-and-suspenders) ───────────────────

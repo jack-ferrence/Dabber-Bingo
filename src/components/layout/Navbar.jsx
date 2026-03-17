@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
+import { useProfile } from '../../hooks/useProfile.js'
 import SportTabs from './SportTabs.jsx'
 
 export default function Navbar({ onMenuClick }) {
   const { user, loading } = useAuth()
+  const { dabsBalance } = useProfile()
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   return (
@@ -61,6 +63,15 @@ export default function Navbar({ onMenuClick }) {
               >
                 {user.is_anonymous ? 'G' : (user.email?.[0]?.toUpperCase() ?? 'U')}
               </span>
+              {dabsBalance !== null && (
+                <span
+                  className="hidden sm:inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold"
+                  style={{ background: 'rgba(228,77,46,0.10)', color: '#E44D2E', border: '1px solid rgba(228,77,46,0.20)' }}
+                >
+                  <span style={{ fontSize: 11 }}>◈</span>
+                  {dabsBalance.toLocaleString()}
+                </span>
+              )}
               <span
                 className="hidden sm:block max-w-[160px] truncate text-sm"
                 style={{ color: '#5C5752' }}

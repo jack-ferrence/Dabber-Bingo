@@ -245,6 +245,17 @@ export async function handler() {
         autoFinished += finishedRooms.length
         log.push(`Auto-finished ${finishedRooms.length} room(s) for game ${gameId}`)
         console.log(`poll-stats: Auto-finished ${finishedRooms.length} room(s) for game ${gameId}`)
+
+        // Award Dabs to all players in each finished room (idempotent RPC)
+        for (const room of finishedRooms) {
+          const { error: dabsErr } = await supabase.rpc('award_game_dabs', { p_room_id: room.id })
+          if (dabsErr) {
+            log.push(`award_game_dabs failed for room ${room.id}: ${dabsErr.message}`)
+            console.warn(`poll-stats: award_game_dabs failed for room ${room.id}`, dabsErr.message)
+          } else {
+            log.push(`Dabs awarded for room ${room.id}`)
+          }
+        }
       }
     }
 

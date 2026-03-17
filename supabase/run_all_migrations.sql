@@ -20,6 +20,7 @@ create table if not exists public.profiles (
   ui_theme text default 'default',
   username_changes_remaining int default 0,
   user_theme text default 'challenger',
+  dabs_balance int not null default 100,
   created_at timestamptz default now(),
   constraint profiles_name_font_check check (
     name_font in ('default','mono','display','serif','rounded')
@@ -542,6 +543,103 @@ alter publication supabase_realtime add table public.cards;
 alter publication supabase_realtime add table public.stat_events;
 alter publication supabase_realtime add table public.room_participants;
 alter publication supabase_realtime add table public.chat_messages;
+alter publication supabase_realtime add table public.dabs_transactions;
+
+-- =============================================================================
+-- 003: Dabs currency
+-- =============================================================================
+
+create table if not exists public.dabs_transactions (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references public.profiles(id) on delete cascade,
+  amount     int not null,
+  reason     text not null,
+  room_id    uuid references public.rooms(id) on delete set null,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_dabs_transactions_user
+  on public.dabs_transactions(user_id, created_at desc);
+
+alter table public.dabs_transactions enable row level security;
+
+create policy "dabs_select_own"
+  on public.dabs_transactions
+  for select to authenticated
+  using (user_id = auth.uid());
+
+create or replace function public.award_game_dabs(p_room_id uuid)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v_card          record;
+  v_position_bonus int;
+  v_square_dabs   int;
+  v_line_dabs     int;
+  v_participation int := 3;
+  v_total         int;
+  v_awarded       int := 0;
+  v_already       boolean;
+begin
+  select exists(
+    select 1 from dabs_transactions where room_id = p_room_id limit 1
+  ) into v_already;
+
+  if v_already then
+    return jsonb_build_object('skipped', true, 'reason', 'already_awarded');
+  end if;
+
+  for v_card in
+    select
+      c.user_id,
+      c.lines_completed,
+      c.squares_marked,
+      row_number() over (
+        order by c.lines_completed desc, c.squares_marked desc, c.created_at asc
+      ) as rank
+    from public.cards c
+    where c.room_id = p_room_id
+  loop
+    v_position_bonus := case v_card.rank
+      when 1 then 100
+      when 2 then 60
+      when 3 then 40
+      when 4 then 25
+      when 5 then 15
+      else case when v_card.rank <= 10 then 5 else 0 end
+    end;
+
+    v_square_dabs := v_card.squares_marked * 2;
+    v_line_dabs   := v_card.lines_completed * 10;
+    v_total       := v_square_dabs + v_line_dabs + v_position_bonus + v_participation;
+
+    if v_square_dabs > 0 then
+      insert into dabs_transactions (user_id, amount, reason, room_id)
+      values (v_card.user_id, v_square_dabs, 'squares_marked', p_room_id);
+    end if;
+
+    if v_line_dabs > 0 then
+      insert into dabs_transactions (user_id, amount, reason, room_id)
+      values (v_card.user_id, v_line_dabs, 'lines_completed', p_room_id);
+    end if;
+
+    if v_position_bonus > 0 then
+      insert into dabs_transactions (user_id, amount, reason, room_id)
+      values (v_card.user_id, v_position_bonus, 'finish_' || v_card.rank::text, p_room_id);
+    end if;
+
+    insert into dabs_transactions (user_id, amount, reason, room_id)
+    values (v_card.user_id, v_participation, 'participation', p_room_id);
+
+    update profiles
+      set dabs_balance = dabs_balance + v_total
+      where id = v_card.user_id;
+
+    v_awarded := v_awarded + 1;
+  end loop;
+
+  return jsonb_build_object('awarded', v_awarded, 'room_id', p_room_id);
+end;
+$$;
 
 -- =============================================================================
 -- DONE. Your fresh Supabase project is ready.
