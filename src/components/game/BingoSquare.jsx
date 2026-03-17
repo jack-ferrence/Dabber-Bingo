@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 
-const BingoSquare = memo(function BingoSquare({ square, index, isWinning, isLineFlash, onClick }) {
+const BingoSquare = memo(function BingoSquare({ square, index, isWinning, isLineFlash, onClick, swapMode = false }) {
   const isFree = index === 12
   const marked = square?.marked === true
   const displayText = square?.display_text ?? ''
@@ -54,7 +54,7 @@ const BingoSquare = memo(function BingoSquare({ square, index, isWinning, isLine
     return (
       <button
         type="button"
-        onClick={() => onClick?.(square)}
+        onClick={() => onClick?.(square, index)}
         className={`select-none sq-marked-glow ${justMarked ? 'sq-mark-in sq-shine' : ''} ${isWinning ? 'sq-winning' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
           aspectRatio: '1',
@@ -88,7 +88,7 @@ const BingoSquare = memo(function BingoSquare({ square, index, isWinning, isLine
   return (
     <button
       type="button"
-      onClick={() => onClick?.(square)}
+      onClick={() => onClick?.(square, index)}
       className="select-none"
       style={{
         aspectRatio: '1',
@@ -98,14 +98,14 @@ const BingoSquare = memo(function BingoSquare({ square, index, isWinning, isLine
         justifyContent: 'center',
         gap: 2,
         background: '#1a1a2e',
-        border: '1px solid #2a2a44',
+        border: swapMode ? '1px dashed #ff6b35' : '1px solid #2a2a44',
         borderRadius: 4,
         padding: 4,
-        cursor: 'pointer',
+        cursor: swapMode ? 'crosshair' : 'pointer',
         transition: 'all 150ms ease',
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = '#22223a'; e.currentTarget.style.borderColor = '#3a3a55' }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = '#1a1a2e'; e.currentTarget.style.borderColor = '#2a2a44' }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = swapMode ? '#2a1a10' : '#22223a'; e.currentTarget.style.borderColor = '#ff6b35' }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = '#1a1a2e'; e.currentTarget.style.borderColor = swapMode ? '#ff6b35' : '#2a2a44' }}
     >
       {playerLabel && (
         <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 600, color: '#8888aa' }}>

@@ -3,7 +3,7 @@ import BingoSquare from './BingoSquare.jsx'
 
 const CONFETTI_COLORS = ['#FFD700', '#00D46E', '#8B5CF6', '#FF4757', '#00FF88', '#FF6B6B']
 
-function BingoBoard({ squares = [], winningSquares = [], winningLines = [], hasBingo = false, onSquareClick }) {
+function BingoBoard({ squares = [], winningSquares = [], winningLines = [], hasBingo = false, onSquareClick, boardSkin = null, swapMode = false }) {
   const flat = Array.isArray(squares[0]) ? squares.flat() : squares
   const winSet = new Set(winningSquares)
 
@@ -50,7 +50,12 @@ function BingoBoard({ squares = [], winningSquares = [], winningLines = [], hasB
       {/* Board frame */}
       <div
         className="machine-glow"
-        style={{ background: '#0c0c14', border: '1px solid #2a2a44', borderRadius: 8, padding: 12 }}
+        data-skin={boardSkin || undefined}
+        style={{
+          background: '#0c0c14', border: '1px solid #2a2a44', borderRadius: 8, padding: 12,
+          outline: swapMode ? '2px dashed #ff6b35' : undefined,
+          outlineOffset: swapMode ? 3 : undefined,
+        }}
       >
         {/* 5×5 Grid */}
         <div className="grid grid-cols-5 gap-1.5">
@@ -62,6 +67,7 @@ function BingoBoard({ squares = [], winningSquares = [], winningLines = [], hasB
               isWinning={winSet.has(square?.id)}
               isLineFlash={flashIndices.has(index)}
               onClick={onSquareClick}
+              swapMode={swapMode && index !== 12}
             />
           ))}
         </div>

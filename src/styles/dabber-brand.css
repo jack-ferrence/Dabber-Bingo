@@ -457,3 +457,56 @@
   scrollbar-width: thin;
   scrollbar-color: #2a2a44 #0c0c14;
 }
+
+
+/* ============================================================
+   BOARD SKINS  (applied via data-skin on the board wrapper)
+   ============================================================ */
+
+/* ── Neon Grid ── */
+[data-skin="neon"] {
+  background: #001a1f !important;
+  border-color: #00e5ff !important;
+}
+[data-skin="neon"] button[style] {
+  background: #001a1f !important;
+  border-color: #00e5ff !important;
+}
+[data-skin="neon"] .sq-marked-glow,
+[data-skin="neon"] [style*="background: #2a1a10"] {
+  background: #001a1f !important;
+  border-color: #00e5ff !important;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.5) !important;
+}
+
+/* ── Stealth ── */
+[data-skin="stealth"] {
+  background: #0a0a12 !important;
+  border-color: #3a3a55 !important;
+}
+[data-skin="stealth"] button[style] {
+  background: #0a0a12 !important;
+  border-color: #3a3a55 !important;
+}
+[data-skin="stealth"] .sq-marked-glow,
+[data-skin="stealth"] [style*="background: #2a1a10"] {
+  background: #0a0a12 !important;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4) !important;
+}
+
+/* ── Inferno ── */
+[data-skin="inferno"] {
+  background: #1a0800 !important;
+  border-color: #e05520 !important;
+}
+[data-skin="inferno"] button[style] {
+  background: #1a0800 !important;
+  border-color: #e05520 !important;
+}
+[data-skin="inferno"] .sq-marked-glow,
+[data-skin="inferno"] [style*="background: #2a1a10"] {
+  background: #3a1000 !important;
+  border-color: #e05520 !important;
+  box-shadow: 0 0 10px rgba(224, 85, 32, 0.4) !important;
+}

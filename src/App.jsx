@@ -5,6 +5,7 @@ import LobbyPage from './pages/LobbyPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
+import StorePage from './pages/StorePage.jsx'
 import ProtectedRoute from './pages/ProtectedRoute.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 
@@ -57,6 +58,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<LobbyPage />} />
+          <Route path="/store" element={<StorePage />} />
         </Route>
         <Route
           path="*"

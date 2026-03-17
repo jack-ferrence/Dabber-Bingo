@@ -178,6 +178,10 @@ function GamePage() {
     if (e) setError(e.message)
   }, [roomId, isCreator])
 
+  const handleCardSwap = useCallback((updatedCard) => {
+    setCard(updatedCard)
+  }, [])
+
   if (loadingRoom || authLoading) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center" style={{ background: '#0c0c14' }}>
@@ -205,6 +209,7 @@ function GamePage() {
       isCreator={isCreator}
       onStartGame={handleStartGame}
       onEndGame={handleEndGame}
+      onCardSwap={handleCardSwap}
       gameStartedNotification={gameStartedNotification}
       error={error}
       leaderboardCards={leaderboardCards}

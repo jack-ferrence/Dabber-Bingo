@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { useProfile } from '../../hooks/useProfile.js'
@@ -9,6 +9,8 @@ export default function Navbar({ onMenuClick }) {
   const { user, loading } = useAuth()
   const { dabsBalance, username: profileUsername } = useProfile()
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const location = useLocation()
+  const isStore = location.pathname === '/store'
 
   return (
     <header
@@ -45,6 +47,22 @@ export default function Navbar({ onMenuClick }) {
         {/* Right: user area */}
         {loading ? null : user ? (
           <div className="flex items-center gap-3">
+
+            {/* Store link */}
+            <Link
+              to="/store"
+              style={{
+                fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700,
+                letterSpacing: '0.06em', textTransform: 'uppercase', textDecoration: 'none',
+                color: isStore ? '#ff6b35' : '#555577',
+                display: 'flex', alignItems: 'center', gap: 4,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#ff6b35' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isStore ? '#ff6b35' : '#555577' }}
+            >
+              <span style={{ fontSize: 13 }}>◈</span>
+              <span className="hidden sm:inline">STORE</span>
+            </Link>
 
             {/* Dabs balance */}
             {dabsBalance !== null && (
