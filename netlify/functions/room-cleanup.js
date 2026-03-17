@@ -9,10 +9,14 @@ if (process.env.SENTRY_DSN) {
 }
 
 /**
- * Netlify scheduled function — runs once daily at 04:00 UTC.
+ * Netlify scheduled function — runs once daily at 08:00 UTC (midnight Pacific).
  *
- * 1. Marks stale live rooms as finished (no stat_events in 3+ hours)
- * 2. Deletes chat_messages and room_participants for rooms finished >7 days ago
+ * 1. Force-finish ALL rooms still in lobby/live — every game from today is over
+ * 2. Marks any remaining stale live rooms as finished (belt-and-suspenders)
+ * 3. Deletes chat_messages and room_participants for rooms finished >7 days ago
+ *
+ * After step 1, sync-games creates fresh public rooms for the next day's games
+ * on its next 5-minute cycle.
  */
 exports.handler = async function () {
   const url = process.env.SUPABASE_URL
@@ -28,6 +32,21 @@ exports.handler = async function () {
   const supabase = createClient(url, serviceKey)
 
   try {
+    // ── Step 1: Force-finish all active rooms at midnight ──────────────────
+    const { data: forceFinished, error: forceErr } = await supabase
+      .from('rooms')
+      .update({ status: 'finished' })
+      .in('status', ['lobby', 'live'])
+      .select('id')
+
+    if (forceErr) {
+      console.error('room-cleanup: midnight force-finish failed', forceErr)
+      Sentry.captureException(forceErr)
+    } else {
+      console.log(`room-cleanup: midnight reset — force-finished ${forceFinished?.length ?? 0} room(s)`)
+    }
+
+    // ── Step 2: Stale room cleanup (belt-and-suspenders) ───────────────────
     const { data: staleCount, error: staleErr } = await supabase.rpc('cleanup_stale_rooms')
     if (staleErr) {
       console.error('room-cleanup: cleanup_stale_rooms failed', staleErr)
@@ -36,6 +55,7 @@ exports.handler = async function () {
       console.log(`room-cleanup: marked ${staleCount} stale rooms as finished`)
     }
 
+    // ── Step 3: Purge old room data ────────────────────────────────────────
     const { data: purgeResult, error: purgeErr } = await supabase.rpc('cleanup_old_room_data')
     if (purgeErr) {
       console.error('room-cleanup: cleanup_old_room_data failed', purgeErr)
@@ -47,6 +67,7 @@ exports.handler = async function () {
     return {
       statusCode: 200,
       body: JSON.stringify({
+        force_finished: forceFinished?.length ?? 0,
         stale_rooms_finished: staleCount ?? 0,
         purge: purgeResult ?? {},
       }),

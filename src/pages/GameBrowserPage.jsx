@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
+import { useCountdown } from '../hooks/useCountdown.js'
 
-function formatTipoff(dateStr) {
-  try {
-    const d = new Date(dateStr)
-    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-  } catch {
-    return ''
-  }
+function GameCountdown({ date }) {
+  const { total, hours, minutes, seconds, isExpired } = useCountdown(date)
+  if (!date || isExpired) return <span>Starting soon…</span>
+  if (total < 5 * 60_000) return <span>Starts in {minutes}m {String(seconds).padStart(2, '0')}s</span>
+  if (hours > 0) return <span>Starts in {hours}h {minutes}m</span>
+  return <span>Starts in {minutes}m</span>
 }
 
 function GameBrowserPage() {
@@ -61,6 +61,7 @@ function GameBrowserPage() {
         game_id: game.id,
         sport: game.sport ?? 'nba',
         status: 'lobby',
+        starts_at: game.date || null,
         created_by: user.id,
       })
       .select()
@@ -176,7 +177,7 @@ function GameBrowserPage() {
                     ? game.statusDetail
                     : game.isFinished
                       ? 'Final'
-                      : formatTipoff(game.date)}
+                      : <GameCountdown date={game.date} />}
                 </div>
 
                 {!game.isFinished && (

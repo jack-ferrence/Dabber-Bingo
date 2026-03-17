@@ -3,6 +3,7 @@ import BingoBoard from './BingoBoard.jsx'
 import PlayerStatsPanel from './PlayerStatsPanel.jsx'
 import Badge from '../ui/Badge.jsx'
 import { checkBingo } from '../../game/statProcessor.js'
+import { useCountdown } from '../../hooks/useCountdown.js'
 
 const Leaderboard = lazy(() => import('./Leaderboard.jsx'))
 const LiveChat = lazy(() => import('./LiveChat.jsx'))
@@ -89,6 +90,8 @@ function GameRoom({
   const statusVariant = room?.status === 'live' ? 'success' : room?.status === 'finished' ? 'muted' : 'warning'
   const statusLabel = room?.status === 'live' ? 'Live' : room?.status === 'finished' ? 'Finished' : 'Lobby'
 
+  const countdown = useCountdown(room?.starts_at ?? null)
+
   const winningLines = bingoResult.winningLines ?? []
 
   return (
@@ -102,6 +105,17 @@ function GameRoom({
           <Badge variant={statusVariant} pulse={room?.status === 'live'}>
             {statusLabel}
           </Badge>
+          {room?.status === 'lobby' && room?.starts_at && (
+            <span className="hidden text-[10px] text-text-muted sm:inline">
+              {countdown.isExpired
+                ? 'Starting soon…'
+                : countdown.total < 5 * 60_000
+                  ? `Starts in ${countdown.minutes}m ${String(countdown.seconds).padStart(2, '0')}s`
+                  : countdown.hours > 0
+                    ? `Starts in ${countdown.hours}h ${countdown.minutes}m`
+                    : `Starts in ${countdown.minutes}m`}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
