@@ -77,6 +77,7 @@ function GamePage() {
   // Load or create card
   useEffect(() => {
     if (!roomId || !user || authLoading || !room) return
+    const debug = import.meta.env.DEV
     const loadOrCreateCard = async () => {
       setLoadingCard(true)
       setError('')
@@ -84,7 +85,10 @@ function GamePage() {
       let players = null
       if (room.game_id) {
         try {
-          const res = await fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`)
+          const rosterUrl = `/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`
+          if (debug) console.log('[GamePage] fetching roster', rosterUrl)
+          const res = await fetch(rosterUrl)
+          if (debug) console.log('[GamePage] roster response status', res.status)
           if (res.ok) {
             const roster = await res.json()
             players = (roster.players ?? []).map((p) => ({
@@ -92,14 +96,19 @@ function GamePage() {
               name: p.name,
               lastName: p.lastName,
             }))
+            if (debug) console.log('[GamePage] roster players', players.length, players.slice(0, 3))
+          } else {
+            if (debug) console.warn('[GamePage] roster fetch non-ok', res.status, await res.text())
           }
-        } catch {
-          // roster fetch failed — RPC will use its fallback roster
+        } catch (rosterErr) {
+          if (debug) console.warn('[GamePage] roster fetch threw', rosterErr)
+          // RPC will use its fallback roster
         }
       }
 
       const rpcParams = { p_room_id: roomId }
       if (players && players.length > 0) rpcParams.p_players = players
+      if (debug) console.log('[GamePage] calling generate_card_for_room', { playerCount: players?.length ?? 0, usingRoster: !!rpcParams.p_players })
 
       let { data, error: rpcError } = await supabase
         .rpc('generate_card_for_room', rpcParams)
@@ -107,13 +116,15 @@ function GamePage() {
 
       if (rpcError && rpcError.message?.toLowerCase().includes('function') && rpcParams.p_players) {
         // Deployed function predates p_players parameter — retry without it.
-        console.warn('generate_card_for_room: p_players rejected; retrying without roster. Run run_all_migrations.sql to fix.', rpcError)
+        // Fix: run the migration in run_all_migrations.sql against your Supabase project.
+        if (debug) console.warn('[GamePage] p_players rejected by RPC — retrying without roster', rpcError)
         ;({ data, error: rpcError } = await supabase
           .rpc('generate_card_for_room', { p_room_id: roomId })
           .single())
       }
 
       if (rpcError) {
+        if (debug) console.error('[GamePage] generate_card_for_room failed', rpcError)
         setError(rpcError.message)
         setLoadingCard(false)
         return
