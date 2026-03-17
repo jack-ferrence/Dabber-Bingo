@@ -11,13 +11,6 @@ export default function HeroBanner() {
         borderLeft: '2px solid #ff6b35',
       }}
     >
-      {/* Radial cinnabar ambient */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse at 20% 50%, rgba(255,107,53,0.06) 0%, transparent 60%)',
-        }}
-      />
 
       <div className="relative z-10 max-w-lg">
         <p

@@ -114,8 +114,8 @@ function SidebarContent({ onClose }) {
       {/* ── My Games ── */}
       <div className="flex-1 overflow-y-auto scrollbar-thin py-4">
         <p
-          className="px-5 mb-2 text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{ color: '#555577' }}
+          className="px-5 mb-2"
+          style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#ff6b35' }}
         >
           My Games
         </p>

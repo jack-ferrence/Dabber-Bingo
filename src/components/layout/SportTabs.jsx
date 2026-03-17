@@ -19,8 +19,8 @@ export default function SportTabs({ onTabClick }) {
 
   return (
     <div
-      className="flex items-center gap-1.5 overflow-x-auto px-4 pb-3"
-      style={{ borderBottom: '1px solid #2a2a44', scrollbarWidth: 'none' }}
+      className="flex items-center overflow-x-auto"
+      style={{ borderBottom: '1px solid #1a1a2e', scrollbarWidth: 'none' }}
     >
       {SPORTS.map((sport) => (
         <button
@@ -28,38 +28,30 @@ export default function SportTabs({ onTabClick }) {
           type="button"
           disabled={!sport.active}
           onClick={() => handleClick(sport)}
-          className="flex-shrink-0 flex items-center gap-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all"
-          style={
-            sport.active
-              ? {
-                  background: '#ff6b35',
-                  color: '#0c0c14',
-                  padding: '5px 14px',
-                  cursor: 'pointer',
-                  boxShadow: '0 1px 3px rgba(255,107,53,0.25)',
-                }
-              : {
-                  color: '#555577',
-                  padding: '5px 12px',
-                  cursor: 'default',
-                  border: '1px solid #2a2a44',
-                  borderRadius: 20,
-                }
-          }
+          style={{
+            fontFamily: 'var(--db-font-mono)',
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            padding: '8px 16px',
+            cursor: sport.active ? 'pointer' : 'default',
+            color: sport.active ? '#ff6b35' : '#3a3a55',
+            background: 'none',
+            borderTop: 'none',
+            borderLeft: 'none',
+            borderRight: 'none',
+            borderBottom: sport.active ? '2px solid #ff6b35' : '2px solid transparent',
+            flexShrink: 0,
+            transition: 'color 100ms ease',
+            outline: 'none',
+          }}
+          onMouseEnter={(e) => { if (sport.active) e.currentTarget.style.color = '#ff8855' }}
+          onMouseLeave={(e) => { if (sport.active) e.currentTarget.style.color = '#ff6b35' }}
         >
           {sport.label}
           {!sport.active && (
-            <span
-              style={{
-                fontSize: 7.5,
-                fontWeight: 800,
-                color: '#C8C3BE',
-                letterSpacing: '0.08em',
-                border: '1px solid #2a2a44',
-                padding: '1px 4px',
-                borderRadius: 3,
-              }}
-            >
+            <span style={{ marginLeft: 6, fontSize: 7.5, fontWeight: 800, color: '#3a3a55', letterSpacing: '0.08em' }}>
               SOON
             </span>
           )}

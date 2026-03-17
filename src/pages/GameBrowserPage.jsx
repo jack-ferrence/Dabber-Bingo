@@ -202,7 +202,7 @@ function GameBrowserPage() {
       {creatingGameId && (
         <div className="fixed inset-0 z-30 flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
           <div
-            className="w-full max-w-md rounded-2xl p-6 shadow-2xl"
+            className="w-full max-w-md p-6"
             style={{ background: '#1a1a2e', border: '1px solid #2a2a44' }}
           >
             <h2 className="text-lg font-semibold tracking-tight" style={{ color: '#e0e0f0' }}>

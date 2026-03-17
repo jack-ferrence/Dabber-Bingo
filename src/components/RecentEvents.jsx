@@ -72,22 +72,23 @@ function RecentEvents({ gameId }) {
 
   return (
     <div>
-      <h2 className="text-sm font-medium uppercase tracking-wide text-slate-400">
+      <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#555577' }}>
         Recent events
       </h2>
       <ul className="mt-2 space-y-1.5 overflow-hidden">
         {events.length === 0 ? (
-          <li className="text-xs text-slate-500">No events yet.</li>
+          <li style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#555577' }}>No events yet.</li>
         ) : (
           events.map((ev) => (
             <li
               key={ev.id}
-              className="animate-in-from-top rounded-md border border-slate-800 bg-slate-900/60 px-2 py-1.5 text-xs text-slate-200"
+              className="animate-in-from-top"
+              style={{ background: '#12121e', border: '1px solid #2a2a44', borderRadius: 4, padding: '6px 8px', fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#e0e0f0' }}
             >
-              <span className="font-medium text-sky-300">
+              <span style={{ fontWeight: 700, color: '#ff6b35' }}>
                 {PLAYER_NAMES[ev.player_id] ?? ev.player_id}
               </span>
-              <span className="text-slate-400"> — </span>
+              <span style={{ color: '#555577' }}> — </span>
               <span>{statTypeLabel(ev.stat_type)}</span>
             </li>
           ))

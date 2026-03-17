@@ -4,7 +4,17 @@
       "Bash(ls /Users/jackferrence/Desktop/bingov2/sports-bingo/src/styles/ && ls /Users/jackferrence/Desktop/bingov2/sports-bingo/tailwind.config.* 2>/dev/null; ls /Users/jackferrence/Desktop/bingov2/sports-bingo/*.config.* 2>/dev/null)",
       "Bash(grep -n \"color: 'var\\(--ch-primary\\)'\" /Users/jackferrence/Desktop/bingov2/sports-bingo/src/components/layout/Sidebar.jsx)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:site.api.espn.com)",
+      "Bash(git commit:*)",
+      "Bash(grep -rn --include=\"*.{jsx,js,css,ts,tsx}\" \\\\\n  -e \"#EDEBE8\" -e \"#F5F3F0\" -e \"#E3E0DC\" -e \"#D5D0CA\" -e \"#F5EDE8\" \\\\\n  -e \"#2D2A26\" -e \"#5C5752\" -e \"#9A9490\" -e \"#B8B2AA\" -e \"#6B6560\" \\\\\n  -e \"#E44D2E\" -e \"#F0705A\" -e \"#C93D22\" \\\\\n  -e \"#DC2626\" -e \"Bebas Neue\" -e \"DM Sans\" -e \"Anton\" -e \"Outfit\" \\\\\n  src/ --exclude-dir=node_modules \\\\\n  | grep -v \"\\\\.css:\" | sed 's/.*\\\\/src\\\\//src\\\\//' | sort)",
+      "Bash(grep -rn --include=\"*.jsx\" --include=\"*.js\" \\\\\n  -e \"db-font-display\\\\|--ch-font\\\\|var\\(--db-font\" \\\\\n  -e \"rgba\\(228, 77, 46\\\\|rgba\\(228,77,46\\\\|rgba\\(220,38,38\\\\|rgba\\(220, 38, 38\" \\\\\n  /Users/jackferrence/Downloads/Chalk-Bingo-main/src/ 2>/dev/null | sort)",
+      "Bash(npm run:*)",
+      "Bash(npx vite:*)",
+      "Bash(./node_modules/.bin/vite build:*)",
+      "Bash(ls node_modules/.bin/vite 2>/dev/null || echo \"not found, installing\" && npm install --silent 2>&1 | tail -5)",
+      "Bash(npm install:*)"
     ]
   }
 }

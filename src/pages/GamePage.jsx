@@ -158,16 +158,16 @@ function GamePage() {
 
   if (loadingRoom || authLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-bg-primary">
-        <span className="text-sm text-text-secondary">Loading room...</span>
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center" style={{ background: '#0c0c14' }}>
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#8888aa' }}>Loading room...</span>
       </div>
     )
   }
 
   if (!room) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-bg-primary">
-        <span className="text-sm text-accent-red">Room not found.</span>
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center" style={{ background: '#0c0c14' }}>
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#ff2d2d' }}>Room not found.</span>
       </div>
     )
   }

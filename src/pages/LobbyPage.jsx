@@ -115,11 +115,14 @@ export default function LobbyPage() {
       {/* Error */}
       {(error || joinError) && (
         <div
-          className="mb-6 rounded-lg px-4 py-3 text-sm"
+          className="mb-6 px-4 py-3"
           style={{
-            background: 'rgba(239,68,68,0.08)',
-            border: '1px solid rgba(239,68,68,0.3)',
-            color: '#EF4444',
+            background: 'rgba(255,45,45,0.08)',
+            border: '1px solid rgba(255,45,45,0.25)',
+            borderRadius: 6,
+            fontFamily: 'var(--db-font-mono)',
+            fontSize: 12,
+            color: '#ff2d2d',
           }}
         >
           {error || joinError}
