@@ -176,7 +176,7 @@ function GamePage() {
               oddsProps = oddsData.props
               if (debug) console.log(`[GamePage] odds: ${oddsProps.length} props for ${oddsData.meta?.home_team} vs ${oddsData.meta?.away_team}`)
             } else if (debug) {
-              console.warn('[GamePage] odds returned empty pool', oddsData.meta)
+              console.warn('[GamePage] odds empty — reason:', oddsData.meta?.reason ?? 'no props returned', oddsData.meta)
             }
           }
         } catch (oddsErr) {
