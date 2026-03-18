@@ -16,12 +16,26 @@ export default function StorePage() {
   const { user } = useAuth()
   const { dabsBalance, nameColor, nameFont, equippedBadge, boardSkin } = useProfile()
 
+  const isEmailVerified = user?.email_confirmed_at != null
+
   const [items, setItems] = useState([])
   const [inventory, setInventory] = useState(new Set())
   // Local equip overrides — tracks what we optimistically equipped this session
   const [localEquipped, setLocalEquipped] = useState({})
   const [tab, setTab] = useState('name_color')
   const [loading, setLoading] = useState(true)
+  const [resendStatus, setResendStatus] = useState(null) // null | 'sending' | 'sent' | 'error'
+
+  const handleResend = async () => {
+    if (!user?.email || resendStatus === 'sending' || resendStatus === 'sent') return
+    setResendStatus('sending')
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: user.email,
+      options: { emailRedirectTo: window.location.origin },
+    })
+    setResendStatus(error ? 'error' : 'sent')
+  }
 
   useEffect(() => {
     if (!user) return
@@ -103,6 +117,56 @@ export default function StorePage() {
           )}
         </div>
 
+        {/* Email verification banner */}
+        {!isEmailVerified && (
+          <div
+            style={{
+              background: 'rgba(255,107,53,0.08)',
+              border: '1px solid rgba(255,107,53,0.25)',
+              borderRadius: 6,
+              padding: '14px 18px',
+              marginBottom: 24,
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+            }}
+          >
+            <div>
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.08em', margin: '0 0 3px' }}>
+                VERIFY YOUR EMAIL TO UNLOCK PURCHASES
+              </p>
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa', margin: 0 }}>
+                Check your inbox or click to resend the confirmation email.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendStatus === 'sending' || resendStatus === 'sent'}
+              style={{
+                background: 'none',
+                border: '1px solid rgba(255,107,53,0.4)',
+                borderRadius: 4,
+                fontFamily: 'var(--db-font-mono)',
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                color: resendStatus === 'sent' ? '#22c55e' : '#ff6b35',
+                padding: '5px 14px',
+                cursor: resendStatus === 'sending' || resendStatus === 'sent' ? 'default' : 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 100ms ease',
+              }}
+              onMouseEnter={(e) => { if (!resendStatus) e.currentTarget.style.background = 'rgba(255,107,53,0.12)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
+            >
+              {resendStatus === 'sending' ? 'SENDING...' : resendStatus === 'sent' ? '✓ EMAIL SENT' : resendStatus === 'error' ? 'RETRY' : 'RESEND VERIFICATION EMAIL'}
+            </button>
+          </div>
+        )}
+
         <CategoryTabs tabs={TABS} activeTab={tab} onTabChange={setTab} />
 
         {loading ? (
@@ -124,6 +188,7 @@ export default function StorePage() {
                 owned={isOwned(item)}
                 equipped={isEquipped(item)}
                 dabsBalance={dabsBalance}
+                isEmailVerified={isEmailVerified}
                 onPurchased={handlePurchased}
                 onEquipped={handleEquipped}
               />

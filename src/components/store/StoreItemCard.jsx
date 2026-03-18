@@ -93,7 +93,7 @@ function ItemPreview({ item }) {
 
 // ── Main card ─────────────────────────────────────────────────────────────────
 
-export default function StoreItemCard({ item, owned, equipped, dabsBalance, onPurchased, onEquipped }) {
+export default function StoreItemCard({ item, owned, equipped, dabsBalance, isEmailVerified = true, onPurchased, onEquipped }) {
   const [confirming, setConfirming] = useState(false)
   const [purchasing, setPurchasing] = useState(false)
   const [equipping, setEquipping] = useState(false)
@@ -103,6 +103,7 @@ export default function StoreItemCard({ item, owned, equipped, dabsBalance, onPu
   const isFree = (item.price ?? item.cost ?? 0) === 0
   const price = item.price ?? item.cost ?? 0
   const canAfford = isFree || (dabsBalance !== null && dabsBalance >= price)
+  const canBuy = isEmailVerified
 
   const showToast = (msg) => {
     setToast(msg)
@@ -221,23 +222,23 @@ export default function StoreItemCard({ item, owned, equipped, dabsBalance, onPu
             {!owned && !isFree && (
               <button
                 type="button"
-                onClick={handleBuyClick}
-                disabled={purchasing || !canAfford}
+                onClick={canBuy ? handleBuyClick : undefined}
+                disabled={purchasing || !canAfford || !canBuy}
                 style={{
                   width: '100%',
-                  background: canAfford ? '#ff6b35' : '#1a1a2e',
-                  color: canAfford ? '#0c0c14' : '#3a3a55',
+                  background: !canBuy ? '#1a1a2e' : canAfford ? '#ff6b35' : '#1a1a2e',
+                  color: !canBuy ? '#3a3a55' : canAfford ? '#0c0c14' : '#3a3a55',
                   border: 'none', borderRadius: 3,
                   fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700,
                   letterSpacing: '0.06em', padding: '6px 0',
-                  cursor: canAfford ? 'pointer' : 'not-allowed',
+                  cursor: (!canBuy || !canAfford || purchasing) ? 'not-allowed' : 'pointer',
                   transition: 'background 100ms ease',
                 }}
-                onMouseEnter={(e) => { if (canAfford && !purchasing) e.currentTarget.style.background = '#ff8855' }}
-                onMouseLeave={(e) => { if (canAfford && !purchasing) e.currentTarget.style.background = '#ff6b35' }}
-                title={!canAfford ? `Need ${price} Dabs (have ${dabsBalance ?? 0})` : undefined}
+                onMouseEnter={(e) => { if (canBuy && canAfford && !purchasing) e.currentTarget.style.background = '#ff8855' }}
+                onMouseLeave={(e) => { if (canBuy && canAfford && !purchasing) e.currentTarget.style.background = '#ff6b35' }}
+                title={!canBuy ? 'Verify your email to unlock purchases' : !canAfford ? `Need ${price} Dabs (have ${dabsBalance ?? 0})` : undefined}
               >
-                {purchasing ? '...' : `◈ ${price}`}
+                {purchasing ? '...' : !canBuy ? '🔒 VERIFY TO BUY' : `◈ ${price}`}
               </button>
             )}
 
