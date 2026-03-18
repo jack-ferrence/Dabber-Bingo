@@ -7,20 +7,20 @@ const SKELETON_COUNT = 3
 // Helpers
 // ---------------------------------------------------------------------------
 
-function todayUTC() {
-  return new Date().toISOString().slice(0, 10)
+// Use Pacific midnight as the day boundary so games are bucketed by their
+// calendar date in PT regardless of the viewer's local timezone.
+function pacificDateStr(d) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(d)
 }
-
-function tomorrowUTC() {
-  const d = new Date()
-  d.setUTCDate(d.getUTCDate() + 1)
-  return d.toISOString().slice(0, 10)
+function todayPacific() { return pacificDateStr(new Date()) }
+function tomorrowPacific() {
+  const [y, m, day] = todayPacific().split('-').map(Number)
+  return pacificDateStr(new Date(y, m - 1, day + 1))
 }
-
 function getDayLabel(startsAt) {
   if (!startsAt) return 'today'
-  const gameDate = new Date(startsAt).toISOString().slice(0, 10)
-  if (gameDate === tomorrowUTC()) return 'tomorrow'
+  const gameDate = pacificDateStr(new Date(startsAt))
+  if (gameDate === tomorrowPacific()) return 'tomorrow'
   return 'today'
 }
 
@@ -102,11 +102,12 @@ function GameCardItems({ games, joinedRoomIds, joiningRoomId, onJoin, onContinue
 }
 
 function SliderWithDays({ games, joinedRoomIds, joiningRoomId, onJoin, onContinue }) {
-  const todayGames    = games.filter((g) => getDayLabel(g.starts_at) === 'today')
-  const tomorrowGames = games.filter((g) => getDayLabel(g.starts_at) === 'tomorrow')
+  const byStartTime = (a, b) => new Date(a.starts_at) - new Date(b.starts_at)
+  const todayGames    = games.filter((g) => getDayLabel(g.starts_at) === 'today').sort(byStartTime)
+  const tomorrowGames = games.filter((g) => getDayLabel(g.starts_at) === 'tomorrow').sort(byStartTime)
 
-  const todayDateStr    = fmtDate(todayUTC())
-  const tomorrowDateStr = fmtDate(tomorrowUTC())
+  const todayDateStr    = fmtDate(todayPacific())
+  const tomorrowDateStr = fmtDate(tomorrowPacific())
 
   // Only show day labels when there's content from more than one day OR
   // when all games are tomorrow (so the user knows why they're not today)
