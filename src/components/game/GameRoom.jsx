@@ -42,7 +42,7 @@ function GameRoom({
 }) {
   const navigate = useNavigate()
   const [selectedSquare, setSelectedSquare] = useState(null)
-  const [mobileLeaderboard, setMobileLeaderboard] = useState(false)
+  const [mobileLeaderboard, setMobileLeaderboard] = useState(true)
   const [mobileStats, setMobileStats] = useState(false)
   const [activeRooms, setActiveRooms] = useState([])
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
@@ -480,7 +480,7 @@ function GameRoom({
 
         {/* RIGHT: Leaderboard + Chat (desktop) */}
         <div className="hidden w-[35%] shrink-0 flex-col border-l border-border-subtle lg:flex">
-          <div className="flex-[45] overflow-y-auto p-3 scrollbar-thin">
+          <div className="flex-[45] min-h-0 overflow-y-auto p-3 scrollbar-thin">
             <Suspense fallback={<PanelFallback />}>
               <Leaderboard
                 roomId={roomId}
@@ -491,7 +491,7 @@ function GameRoom({
             </Suspense>
           </div>
           <div className="border-t border-border-subtle" />
-          <div className="flex-[55] overflow-hidden p-3">
+          <div className="flex-[55] min-h-0 overflow-y-auto p-3">
             <Suspense fallback={<PanelFallback />}>
               <LiveChat
                 roomId={roomId}
@@ -531,7 +531,7 @@ function GameRoom({
               />
             </Suspense>
           </div>
-          <div className="overflow-hidden p-3" style={{ maxHeight: '16rem' }}>
+          <div className="overflow-y-auto p-3" style={{ maxHeight: '16rem' }}>
             <Suspense fallback={<PanelFallback />}>
               <LiveChat
                 roomId={roomId}
