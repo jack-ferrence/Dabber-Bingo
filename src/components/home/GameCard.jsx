@@ -24,10 +24,10 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
   const awayColor = NBA_TEAM_COLORS[away] ?? NBA_TEAM_COLORS.DEFAULT
   const isLive = game.status === 'live'
   const isFinished = game.status === 'finished'
-  const { dabsBalance } = useProfile()
+  const { dobsBalance } = useProfile()
   const isNcaa = game.sport === 'ncaa'
   const ENTRY_COST = 10
-  const canAfford = isNcaa || dabsBalance === null || dabsBalance >= ENTRY_COST
+  const canAfford = isNcaa || dobsBalance === null || dobsBalance >= ENTRY_COST
 
   return (
     <div
@@ -150,7 +150,7 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
               onClick={() => onJoin(game.id)}
               disabled={joining || !canAfford}
               className="btn-join"
-              title={!canAfford ? `Need ${ENTRY_COST} Dabs to join (you have ${dabsBalance})` : undefined}
+              title={!canAfford ? `Need ${ENTRY_COST} Dobs to join (you have ${dobsBalance})` : undefined}
               style={!canAfford ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
             >
               {joining ? '…' : 'JOIN'}

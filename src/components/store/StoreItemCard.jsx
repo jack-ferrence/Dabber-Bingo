@@ -93,7 +93,7 @@ function ItemPreview({ item }) {
 
 // ── Main card ─────────────────────────────────────────────────────────────────
 
-export default function StoreItemCard({ item, owned, equipped, dabsBalance, isEmailVerified = true, onPurchased, onEquipped, onVerifyNeeded }) {
+export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEmailVerified = true, onPurchased, onEquipped, onVerifyNeeded }) {
   const [confirming, setConfirming] = useState(false)
   const [purchasing, setPurchasing] = useState(false)
   const [equipping, setEquipping] = useState(false)
@@ -102,7 +102,7 @@ export default function StoreItemCard({ item, owned, equipped, dabsBalance, isEm
 
   const isFree = (item.price ?? item.cost ?? 0) === 0
   const price = item.price ?? item.cost ?? 0
-  const canAfford = isFree || (dabsBalance !== null && dabsBalance >= price)
+  const canAfford = isFree || (dobsBalance !== null && dobsBalance >= price)
   const canBuy = isEmailVerified
 
   const showToast = (msg) => {
@@ -124,7 +124,7 @@ export default function StoreItemCard({ item, owned, equipped, dabsBalance, isEm
     setPurchasing(false)
     if (error) { setErr(error.message); return }
     if (!data?.success) {
-      if (data?.reason === 'insufficient_dabs') setErr(`Need ${data.cost} Dabs (have ${data.balance})`)
+      if (data?.reason === 'insufficient_dabs') setErr(`Need ${data.cost} Dobs (have ${data.balance})`)
       else if (data?.reason === 'already_owned') showToast('Already owned')
       else setErr(data?.reason || 'Purchase failed')
       return
@@ -236,7 +236,7 @@ export default function StoreItemCard({ item, owned, equipped, dabsBalance, isEm
                 }}
                 onMouseEnter={(e) => { if (canBuy && canAfford && !purchasing) e.currentTarget.style.background = '#ff8855' }}
                 onMouseLeave={(e) => { if (canBuy && canAfford && !purchasing) e.currentTarget.style.background = '#ff6b35' }}
-                title={!canBuy ? 'Verify your email to unlock purchases' : !canAfford ? `Need ${price} Dabs (have ${dabsBalance ?? 0})` : undefined}
+                title={!canBuy ? 'Verify your email to unlock purchases' : !canAfford ? `Need ${price} Dobs (have ${dobsBalance ?? 0})` : undefined}
               >
                 {purchasing ? '...' : !canBuy ? '🔒 VERIFY TO BUY' : `◈ ${price}`}
               </button>

@@ -636,6 +636,6 @@ html, body {
 
   /* ── Mobile inline chat: constrain messages area ── */
   .mobile-inline-chat .overflow-y-auto {
-    max-height: 7rem !important;
+    max-height: 12rem !important;
   }
 }

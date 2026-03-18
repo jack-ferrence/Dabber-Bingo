@@ -1,4 +1,4 @@
-# Dabber Design System — Arcade Scoreboard
+# Dobber Design System — Arcade Scoreboard
 
 ## Philosophy
 Retro arcade scoreboard. Deep navy-black backgrounds, burnt orange accent, monospace everything. Like an old LED scoreboard in a dimly lit arcade.
@@ -88,7 +88,7 @@ Retro arcade scoreboard. Deep navy-black backgrounds, burnt orange accent, monos
 - Hover: `#ff8855`
 - No underlines anywhere
 
-## CSS Custom Properties (dabber-brand.css)
+## CSS Custom Properties (dobber-brand.css)
 
 All design tokens are available as CSS variables prefixed `--db-*`:
 

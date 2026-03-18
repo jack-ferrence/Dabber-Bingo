@@ -42,7 +42,7 @@ function GameRoom({
 }) {
   const navigate = useNavigate()
   const [selectedSquare, setSelectedSquare] = useState(null)
-  const [mobileLeaderboard, setMobileLeaderboard] = useState(false)
+  const [mobileLeaderboard, setMobileLeaderboard] = useState(true)
   const [mobileStats, setMobileStats] = useState(false)
   const [activeRooms, setActiveRooms] = useState([])
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
@@ -157,7 +157,7 @@ function GameRoom({
     }
     if (!result?.success) {
       const reason = result?.reason
-      if (reason === 'insufficient_dabs') setSwapError(`Need ${result.cost ?? (swapCount === 0 ? 10 : 50)} Dabs (have ${result.balance ?? 0})`)
+      if (reason === 'insufficient_dabs') setSwapError(`Need ${result.cost ?? (swapCount === 0 ? 10 : 50)} Dobs (have ${result.balance ?? 0})`)
       else if (reason === 'game_already_started') setSwapError('Too late — game is live!')
       else if (reason === 'max_swaps_reached') setSwapError('Max 2 swaps per game reached')
       else setSwapError(reason || 'Swap failed')
@@ -172,7 +172,7 @@ function GameRoom({
   }, [roomId, rosterPlayers, onCardSwap, swapCount])
   const handleToggleMobileLeaderboard = useCallback(() => setMobileLeaderboard((v) => !v), [])
 
-  const { username: profileUsername, boardSkin } = useProfile()
+  const { username: profileUsername, dobsBalance, boardSkin } = useProfile()
   const username = profileUsername
     ?? (user?.is_anonymous ? `Guest_${user.id.slice(0, 8)}` : (user?.email ?? 'Guest'))
 
@@ -181,8 +181,8 @@ function GameRoom({
 
   const countdown = useCountdown(room?.starts_at ?? null)
 
-  // ── Game-over Dabs summary ─────────────────────────────────────────────────
-  const dabsSummary = useMemo(() => {
+  // ── Game-over Dobs summary ─────────────────────────────────────────────────
+  const dobsSummary = useMemo(() => {
     if (room?.status !== 'finished' || !card) return null
 
     const myRank = leaderboardCards.length > 0
@@ -199,17 +199,17 @@ function GameRoom({
          myRank === 4 ? 25 : myRank === 5 ? 15 : myRank <= 10 ? 5 : 0)
       : 0
 
-    const squareDabs = (card.squares_marked ?? 0) * 2
-    const lineDabs   = (card.lines_completed ?? 0) * 10
+    const squareDobs = (card.squares_marked ?? 0) * 2
+    const lineDobs   = (card.lines_completed ?? 0) * 10
     const participation = 3
-    const total = squareDabs + lineDabs + posBonus + participation
+    const total = squareDobs + lineDobs + posBonus + participation
 
     const ordinal = (n) => {
       if (n === 1) return '1st'; if (n === 2) return '2nd'; if (n === 3) return '3rd'
       return `${n}th`
     }
 
-    return { myRank, posBonus, squareDabs, lineDabs, participation, total, ordinal }
+    return { myRank, posBonus, squareDobs, lineDobs, participation, total, ordinal }
   }, [room?.status, card, leaderboardCards, user?.id])
 
   const winningLines = bingoResult.winningLines ?? []
@@ -335,8 +335,8 @@ function GameRoom({
         </div>
       )}
 
-      {/* ── Game-over Dabs summary ── */}
-      {dabsSummary && (
+      {/* ── Game-over Dobs summary ── */}
+      {dobsSummary && (
         <div
           className="shrink-0 border-b px-4 py-3 animate-in-from-top"
           style={{ background: 'rgba(255,107,53,0.06)', borderColor: 'rgba(255,107,53,0.18)' }}
@@ -345,27 +345,27 @@ function GameRoom({
             {/* Left: rank + total */}
             <div className="flex items-center gap-3">
               <span style={{ fontSize: 22 }}>
-                {dabsSummary.myRank === 1 ? '🥇' : dabsSummary.myRank === 2 ? '🥈' : dabsSummary.myRank === 3 ? '🥉' : '🎯'}
+                {dobsSummary.myRank === 1 ? '🥇' : dobsSummary.myRank === 2 ? '🥈' : dobsSummary.myRank === 3 ? '🥉' : '🎯'}
               </span>
               <div>
                 <p className="text-xs font-semibold" style={{ color: '#e0e0f0' }}>
-                  {dabsSummary.myRank > 0 ? `Finished ${dabsSummary.ordinal(dabsSummary.myRank)}` : 'Game Over'}
+                  {dobsSummary.myRank > 0 ? `Finished ${dobsSummary.ordinal(dobsSummary.myRank)}` : 'Game Over'}
                 </p>
                 <p className="text-[10px]" style={{ color: '#555577' }}>
-                  Game finished — Dabs awarded
+                  Game finished — Dobs awarded
                 </p>
               </div>
             </div>
 
             {/* Right: breakdown */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]" style={{ color: '#8888aa' }}>
-              <span>{card.squares_marked} squares × 2 = <strong style={{ color: '#ff6b35' }}>{dabsSummary.squareDabs}</strong></span>
+              <span>{card.squares_marked} squares × 2 = <strong style={{ color: '#ff6b35' }}>{dobsSummary.squareDobs}</strong></span>
               <span style={{ color: '#2a2a44' }}>·</span>
-              <span>{card.lines_completed} lines × 10 = <strong style={{ color: '#ff6b35' }}>{dabsSummary.lineDabs}</strong></span>
-              {dabsSummary.posBonus > 0 && (
+              <span>{card.lines_completed} lines × 10 = <strong style={{ color: '#ff6b35' }}>{dobsSummary.lineDobs}</strong></span>
+              {dobsSummary.posBonus > 0 && (
                 <>
                   <span style={{ color: '#2a2a44' }}>·</span>
-                  <span>Position +<strong style={{ color: '#ff6b35' }}>{dabsSummary.posBonus}</strong></span>
+                  <span>Position +<strong style={{ color: '#ff6b35' }}>{dobsSummary.posBonus}</strong></span>
                 </>
               )}
               <span style={{ color: '#2a2a44' }}>·</span>
@@ -373,7 +373,7 @@ function GameRoom({
               <span
                 style={{ marginLeft: 4, borderRadius: 4, padding: '2px 8px', fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, background: 'rgba(255,107,53,0.12)', color: '#ff6b35', border: '1px solid rgba(255,107,53,0.25)' }}
               >
-                ◈ +{dabsSummary.total} Dabs
+                ◈ +{dobsSummary.total} Dobs
               </span>
             </div>
           </div>
@@ -432,7 +432,7 @@ function GameRoom({
                     onMouseEnter={(e) => { e.currentTarget.style.color = '#ff6b35' }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = '#8888aa' }}
                   >
-                    CUSTOMIZE YOUR LOOK IN THE DABS STORE →
+                    CUSTOMIZE YOUR LOOK IN THE DOBS STORE →
                   </Link>
                   <button type="button" onClick={handleDismissStorePromo}
                     style={{ background: 'none', border: 'none', color: '#3a3a55', cursor: 'pointer', fontFamily: 'var(--db-font-mono)', fontSize: 12, padding: '0 0 0 12px', lineHeight: 1 }}
@@ -481,7 +481,7 @@ function GameRoom({
 
         {/* RIGHT: Leaderboard + Chat (desktop) */}
         <div className="hidden w-[35%] shrink-0 flex-col border-l border-border-subtle lg:flex">
-          <div className="flex-[45] overflow-y-auto p-3 scrollbar-thin">
+          <div className="flex-[45] min-h-0 overflow-y-auto p-3 scrollbar-thin">
             <Suspense fallback={<PanelFallback />}>
               <Leaderboard
                 roomId={roomId}
@@ -492,7 +492,7 @@ function GameRoom({
             </Suspense>
           </div>
           <div className="border-t border-border-subtle" />
-          <div className="flex-[55] overflow-hidden p-3">
+          <div className="flex-[55] min-h-0 overflow-y-auto p-3">
             <Suspense fallback={<PanelFallback />}>
               <LiveChat
                 roomId={roomId}
@@ -532,7 +532,7 @@ function GameRoom({
               />
             </Suspense>
           </div>
-          <div className="overflow-hidden p-3" style={{ maxHeight: '16rem' }}>
+          <div className="overflow-y-auto p-3" style={{ maxHeight: '16rem' }}>
             <Suspense fallback={<PanelFallback />}>
               <LiveChat
                 roomId={roomId}

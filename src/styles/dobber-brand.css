@@ -1,5 +1,5 @@
 /* ============================================================
-   DABBER — Arcade Scoreboard Design System
+   DOBBER — Arcade Scoreboard Design System
    Deep navy-black + burnt orange + monospace everything
    ============================================================ */
 
@@ -191,7 +191,7 @@
   color: var(--db-primary);
 }
 
-/* Monospace number display — for scores, Dabs count, etc. */
+/* Monospace number display — for scores, Dobs count, etc. */
 .db-number {
   font-family: var(--db-font-mono);
   font-weight: 800;

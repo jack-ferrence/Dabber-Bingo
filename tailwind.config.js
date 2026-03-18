@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── PRIMARY BRAND: DABBER — Arcade Scoreboard ──────────────
+        // ── PRIMARY BRAND: DOBBER — Arcade Scoreboard ──────────────
         db: {
           // Primary — Burnt Orange
           primary: {

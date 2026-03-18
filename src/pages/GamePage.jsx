@@ -125,7 +125,7 @@ function GamePage() {
           if (debug) console.warn('[GamePage] deduct_entry_fee not found, skipping', feeError.message)
         } else if (feeResult && !feeResult.success) {
           if (feeResult.reason === 'insufficient_dabs') {
-            setError(`Not enough Dabs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dabs.`)
+            setError(`Not enough Dobs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dobs.`)
           } else if (feeResult.reason !== 'already_joined' && feeResult.reason !== 'free_entry') {
             setError('Could not join: ' + feeResult.reason)
           }

@@ -54,7 +54,7 @@ export default function VerifyEmailModal({ email, onClose }) {
           VERIFY YOUR EMAIL
         </h2>
         <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#8888aa', margin: '0 0 14px', lineHeight: 1.6 }}>
-          Verify your email to unlock purchases in the Dabs Store. You can still browse and play games without verifying.
+          Verify your email to unlock purchases in the Dobs Store. You can still browse and play games without verifying.
         </p>
 
         {email && (

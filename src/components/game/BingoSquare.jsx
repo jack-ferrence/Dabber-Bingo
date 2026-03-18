@@ -269,7 +269,7 @@ const BingoSquare = memo(function BingoSquare({
             setCandidateSquare(candidate)
             setSwapConfirm(true)
           }}
-          title="Swap this square (5 Dabs)"
+          title="Swap this square (5 Dobs)"
           style={{
             position: 'absolute',
             top: 2,
