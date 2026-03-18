@@ -13,6 +13,7 @@ function GamePage() {
   const [room, setRoom] = useState(null)
   const [card, setCard] = useState(null)
   const [rosterPlayers, setRosterPlayers] = useState(null)
+  const [oddsPool, setOddsPool] = useState([])
   const [retryCount, setRetryCount] = useState(0)
   const [loadingRoom, setLoadingRoom] = useState(true)
   const [loadingCard, setLoadingCard] = useState(true)
@@ -187,6 +188,7 @@ function GamePage() {
       if (oddsProps && players) {
         try {
           const matched = matchOddsToRoster(oddsProps, players)
+          setOddsPool(matched)
           const oddsCard = generateOddsBasedCard(matched)
           if (oddsCard) {
             // Save the client-generated card to the database
@@ -325,6 +327,7 @@ function GamePage() {
       initChatMessages={initChatMessages}
       resetStatEvents={resetStatEvents}
       rosterPlayers={rosterPlayers}
+      oddsPool={oddsPool}
       onRetryCard={() => { setCard(null); setRetryCount((c) => c + 1) }}
     />
   )

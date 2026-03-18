@@ -145,3 +145,37 @@ export function generateOddsBasedCard(matchedProps) {
 
   return card
 }
+
+/**
+ * Find a client-side swap candidate: a prop from the pool with American odds
+ * within ±25 of the original square, not already on the card, respecting conflict keys.
+ *
+ * @param {Object} originalSquare - the square being replaced (needs american_odds)
+ * @param {Array}  fullPropPool   - output of matchOddsToRoster (the full matched pool)
+ * @param {Array}  currentCardSquares - all 25 squares currently on the card
+ * @returns {Object|null} a candidate prop (same shape as pool entry), or null
+ */
+export function findSwapCandidate(originalSquare, fullPropPool, currentCardSquares) {
+  if (!fullPropPool?.length) return null
+  const origOdds = originalSquare?.american_odds
+  if (origOdds == null) return null
+
+  const usedConflictKeys = new Set()
+  const usedDisplayTexts = new Set()
+  for (const sq of currentCardSquares ?? []) {
+    if (sq?.conflict_key) usedConflictKeys.add(sq.conflict_key)
+    if (sq?.display_text) usedDisplayTexts.add(sq.display_text)
+  }
+
+  const candidates = fullPropPool.filter(
+    (p) =>
+      p.american_odds != null &&
+      Math.abs(p.american_odds - origOdds) <= 25 &&
+      !usedConflictKeys.has(p.conflict_key) &&
+      !usedDisplayTexts.has(p.display_text) &&
+      p.display_text !== originalSquare.display_text
+  )
+
+  if (!candidates.length) return null
+  return candidates[Math.floor(Math.random() * candidates.length)]
+}

@@ -37,6 +37,7 @@ function GameRoom({
   initChatMessages,
   resetStatEvents,
   rosterPlayers,
+  oddsPool = [],
   onRetryCard,
 }) {
   const navigate = useNavigate()
@@ -130,13 +131,14 @@ function GameRoom({
     if (card?.swap_count != null) setSwapCount(card.swap_count)
   }, [card?.swap_count])
 
-  const handleSwapRequest = useCallback(async (squareIndex) => {
+  const handleSwapRequest = useCallback(async (squareIndex, newSquare = null) => {
     setSwappingSquareIndex(squareIndex)
     setSwapError('')
     const { data: result, error: rpcError } = await supabase.rpc('swap_card_square', {
       p_room_id: roomId,
       p_square_index: squareIndex,
       p_roster: rosterPlayers ?? null,
+      p_new_square: newSquare ?? null,
     })
     setSwappingSquareIndex(null)
     if (rpcError) {
@@ -157,7 +159,7 @@ function GameRoom({
       setSwapCount((c) => c + 1)
     }
     onCardSwap?.({ squareIndex: result.square_index, newSquare: result.new_square })
-  }, [roomId, rosterPlayers, onCardSwap, swapCount])
+  }, [roomId, rosterPlayers, onCardSwap, swapCount, oddsPool])
   const handleToggleMobileLeaderboard = useCallback(() => setMobileLeaderboard((v) => !v), [])
   const handleOpenMobileChat = useCallback(() => setMobileChat(true), [])
   const handleCloseMobileChat = useCallback(() => setMobileChat(false), [])
@@ -390,6 +392,7 @@ function GameRoom({
                 onSwapRequest={handleSwapRequest}
                 swappingSquareIndex={swappingSquareIndex}
                 swapCount={swapCount}
+                oddsPool={oddsPool}
               />
 
               {/* Swap hint + error (lobby only) */}

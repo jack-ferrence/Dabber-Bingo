@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
+import { findSwapCandidate } from '../../game/oddsCardGenerator.js'
 
 const BingoSquare = memo(function BingoSquare({
   square,
@@ -11,6 +12,8 @@ const BingoSquare = memo(function BingoSquare({
   isSwapping = false,
   swapsExhausted = false,
   nextSwapCost = 10,
+  oddsPool = [],
+  allSquares = [],
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
@@ -19,6 +22,7 @@ const BingoSquare = memo(function BingoSquare({
   const [justMarked, setJustMarked] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [swapConfirm, setSwapConfirm] = useState(false)
+  const [candidateSquare, setCandidateSquare] = useState(null)
 
   useEffect(() => {
     if (marked && !prevMarkedRef.current) {
@@ -32,7 +36,7 @@ const BingoSquare = memo(function BingoSquare({
 
   // Reset confirm when parent starts swapping
   useEffect(() => {
-    if (isSwapping) setSwapConfirm(false)
+    if (isSwapping) { setSwapConfirm(false); setCandidateSquare(null) }
   }, [isSwapping])
 
   let playerLabel = ''
@@ -48,6 +52,9 @@ const BingoSquare = memo(function BingoSquare({
   const TIER_COLORS = { easy: '#22c55e', medium: '#3b82f6', hard: '#f59e0b', longshot: '#ef4444' }
   const tierColor = square?.tier ? TIER_COLORS[square.tier] : null
   const tierPct = square?.implied_prob != null ? Math.round(square.implied_prob * 100) : null
+
+  const odds = square?.american_odds
+  const oddsLabel = odds != null ? `(${odds > 0 ? '+' : ''}${odds})` : null
 
   // ── FREE square ──────────────────────────────────────────────────────────────
   if (isFree) {
@@ -95,6 +102,8 @@ const BingoSquare = memo(function BingoSquare({
 
   // ── Swap confirm overlay ─────────────────────────────────────────────────────
   if (swapConfirm) {
+    const candOdds = candidateSquare?.american_odds
+    const candOddsLabel = candOdds != null ? ` (${candOdds > 0 ? '+' : ''}${candOdds})` : ''
     return (
       <div
         style={{
@@ -103,30 +112,35 @@ const BingoSquare = memo(function BingoSquare({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 4,
+          gap: 3,
           background: '#150a04',
           border: '1px dashed #ff6b35',
           borderRadius: 4,
           padding: 4,
         }}
       >
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: '#e0e0f0', textAlign: 'center', lineHeight: 1.3 }}>
-          Swap?
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, color: '#8888aa', textAlign: 'center', lineHeight: 1.2 }}>
+          {candidateSquare ? 'Replace with:' : 'Swap square?'}
         </span>
+        {candidateSquare ? (
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, color: '#e0e0f0', textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word' }}>
+            {candidateSquare.display_text}{candOddsLabel}
+          </span>
+        ) : null}
         <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: '#ff6b35', fontWeight: 700 }}>
           {nextSwapCost} ◈
         </span>
         <div style={{ display: 'flex', gap: 4 }}>
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); onSwapRequest?.(index); setSwapConfirm(false) }}
+            onClick={(e) => { e.stopPropagation(); onSwapRequest?.(index, candidateSquare ?? null); setSwapConfirm(false); setCandidateSquare(null) }}
             style={{ width: 20, height: 20, borderRadius: 3, background: '#ff6b35', color: '#0c0c14', border: 'none', fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
           >
             ✓
           </button>
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); setSwapConfirm(false) }}
+            onClick={(e) => { e.stopPropagation(); setSwapConfirm(false); setCandidateSquare(null) }}
             style={{ width: 20, height: 20, borderRadius: 3, background: 'none', color: '#555577', border: '1px solid #2a2a44', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
           >
             ✗
@@ -167,6 +181,11 @@ const BingoSquare = memo(function BingoSquare({
         <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800, color: '#ff6b35', lineHeight: 1.2 }}>
           {statLabel}
         </span>
+        {oddsLabel && (
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: 'rgba(255,107,53,0.6)', lineHeight: 1 }}>
+            {oddsLabel}
+          </span>
+        )}
         <span style={{ position: 'absolute', right: 3, top: 2, fontSize: 8, color: '#ff6b35' }}>✓</span>
         {tierColor && (
           <span
@@ -221,6 +240,11 @@ const BingoSquare = memo(function BingoSquare({
       <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 600, color: '#e0e0f0', lineHeight: 1.2 }}>
         {statLabel}
       </span>
+      {oddsLabel && (
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: '#555577', lineHeight: 1 }}>
+          {oddsLabel}
+        </span>
+      )}
 
       {/* Tier difficulty dot — shown on odds-based cards */}
       {tierColor && (
@@ -234,7 +258,12 @@ const BingoSquare = memo(function BingoSquare({
       {showSwapBtn && (
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); setSwapConfirm(true) }}
+          onClick={(e) => {
+            e.stopPropagation()
+            const candidate = oddsPool.length > 0 ? findSwapCandidate(square, oddsPool, allSquares) : null
+            setCandidateSquare(candidate)
+            setSwapConfirm(true)
+          }}
           title="Swap this square (5 Dabs)"
           style={{
             position: 'absolute',

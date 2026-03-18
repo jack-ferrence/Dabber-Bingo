@@ -84,6 +84,12 @@ function parsePlayerStats(athlete, period) {
     events.push({ player_id: pid, player_name: pname, stat_type: 'blocks', value: blk, period })
   }
 
+  // Combo stats for PRA / PR / PA / RA props
+  if (pts + reb + ast > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'pts_reb_ast', value: pts + reb + ast, period })
+  if (pts + reb > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'pts_reb',     value: pts + reb,       period })
+  if (pts + ast > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'pts_ast',     value: pts + ast,       period })
+  if (reb + ast > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'reb_ast',     value: reb + ast,       period })
+
   return events
 }
 
@@ -235,6 +241,12 @@ function mapStatsByLabel(athlete, labels, period) {
     events.push({ player_id: pid, player_name: pname, stat_type: 'blocks', value: blk, period })
   }
 
+  // Combo stats for PRA / PR / PA / RA props
+  if (pts + reb + ast > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'pts_reb_ast', value: pts + reb + ast, period })
+  if (pts + reb > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'pts_reb',     value: pts + reb,       period })
+  if (pts + ast > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'pts_ast',     value: pts + ast,       period })
+  if (reb + ast > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'reb_ast',     value: reb + ast,       period })
+
   return events
 }
 
@@ -294,6 +306,11 @@ const MOCK_STAT_TYPES = [
   { stat_type: 'threes',        min: 1,  max: 8 },
   { stat_type: 'steals',        min: 1,  max: 5 },
   { stat_type: 'blocks',        min: 1,  max: 5 },
+  // Combo types
+  { stat_type: 'pts_reb_ast',   min: 20, max: 65 },
+  { stat_type: 'pts_reb',       min: 15, max: 50 },
+  { stat_type: 'pts_ast',       min: 12, max: 45 },
+  { stat_type: 'reb_ast',       min: 5,  max: 25 },
 ]
 
 function randomInt(min, max) {
