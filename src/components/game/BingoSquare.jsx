@@ -26,6 +26,7 @@ const BingoSquare = memo(function BingoSquare({
 
   useEffect(() => {
     if (marked && !prevMarkedRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJustMarked(true)
       const t = setTimeout(() => setJustMarked(false), 500)
       prevMarkedRef.current = marked
@@ -36,7 +37,11 @@ const BingoSquare = memo(function BingoSquare({
 
   // Reset confirm when parent starts swapping
   useEffect(() => {
-    if (isSwapping) { setSwapConfirm(false); setCandidateSquare(null) }
+    if (isSwapping) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSwapConfirm(false)
+      setCandidateSquare(null)
+    }
   }, [isSwapping])
 
   let playerLabel = ''
