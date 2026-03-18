@@ -78,13 +78,11 @@ function BingoBoard({
               isWinning={winSet.has(square?.id)}
               isLineFlash={flashIndices.has(index)}
               onClick={onSquareClick}
-              isLobby={isLobby && index !== 12}
+              isLobby={isLobby && index !== 12 && oddsPool.length > 0}
               onSwapRequest={onSwapRequest}
               isSwapping={swappingSquareIndex === index}
               swapsExhausted={swapCount >= 2}
               nextSwapCost={swapCount === 0 ? 10 : 50}
-              oddsPool={oddsPool}
-              allSquares={flat}
             />
           ))}
         </div>

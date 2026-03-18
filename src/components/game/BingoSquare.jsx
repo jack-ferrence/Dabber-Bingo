@@ -1,5 +1,4 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { findSwapCandidate } from '../../game/oddsCardGenerator.js'
 
 const BingoSquare = memo(function BingoSquare({
   square,
@@ -12,8 +11,6 @@ const BingoSquare = memo(function BingoSquare({
   isSwapping = false,
   swapsExhausted = false,
   nextSwapCost = 10,
-  oddsPool = [],
-  allSquares = [],
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
@@ -21,8 +18,6 @@ const BingoSquare = memo(function BingoSquare({
   const prevMarkedRef = useRef(marked)
   const [justMarked, setJustMarked] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const [swapConfirm, setSwapConfirm] = useState(false)
-  const [candidateSquare, setCandidateSquare] = useState(null)
 
   useEffect(() => {
     if (marked && !prevMarkedRef.current) {
@@ -33,11 +28,6 @@ const BingoSquare = memo(function BingoSquare({
     }
     prevMarkedRef.current = marked
   }, [marked])
-
-  // Reset confirm when parent starts swapping
-  useEffect(() => {
-    if (isSwapping) { setSwapConfirm(false); setCandidateSquare(null) }
-  }, [isSwapping])
 
   let playerLabel = ''
   let statLabel = displayText
@@ -96,56 +86,6 @@ const BingoSquare = memo(function BingoSquare({
         }}
       >
         <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, color: '#ff6b35', animation: 'spin 1s linear infinite' }}>⟳</span>
-      </div>
-    )
-  }
-
-  // ── Swap confirm overlay ─────────────────────────────────────────────────────
-  if (swapConfirm) {
-    const candOdds = candidateSquare?.american_odds
-    const candOddsLabel = candOdds != null ? ` (${candOdds > 0 ? '+' : ''}${candOdds})` : ''
-    return (
-      <div
-        style={{
-          aspectRatio: '1',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 3,
-          background: '#150a04',
-          border: '1px dashed #ff6b35',
-          borderRadius: 4,
-          padding: 4,
-        }}
-      >
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, color: '#8888aa', textAlign: 'center', lineHeight: 1.2 }}>
-          {candidateSquare ? 'Replace with:' : 'Swap square?'}
-        </span>
-        {candidateSquare ? (
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, color: '#e0e0f0', textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word' }}>
-            {candidateSquare.display_text}{candOddsLabel}
-          </span>
-        ) : null}
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: '#ff6b35', fontWeight: 700 }}>
-          {nextSwapCost} ◈
-        </span>
-        <div style={{ display: 'flex', gap: 4 }}>
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onSwapRequest?.(index, candidateSquare ?? null); setSwapConfirm(false); setCandidateSquare(null) }}
-            style={{ width: 20, height: 20, borderRadius: 3, background: '#ff6b35', color: '#0c0c14', border: 'none', fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-          >
-            ✓
-          </button>
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); setSwapConfirm(false); setCandidateSquare(null) }}
-            style={{ width: 20, height: 20, borderRadius: 3, background: 'none', color: '#555577', border: '1px solid #2a2a44', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-          >
-            ✗
-          </button>
-        </div>
       </div>
     )
   }
@@ -260,11 +200,9 @@ const BingoSquare = memo(function BingoSquare({
           type="button"
           onClick={(e) => {
             e.stopPropagation()
-            const candidate = oddsPool.length > 0 ? findSwapCandidate(square, oddsPool, allSquares) : null
-            setCandidateSquare(candidate)
-            setSwapConfirm(true)
+            onSwapRequest?.(square, index)
           }}
-          title="Swap this square (5 Dabs)"
+          title={`Swap this square (${nextSwapCost} Dabs)`}
           style={{
             position: 'absolute',
             top: 2,
