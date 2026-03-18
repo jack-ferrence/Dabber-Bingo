@@ -38,6 +38,7 @@ function GameRoom({
   participantJoined,
   initChatMessages,
   resetStatEvents,
+  rosterPlayers,
   oddsPool = [],
   onRetryCard,
 }) {
@@ -164,28 +165,13 @@ function GameRoom({
     setSwapError('')
   }, [oddsPool, flatSquares, swapCount])
 
+  // SwapModal only calls onSwapComplete after a confirmed successful RPC — errors are handled internally.
   const handleSwapComplete = useCallback((newSquare, squareIndex) => {
     setSwapCount((c) => c + 1)
     setSwappingSquareIndex(null)
-    if (rpcError) {
-      setSwapError(rpcError.message)
-      return
-    }
-    if (!result?.success) {
-      const reason = result?.reason
-      if (reason === 'insufficient_dabs') setSwapError(`Need ${result.cost ?? (swapCount === 0 ? 10 : 50)} Dobs (have ${result.balance ?? 0})`)
-      else if (reason === 'game_already_started') setSwapError('Too late — game is live!')
-      else if (reason === 'max_swaps_reached') setSwapError('Max 2 swaps per game reached')
-      else setSwapError(reason || 'Swap failed')
-      return
-    }
-    if (result.swap_count != null) {
-      setSwapCount(result.swap_count)
-    } else {
-      setSwapCount((c) => c + 1)
-    }
-    onCardSwap?.({ squareIndex: result.square_index, newSquare: result.new_square })
-  }, [roomId, rosterPlayers, onCardSwap, swapCount])
+    setSwapError('')
+    onCardSwap?.({ squareIndex, newSquare })
+  }, [onCardSwap])
   const handleToggleMobileLeaderboard = useCallback(() => setMobileLeaderboard((v) => !v), [])
 
   const { username: profileUsername, dobsBalance, boardSkin } = useProfile()
