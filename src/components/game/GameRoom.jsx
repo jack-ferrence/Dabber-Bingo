@@ -42,7 +42,6 @@ function GameRoom({
 }) {
   const navigate = useNavigate()
   const [selectedSquare, setSelectedSquare] = useState(null)
-  const [mobileChat, setMobileChat] = useState(false)
   const [mobileLeaderboard, setMobileLeaderboard] = useState(false)
   const [mobileStats, setMobileStats] = useState(false)
   const [activeRooms, setActiveRooms] = useState([])
@@ -114,6 +113,16 @@ function GameRoom({
     setMobileStats(false)
   }, [])
 
+  // Close mobile stats sheet on Escape key
+  useEffect(() => {
+    if (!mobileStats) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') handleCloseStatsMobile()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [mobileStats, handleCloseStatsMobile])
+
   // ── Card swap state ─────────────────────────────────────────────────────────
   const [swappingSquareIndex, setSwappingSquareIndex] = useState(null)
   const [swapError, setSwapError] = useState('')
@@ -161,8 +170,6 @@ function GameRoom({
     onCardSwap?.({ squareIndex: result.square_index, newSquare: result.new_square })
   }, [roomId, rosterPlayers, onCardSwap, swapCount, oddsPool])
   const handleToggleMobileLeaderboard = useCallback(() => setMobileLeaderboard((v) => !v), [])
-  const handleOpenMobileChat = useCallback(() => setMobileChat(true), [])
-  const handleCloseMobileChat = useCallback(() => setMobileChat(false), [])
 
   const { username: profileUsername, dabsBalance, boardSkin } = useProfile()
   const username = profileUsername
@@ -207,9 +214,9 @@ function GameRoom({
   const winningLines = bingoResult.winningLines ?? []
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col bg-bg-primary">
+    <div className="game-room-root flex h-[calc(100vh-4rem)] flex-col bg-bg-primary">
       {/* ── Header ── */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border-subtle bg-bg-secondary px-4">
+      <header className="game-room-header flex h-14 shrink-0 items-center justify-between border-b border-border-subtle bg-bg-secondary px-4">
         <div className="flex items-center gap-3 min-w-0">
           {/* Back button */}
           <button
@@ -373,10 +380,10 @@ function GameRoom({
       )}
 
       {/* ── Main 3-column area ── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="game-room-main flex flex-1 overflow-hidden">
 
         {/* LEFT: Bingo Board */}
-        <div className={`flex shrink-0 flex-col items-center justify-center overflow-y-auto p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[45%]' : 'w-full lg:w-[65%]'}`}>
+        <div className={`game-room-board flex shrink-0 flex-col items-center justify-center overflow-y-auto p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[45%]' : 'w-full lg:w-[65%]'}`}>
           {loadingCard ? (
             <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#555577' }}>Loading your card...</div>
           ) : card ? (
@@ -538,10 +545,36 @@ function GameRoom({
         </div>
       </div>
 
-      {/* ── Mobile: stacked panels ── */}
-      <div className="border-t border-border-subtle md:hidden">
-        {selectedSquare && mobileStats && (
-          <div className="border-b border-border-subtle animate-slide-in-left">
+      {/* ── Mobile: PlayerStats bottom sheet ── */}
+      {selectedSquare && mobileStats && (
+        <div className="md:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40"
+            role="presentation"
+            aria-hidden="true"
+            style={{ background: 'rgba(12, 12, 20, 0.7)' }}
+            onClick={handleCloseStatsMobile}
+          />
+          {/* Bottom sheet */}
+          <div
+            className="mobile-stats-sheet fixed bottom-0 left-0 right-0 z-50 animate-slide-up"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Player Stats"
+            style={{
+              background: '#12121e',
+              borderRadius: '12px 12px 0 0',
+              height: '60vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {/* Drag handle */}
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px', flexShrink: 0 }}>
+              <div style={{ width: 32, height: 4, background: '#2a2a44', borderRadius: 2 }} />
+            </div>
             <PlayerStatsPanel
               playerId={selectedSquare.player_id}
               playerName={selectedSquare.player_name}
@@ -552,8 +585,11 @@ function GameRoom({
               onClose={handleCloseStatsMobile}
             />
           </div>
-        )}
+        </div>
+      )}
 
+      {/* ── Mobile: stacked panels ── */}
+      <div className="border-t border-border-subtle md:hidden">
         <button
           type="button"
           onClick={handleToggleMobileLeaderboard}
@@ -574,6 +610,19 @@ function GameRoom({
             </Suspense>
           </div>
         )}
+
+        {/* Inline chat — always visible on mobile */}
+        <div className="mobile-inline-chat border-t border-border-subtle p-3">
+          <Suspense fallback={<PanelFallback />}>
+            <LiveChat
+              roomId={roomId}
+              userId={user?.id}
+              username={username}
+              realtimeMessages={chatMessages}
+              initChatMessages={initChatMessages}
+            />
+          </Suspense>
+        </div>
       </div>
 
       {/* ── Footer ── */}
@@ -590,53 +639,6 @@ function GameRoom({
           {username}
         </span>
       </footer>
-
-      {/* ── Mobile chat FAB + overlay ── */}
-      <div className="md:hidden">
-        {mobileChat && (
-          <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'rgba(12,12,20,0.95)', backdropFilter: 'blur(6px)' }}>
-            <div className="flex h-12 items-center justify-between border-b border-border-subtle px-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">Chat</span>
-              <button
-                type="button"
-                onClick={handleCloseMobileChat}
-                className="rounded p-1 text-text-muted hover:text-text-primary"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M4 4l8 8M12 4l-8 8" />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 overflow-hidden p-3">
-              <Suspense fallback={<PanelFallback />}>
-                <LiveChat
-                  roomId={roomId}
-                  userId={user?.id}
-                  username={username}
-                  realtimeMessages={chatMessages}
-                  initChatMessages={initChatMessages}
-                />
-              </Suspense>
-            </div>
-          </div>
-        )}
-
-        {!mobileChat && (
-          <button
-            type="button"
-            onClick={handleOpenMobileChat}
-            className="fixed bottom-16 right-4 z-40 flex h-12 w-12 items-center justify-center transition"
-            style={{ background: '#8b5cf6', borderRadius: '50%', boxShadow: '0 4px 16px rgba(139,92,246,0.3)', border: 'none', cursor: 'pointer' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#7c3aed' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#8b5cf6' }}
-            aria-label="Open chat"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
-        )}
-      </div>
 
       {/* ── Game Over modal ── */}
       {room?.status === 'finished' && (

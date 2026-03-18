@@ -310,6 +310,11 @@ body {
   }
 }
 
+/* ── Prevent horizontal overflow globally ── */
+html, body {
+  overflow-x: hidden;
+}
+
 /* ═══════════════════════════════════════════════════════════
    HOME SCREEN — animations & component classes
    ═══════════════════════════════════════════════════════════ */
@@ -502,4 +507,135 @@ body {
 :focus-visible {
   outline: 2px solid #ff6b35;
   outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — max-width: 767px
+   All rules here are additive overrides; nothing above changes.
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+  /* ── Minimum touch targets (WCAG 2.5.5) ── */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* ── Prevent iOS input auto-zoom (must be ≥ 16px) ── */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* ── Reduce base spacing ── */
+  .space-y-10 > * + * { margin-top: 1.5rem; }
+  .space-y-6 > * + * { margin-top: 1rem; }
+
+  /* ── Navbar: smaller logo wordmark ── */
+  .navbar-wordmark {
+    font-size: 14px !important;
+    letter-spacing: 3px !important;
+  }
+
+  /* ── Lobby page title ── */
+  .lobby-title {
+    font-size: 30px !important;
+  }
+
+  /* ── Sport section headings ── */
+  .sport-section h2 {
+    font-size: 18px !important;
+  }
+
+  /* ── Game cards: narrower on mobile so 1.5 cards hint at scroll ── */
+  .game-card {
+    width: 200px !important;
+    min-height: 130px !important;
+  }
+
+  .skeleton-card {
+    width: 200px !important;
+    min-height: 130px !important;
+  }
+
+  /* Team abbreviation */
+  .team-abbr {
+    font-size: 28px !important;
+  }
+
+  /* VS separator */
+  .vs-text {
+    font-size: 10px !important;
+  }
+
+  /* JOIN / JOINED buttons */
+  .btn-join {
+    padding: 6px 12px !important;
+    font-size: 9px !important;
+  }
+  .btn-joined {
+    padding: 6px 10px !important;
+    font-size: 9px !important;
+  }
+
+  /* ── Hide slider scroll arrows on mobile (users swipe) ── */
+  button[aria-label="Scroll left"],
+  button[aria-label="Scroll right"] {
+    display: none !important;
+  }
+
+  /* ── Store category tabs: horizontally scrollable ── */
+  .store-category-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .store-category-tabs button {
+    flex-shrink: 0 !important;
+    font-size: 10px !important;
+  }
+
+  /* ── Bingo board: tighter grid gap ── */
+  .bingo-grid {
+    gap: 3px !important;
+  }
+
+  /* ── Game Room: allow scrolling on mobile ── */
+  .game-room-root {
+    height: auto !important;
+    min-height: calc(100vh - 4rem);
+  }
+
+  .game-room-main {
+    flex: none !important;
+    overflow: visible !important;
+    min-height: 320px;
+  }
+
+  .game-room-board {
+    overflow: visible !important;
+    justify-content: flex-start !important;
+    min-height: 320px;
+  }
+
+  /* ── Game Room header: sticky on mobile ── */
+  .game-room-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 44px !important;
+  }
+
+  /* ── PlayerStatsPanel inside mobile bottom sheet ── */
+  .mobile-stats-sheet .animate-slide-in-left {
+    width: 100% !important;
+    border-left: none !important;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ── Mobile inline chat: constrain messages area ── */
+  .mobile-inline-chat .overflow-y-auto {
+    max-height: 7rem !important;
+  }
 }

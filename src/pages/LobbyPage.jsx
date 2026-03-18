@@ -78,6 +78,7 @@ export default function LobbyPage() {
       <div className="mb-9">
         <div className="flex items-baseline gap-3 flex-wrap">
           <h1
+            className="lobby-title"
             style={{
               fontFamily: 'var(--db-font-display)',
               fontSize: 'clamp(36px, 4vw, 52px)',

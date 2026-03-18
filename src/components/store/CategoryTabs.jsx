@@ -1,6 +1,6 @@
 export default function CategoryTabs({ tabs, activeTab, onTabChange }) {
   return (
-    <div style={{ display: 'flex', gap: 4, marginBottom: 24, flexWrap: 'wrap' }}>
+    <div className="store-category-tabs" style={{ display: 'flex', gap: 4, marginBottom: 24, flexWrap: 'wrap' }}>
       {tabs.map((t) => (
         <button
           key={t.key}

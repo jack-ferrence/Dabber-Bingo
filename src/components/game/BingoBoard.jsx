@@ -69,7 +69,7 @@ function BingoBoard({
         }}
       >
         {/* 5×5 Grid */}
-        <div className="grid grid-cols-5 gap-1.5">
+        <div className="grid grid-cols-5 gap-1.5 bingo-grid">
           {flat.slice(0, 25).map((square, index) => (
             <BingoSquare
               key={square?.id ?? index}
