@@ -14,8 +14,7 @@ function pacificDateStr(d) {
 }
 function todayPacific() { return pacificDateStr(new Date()) }
 function tomorrowPacific() {
-  const [y, m, day] = todayPacific().split('-').map(Number)
-  return pacificDateStr(new Date(y, m - 1, day + 1))
+  return pacificDateStr(new Date(Date.now() + 86_400_000))
 }
 function getDayLabel(startsAt) {
   if (!startsAt) return 'today'
