@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useMatch } from 'react-router-dom'
+import { Routes, Route, Link, Navigate, useMatch } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import LobbyPage from './pages/LobbyPage.jsx'
@@ -16,6 +16,15 @@ function App() {
 
   // Game room: full-screen, no sidebar or sport tabs
   if (isGameRoute) {
+    if (loading) {
+      return (
+        <div style={{ minHeight: '100vh', background: '#0c0c14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#555577' }}>Loading...</span>
+        </div>
+      )
+    }
+    if (!user) return <Navigate to="/login" replace />
+
     return (
       <div className="h-screen flex flex-col" style={{ background: '#0c0c14' }}>
         <header
@@ -35,9 +44,9 @@ function App() {
           >
             DABBER
           </Link>
-          {!loading && user && (
+          {user && (
             <span style={{ color: '#555577', fontSize: 12, fontFamily: 'var(--db-font-mono)' }}>
-              {profileUsername ?? (user.is_anonymous ? `Guest_${user.id.slice(0, 8)}` : user.email)}
+              {profileUsername ?? user.email}
             </span>
           )}
         </header>

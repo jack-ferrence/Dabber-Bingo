@@ -12,6 +12,7 @@ function GamePage() {
   const [room, setRoom] = useState(null)
   const [card, setCard] = useState(null)
   const [rosterPlayers, setRosterPlayers] = useState(null)
+  const [retryCount, setRetryCount] = useState(0)
   const [loadingRoom, setLoadingRoom] = useState(true)
   const [loadingCard, setLoadingCard] = useState(true)
   const [error, setError] = useState('')
@@ -83,13 +84,12 @@ function GamePage() {
       setLoadingCard(true)
       setError('')
 
+      // ── Step 1: Fetch roster (best-effort, failures are non-fatal) ──────────
       let players = null
       if (room.game_id) {
         try {
           const rosterUrl = `/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`
-          if (debug) console.log('[GamePage] fetching roster', rosterUrl)
           const res = await fetch(rosterUrl)
-          if (debug) console.log('[GamePage] roster response status', res.status)
           if (res.ok) {
             const roster = await res.json()
             players = (roster.players ?? []).map((p) => ({
@@ -98,66 +98,86 @@ function GamePage() {
               lastName: p.lastName,
             }))
             setRosterPlayers(players)
-            if (debug) console.log('[GamePage] roster players', players.length, players.slice(0, 3))
-          } else {
-            if (debug) console.warn('[GamePage] roster fetch non-ok', res.status, await res.text())
+          } else if (debug) {
+            console.warn('[GamePage] roster fetch non-ok', res.status)
           }
         } catch (rosterErr) {
           if (debug) console.warn('[GamePage] roster fetch threw', rosterErr)
-          // RPC will use its fallback roster
+          // Non-fatal — RPC will use its fallback roster
         }
       }
 
-      // Charge entry fee (no-op if already joined or NCAA)
-      const { data: feeResult, error: feeError } = await supabase.rpc('deduct_entry_fee', {
-        p_user_id: user.id,
-        p_room_id: roomId,
-      })
+      // ── Step 2: Charge entry fee (no-op if already joined or NCAA) ──────────
+      try {
+        const { data: feeResult, error: feeError } = await supabase.rpc('deduct_entry_fee', {
+          p_user_id: user.id,
+          p_room_id: roomId,
+        })
 
-      if (feeError) {
-        setError('Failed to process entry fee: ' + feeError.message)
-        setLoadingCard(false)
-        return
-      }
-
-      if (feeResult && !feeResult.success) {
-        if (feeResult.reason === 'insufficient_dabs') {
-          setError(`Not enough Dabs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dabs.`)
-        } else {
-          setError('Could not join: ' + feeResult.reason)
+        if (feeError) {
+          // If the function doesn't exist in this DB, skip the fee gracefully
+          const missing = feeError.code === 'PGRST202' || feeError.code === '42883' ||
+            feeError.message?.toLowerCase().includes('function')
+          if (!missing) {
+            setError('Failed to process entry fee: ' + feeError.message)
+            setLoadingCard(false)
+            return
+          }
+          if (debug) console.warn('[GamePage] deduct_entry_fee not found, skipping', feeError.message)
+        } else if (feeResult && !feeResult.success) {
+          if (feeResult.reason === 'insufficient_dabs') {
+            setError(`Not enough Dabs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dabs.`)
+          } else if (feeResult.reason !== 'already_joined' && feeResult.reason !== 'free_entry') {
+            setError('Could not join: ' + feeResult.reason)
+          }
+          if (feeResult.reason === 'insufficient_dabs') {
+            setLoadingCard(false)
+            return
+          }
         }
+      } catch (feeErr) {
+        if (debug) console.warn('[GamePage] deduct_entry_fee threw', feeErr)
+        // Non-fatal — continue to card generation
+      }
+
+      // ── Step 3: Generate (or retrieve) card ─────────────────────────────────
+      try {
+        const rpcParams = { p_room_id: roomId }
+        if (players && players.length > 0) rpcParams.p_players = players
+
+        let { data, error: rpcError } = await supabase
+          .rpc('generate_card_for_room', rpcParams)
+          .maybeSingle()
+
+        if (rpcError && rpcParams.p_players && (
+          rpcError.code === 'PGRST202' ||
+          rpcError.message?.toLowerCase().includes('function') ||
+          rpcError.message?.includes('p_players')
+        )) {
+          // DB predates p_players parameter — retry without roster
+          if (debug) console.warn('[GamePage] p_players rejected by RPC, retrying without roster')
+          ;({ data, error: rpcError } = await supabase
+            .rpc('generate_card_for_room', { p_room_id: roomId })
+            .maybeSingle())
+        }
+
+        if (rpcError) {
+          if (debug) console.error('[GamePage] generate_card_for_room failed', rpcError)
+          setError(rpcError.message || 'Failed to generate card')
+          setLoadingCard(false)
+          return
+        }
+
+        setCard(data ?? null)
         setLoadingCard(false)
-        return
-      }
-
-      const rpcParams = { p_room_id: roomId }
-      if (players && players.length > 0) rpcParams.p_players = players
-      if (debug) console.log('[GamePage] calling generate_card_for_room', { playerCount: players?.length ?? 0, usingRoster: !!rpcParams.p_players })
-
-      let { data, error: rpcError } = await supabase
-        .rpc('generate_card_for_room', rpcParams)
-        .single()
-
-      if (rpcError && rpcError.message?.toLowerCase().includes('function') && rpcParams.p_players) {
-        // Deployed function predates p_players parameter — retry without it.
-        // Fix: run the migration in run_all_migrations.sql against your Supabase project.
-        if (debug) console.warn('[GamePage] p_players rejected by RPC — retrying without roster', rpcError)
-        ;({ data, error: rpcError } = await supabase
-          .rpc('generate_card_for_room', { p_room_id: roomId })
-          .single())
-      }
-
-      if (rpcError) {
-        if (debug) console.error('[GamePage] generate_card_for_room failed', rpcError)
-        setError(rpcError.message)
+      } catch (cardErr) {
+        if (debug) console.error('[GamePage] card generation threw', cardErr)
+        setError('Connection error generating card. Please try again.')
         setLoadingCard(false)
-        return
       }
-      setCard(data)
-      setLoadingCard(false)
     }
     loadOrCreateCard()
-  }, [roomId, user, authLoading, room?.id])
+  }, [roomId, user, authLoading, room?.id, retryCount])
 
   const flatSquares = useMemo(() => {
     if (!card?.squares) return []
@@ -232,6 +252,7 @@ function GamePage() {
       initChatMessages={initChatMessages}
       resetStatEvents={resetStatEvents}
       rosterPlayers={rosterPlayers}
+      onRetryCard={() => { setCard(null); setRetryCount((c) => c + 1) }}
     />
   )
 }

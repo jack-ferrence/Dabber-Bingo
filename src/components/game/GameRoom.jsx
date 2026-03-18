@@ -37,6 +37,7 @@ function GameRoom({
   initChatMessages,
   resetStatEvents,
   rosterPlayers,
+  onRetryCard,
 }) {
   const navigate = useNavigate()
   const [selectedSquare, setSelectedSquare] = useState(null)
@@ -386,7 +387,22 @@ function GameRoom({
               )}
             </>
           ) : (
-            <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#555577' }}>No card available.</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#555577', textAlign: 'center', maxWidth: 300 }}>
+                Failed to generate your bingo card. The game roster may not be available yet.
+              </span>
+              {onRetryCard && (
+                <button
+                  type="button"
+                  onClick={onRetryCard}
+                  style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '6px 16px', cursor: 'pointer' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#ff8855' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = '#ff6b35' }}
+                >
+                  TRY AGAIN
+                </button>
+              )}
+            </div>
           )}
         </div>
 

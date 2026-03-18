@@ -20,7 +20,7 @@ export function useProfile() {
         .from('profiles')
         .select('dabs_balance, username, name_color, name_font, equipped_badge, board_skin')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
       if (!cancelled) setProfile(data ?? null)
     }
 
