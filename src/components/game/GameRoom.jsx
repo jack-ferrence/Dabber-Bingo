@@ -2,9 +2,11 @@ import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef } fro
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import BingoBoard from './BingoBoard.jsx'
+import SwapModal from './SwapModal.jsx'
 import PlayerStatsPanel from './PlayerStatsPanel.jsx'
 import Badge from '../ui/Badge.jsx'
 import { checkBingo } from '../../game/statProcessor.js'
+import { findSwapCandidates } from '../../game/oddsCardGenerator.js'
 import { useCountdown } from '../../hooks/useCountdown.js'
 import { useProfile } from '../../hooks/useProfile.js'
 
@@ -36,7 +38,6 @@ function GameRoom({
   participantJoined,
   initChatMessages,
   resetStatEvents,
-  rosterPlayers,
   oddsPool = [],
   onRetryCard,
 }) {
@@ -135,21 +136,36 @@ function GameRoom({
   }
 
   const [swapCount, setSwapCount] = useState(0)
+  const [swapModalOpen, setSwapModalOpen] = useState(false)
+  const [swapTarget, setSwapTarget] = useState(null)
+
+  // Load swap count from dabs_transactions on mount
+  useEffect(() => {
+    if (!user || !roomId) return
+    supabase
+      .from('dabs_transactions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('room_id', roomId)
+      .eq('reason', 'card_swap')
+      .then(({ count }) => { if (count != null) setSwapCount(count) })
+  }, [user, roomId])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (card?.swap_count != null) setSwapCount(card.swap_count)
   }, [card?.swap_count])
 
-  const handleSwapRequest = useCallback(async (squareIndex, newSquare = null) => {
-    setSwappingSquareIndex(squareIndex)
+  const handleSwapRequest = useCallback((square, squareIndex) => {
+    if (!square || swapCount >= 2) return
+    const candidates = findSwapCandidates(square, oddsPool, flatSquares, 5)
+    setSwapTarget({ square, index: squareIndex, candidates })
+    setSwapModalOpen(true)
     setSwapError('')
-    const { data: result, error: rpcError } = await supabase.rpc('swap_card_square', {
-      p_room_id: roomId,
-      p_square_index: squareIndex,
-      p_roster: rosterPlayers ?? null,
-      p_new_square: newSquare ?? null,
-    })
+  }, [oddsPool, flatSquares, swapCount])
+
+  const handleSwapComplete = useCallback((newSquare, squareIndex) => {
+    setSwapCount((c) => c + 1)
     setSwappingSquareIndex(null)
     if (rpcError) {
       setSwapError(rpcError.message)
@@ -667,6 +683,18 @@ function GameRoom({
           </div>
         </div>
       )}
+
+      {/* ── Swap Modal ── */}
+      <SwapModal
+        isOpen={swapModalOpen}
+        onClose={() => setSwapModalOpen(false)}
+        currentSquare={swapTarget?.square}
+        squareIndex={swapTarget?.index}
+        candidates={swapTarget?.candidates ?? []}
+        swapCount={swapCount}
+        roomId={roomId}
+        onSwapComplete={handleSwapComplete}
+      />
     </div>
   )
 }

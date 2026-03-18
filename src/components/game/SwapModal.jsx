@@ -1,0 +1,350 @@
+import { useState } from 'react'
+import { supabase } from '../../lib/supabase.js'
+
+const MAX_SWAPS = 2
+
+const randomId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
+}
+
+function oddsLabel(odds) {
+  if (odds == null) return ''
+  return odds > 0 ? `+${odds}` : `${odds}`
+}
+
+function SwapModal({
+  isOpen,
+  onClose,
+  currentSquare,
+  squareIndex,
+  candidates = [],
+  swapCount,
+  roomId,
+  onSwapComplete,
+}) {
+  const [selected, setSelected] = useState(null)
+  const [confirming, setConfirming] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const cost = swapCount === 0 ? 10 : 50
+
+  const handleSelect = (candidate) => {
+    setSelected(candidate)
+    setConfirming(true)
+    setError('')
+  }
+
+  const handleBack = () => {
+    setConfirming(false)
+    setSelected(null)
+    setError('')
+  }
+
+  const handleClose = () => {
+    setSelected(null)
+    setConfirming(false)
+    setError('')
+    onClose()
+  }
+
+  const handleConfirm = async () => {
+    if (!selected) return
+    setLoading(true)
+    setError('')
+
+    const newSquare = {
+      id: randomId(),
+      player_id: selected.player_id ?? null,
+      player_name: selected.player_name ?? null,
+      stat_type: selected.stat_type,
+      threshold: selected.threshold,
+      display_text: selected.display_text,
+      american_odds: selected.american_odds,
+      implied_prob: selected.implied_prob ?? null,
+      tier: selected.tier ?? null,
+      conflict_key: selected.conflict_key,
+      marked: false,
+    }
+
+    const { data, error: rpcError } = await supabase.rpc('swap_card_square', {
+      p_room_id: roomId,
+      p_square_index: squareIndex,
+      p_new_square: newSquare,
+    })
+
+    setLoading(false)
+
+    if (rpcError) {
+      setError(rpcError.message)
+      return
+    }
+
+    if (data && !data.success) {
+      if (data.reason === 'insufficient_dabs') {
+        setError(`Not enough Dabs! Need ${cost}, have ${data.balance ?? 0}.`)
+      } else if (data.reason === 'max_swaps_reached') {
+        setError(`Max swaps reached (${MAX_SWAPS}/${MAX_SWAPS})!`)
+      } else if (data.reason === 'game_already_started') {
+        setError('Too late — game is already live!')
+      } else {
+        setError(data.reason || 'Swap failed. Please try again.')
+      }
+      return
+    }
+
+    onSwapComplete(newSquare, squareIndex, data?.new_balance)
+    handleClose()
+  }
+
+  if (!isOpen) return null
+
+  const currentOdds = currentSquare?.american_odds
+  const swapNumLabel = `${swapCount + 1}/${MAX_SWAPS}`
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Swap Square"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(12, 12, 20, 0.85)',
+        backdropFilter: 'blur(4px)',
+        padding: 16,
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+    >
+      <div
+        style={{
+          background: '#12121e',
+          border: '1px solid #2a2a44',
+          borderRadius: 8,
+          maxWidth: 400,
+          width: '100%',
+          padding: 20,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.08em' }}>
+            SWAP SQUARE
+          </span>
+          <button
+            type="button"
+            onClick={handleClose}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555577', fontFamily: 'var(--db-font-mono)', fontSize: 14, padding: '2px 6px', lineHeight: 1, borderRadius: 3 }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#e0e0f0' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#555577' }}
+            aria-label="Cancel"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Current square */}
+        <div>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Current
+          </span>
+          <div
+            style={{
+              marginTop: 4,
+              background: '#1a1a2e',
+              border: '1px solid #2a2a44',
+              borderRadius: 4,
+              padding: '8px 12px',
+            }}
+          >
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: '#e0e0f0', display: 'block' }}>
+              {currentSquare?.display_text}
+            </span>
+            {currentOdds != null && (
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#555577' }}>
+                {oddsLabel(currentOdds)}
+                {currentSquare?.implied_prob != null && (
+                  <span style={{ marginLeft: 6, fontSize: 9, color: '#3a3a55' }}>
+                    ~{Math.round(currentSquare.implied_prob * 100)}%
+                  </span>
+                )}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ height: 1, background: '#2a2a44' }} />
+
+        {/* Candidates or confirm step */}
+        {confirming && selected ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Replace With
+            </span>
+            <div
+              style={{
+                background: 'rgba(255,107,53,0.08)',
+                border: '1px solid rgba(255,107,53,0.4)',
+                borderRadius: 4,
+                padding: '10px 12px',
+              }}
+            >
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: '#e0e0f0', display: 'block' }}>
+                {selected.display_text}
+              </span>
+              {selected.american_odds != null && (
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35' }}>
+                  {oddsLabel(selected.american_odds)}
+                  {selected.implied_prob != null && (
+                    <span style={{ marginLeft: 6, fontSize: 9, color: '#555577' }}>
+                      ~{Math.round(selected.implied_prob * 100)}%
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+
+            {error && (
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#ff2d2d', margin: 0 }}>
+                {error}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleConfirm}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '9px 16px',
+                background: loading ? '#2a2a44' : '#ff6b35',
+                color: loading ? '#555577' : '#0c0c14',
+                border: 'none',
+                borderRadius: 4,
+                fontFamily: 'var(--db-font-mono)',
+                fontSize: 12,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'background 100ms ease',
+              }}
+              onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = '#ff8855' }}
+              onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = '#ff6b35' }}
+            >
+              {loading ? 'SWAPPING…' : `CONFIRM SWAP — ${cost} ◈`}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '7px 16px',
+                background: 'none',
+                color: '#8888aa',
+                border: '1px solid #2a2a44',
+                borderRadius: 4,
+                fontFamily: 'var(--db-font-mono)',
+                fontSize: 11,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'border-color 100ms ease, color 100ms ease',
+              }}
+              onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.borderColor = '#555577'; e.currentTarget.style.color = '#e0e0f0' } }}
+              onMouseLeave={(e) => { if (!loading) { e.currentTarget.style.borderColor = '#2a2a44'; e.currentTarget.style.color = '#8888aa' } }}
+            >
+              BACK
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Pick a Replacement
+            </span>
+
+            {candidates.length === 0 ? (
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#555577', textAlign: 'center', padding: '12px 0' }}>
+                No similar props available
+              </p>
+            ) : (
+              candidates.map((candidate, i) => (
+                <button
+                  key={candidate.conflict_key ?? i}
+                  type="button"
+                  onClick={() => handleSelect(candidate)}
+                  style={{
+                    textAlign: 'left',
+                    background: '#1a1a2e',
+                    border: '1px solid #2a2a44',
+                    borderRadius: 4,
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    transition: 'border-color 100ms ease, background 100ms ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#ff6b35'; e.currentTarget.style.background = '#22223a' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#2a2a44'; e.currentTarget.style.background = '#1a1a2e' }}
+                >
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: '#e0e0f0', display: 'block' }}>
+                    {candidate.display_text}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                    {candidate.american_odds != null && (
+                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35' }}>
+                        {oddsLabel(candidate.american_odds)}
+                      </span>
+                    )}
+                    {candidate.implied_prob != null && (
+                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577' }}>
+                        ~{Math.round(candidate.implied_prob * 100)}%
+                      </span>
+                    )}
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#3a3a55' }}>
+            Cost: {cost} ◈ (Swap {swapNumLabel})
+          </span>
+          <button
+            type="button"
+            onClick={handleClose}
+            style={{
+              background: 'none',
+              color: '#555577',
+              border: '1px solid #2a2a44',
+              borderRadius: 4,
+              fontFamily: 'var(--db-font-mono)',
+              fontSize: 10,
+              padding: '4px 12px',
+              cursor: 'pointer',
+              letterSpacing: '0.06em',
+              transition: 'color 100ms ease, border-color 100ms ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#e0e0f0'; e.currentTarget.style.borderColor = '#555577' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#555577'; e.currentTarget.style.borderColor = '#2a2a44' }}
+          >
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default SwapModal

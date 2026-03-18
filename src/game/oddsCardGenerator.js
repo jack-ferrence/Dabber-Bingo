@@ -199,9 +199,24 @@ export function generateOddsBasedCard(matchedProps) {
  * @returns {Object|null} a candidate prop (same shape as pool entry), or null
  */
 export function findSwapCandidate(originalSquare, fullPropPool, currentCardSquares) {
-  if (!fullPropPool?.length) return null
+  const candidates = findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, 1)
+  return candidates.length > 0 ? candidates[0] : null
+}
+
+/**
+ * Find up to N swap candidates within ±25 American odds,
+ * not conflicting with current card squares.
+ *
+ * @param {Object} originalSquare     - the square being replaced (needs american_odds)
+ * @param {Array}  fullPropPool       - output of matchOddsToRoster (the full matched pool)
+ * @param {Array}  currentCardSquares - all 25 squares currently on the card
+ * @param {number} count              - max number of candidates to return (default 5)
+ * @returns {Array} array of up to `count` candidate props
+ */
+export function findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, count = 5) {
+  if (!fullPropPool?.length) return []
   const origOdds = originalSquare?.american_odds
-  if (origOdds == null) return null
+  if (origOdds == null) return []
 
   const usedConflictKeys = new Set()
   const usedDisplayTexts = new Set()
