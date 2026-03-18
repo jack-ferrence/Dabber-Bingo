@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useHomeData } from '../hooks/useHomeData.js'
 import SportSection from '../components/home/SportSection.jsx'
+import JoinConfirmModal from '../components/home/JoinConfirmModal.jsx'
 
 const SPORT_SECTIONS = [
   { sport: 'nba',  label: '🏀 NBA' },
@@ -17,6 +18,7 @@ export default function LobbyPage() {
 
   const [joiningRoomId, setJoiningRoomId] = useState(null)
   const [joinError, setJoinError] = useState('')
+  const [pendingJoinRoom, setPendingJoinRoom] = useState(null)
 
   // Set of room IDs the user has already joined
   const joinedRoomIds = useMemo(
@@ -45,8 +47,7 @@ export default function LobbyPage() {
     return groups
   }, [allRooms])
 
-  const handleJoin = async (roomId) => {
-    if (!user) { navigate('/login'); return }
+  const doJoin = async (roomId) => {
     setJoinError('')
     setJoiningRoomId(roomId)
 
@@ -61,6 +62,28 @@ export default function LobbyPage() {
 
     if (err) { setJoinError(err.message); return }
     navigate(`/room/${roomId}`)
+  }
+
+  const handleJoin = (roomId) => {
+    if (!user) { navigate('/login'); return }
+    const room = allRooms.find((r) => r.id === roomId)
+    const isNcaa = room?.sport === 'ncaa'
+    if (isNcaa || !room) {
+      doJoin(roomId)
+    } else {
+      setPendingJoinRoom(room)
+    }
+  }
+
+  const handleConfirmJoin = () => {
+    if (!pendingJoinRoom) return
+    const roomId = pendingJoinRoom.id
+    setPendingJoinRoom(null)
+    doJoin(roomId)
+  }
+
+  const handleCancelJoin = () => {
+    setPendingJoinRoom(null)
   }
 
   const handleContinue = (roomId) => navigate(`/room/${roomId}`)
@@ -157,6 +180,15 @@ export default function LobbyPage() {
           </div>
         ))}
       </div>
+
+      {/* NBA join confirmation modal */}
+      {pendingJoinRoom && (
+        <JoinConfirmModal
+          room={pendingJoinRoom}
+          onConfirm={handleConfirmJoin}
+          onClose={handleCancelJoin}
+        />
+      )}
     </div>
   )
 }
