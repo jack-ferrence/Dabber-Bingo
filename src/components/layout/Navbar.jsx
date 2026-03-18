@@ -3,11 +3,11 @@ import { Link, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { useProfile } from '../../hooks/useProfile.js'
-import DabberLogo from '../ui/DabberLogo.jsx'
+import DobberLogo from '../ui/DobberLogo.jsx'
 
 export default function Navbar({ onMenuClick }) {
   const { user, loading } = useAuth()
-  const { dabsBalance, username: profileUsername } = useProfile()
+  const { dobsBalance, username: profileUsername } = useProfile()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const location = useLocation()
   const isStore = location.pathname === '/store'
@@ -37,9 +37,9 @@ export default function Navbar({ onMenuClick }) {
             to="/"
             style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
           >
-            <DabberLogo size={26} />
+            <DobberLogo size={26} />
             <span className="navbar-wordmark" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 16, fontWeight: 800, letterSpacing: '4px', color: '#e0e0f0', lineHeight: 1 }}>
-              DABBER
+              DOBBER
             </span>
           </Link>
         </div>
@@ -64,11 +64,11 @@ export default function Navbar({ onMenuClick }) {
               <span className="hidden sm:inline">STORE</span>
             </Link>
 
-            {/* Dabs balance */}
-            {dabsBalance !== null && (
+            {/* Dobs balance */}
+            {dobsBalance !== null && (
               <Link
                 to="/store"
-                title="Open Dabs Store"
+                title="Open Dobs Store"
                 className="hidden sm:flex items-center"
                 style={{
                   background: '#1a1a2e',
@@ -84,10 +84,10 @@ export default function Navbar({ onMenuClick }) {
               >
                 <span style={{ color: '#ff6b35', fontSize: 10, marginRight: 4 }}>◆</span>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 800, color: '#ff6b35' }}>
-                  {dabsBalance.toLocaleString()}
+                  {dobsBalance.toLocaleString()}
                 </span>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', marginLeft: 3 }}>
-                  DABS
+                  DOBS
                 </span>
               </Link>
             )}

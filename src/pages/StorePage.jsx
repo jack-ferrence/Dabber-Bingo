@@ -17,7 +17,7 @@ const TABS = [
 
 export default function StorePage() {
   const { user } = useAuth()
-  const { dabsBalance, nameColor, nameFont, equippedBadge, boardSkin } = useProfile()
+  const { dobsBalance, nameColor, nameFont, equippedBadge, boardSkin } = useProfile()
   const [searchParams] = useSearchParams()
 
   const isEmailVerified = user?.email_confirmed_at != null
@@ -98,14 +98,14 @@ export default function StorePage() {
               margin: 0,
             }}
           >
-            DABS STORE
+            DOBS STORE
           </h1>
-          {dabsBalance !== null && (
+          {dobsBalance !== null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#1a1a2e', border: '1px solid #2a2a44', borderRadius: 4, padding: '6px 14px' }}>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 20, fontWeight: 900, color: '#ff6b35' }}>
-                {dabsBalance.toLocaleString()}
+                {dobsBalance.toLocaleString()}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', letterSpacing: '0.12em' }}>◈ DABS</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', letterSpacing: '0.12em' }}>◈ DOBS</span>
             </div>
           )}
         </div>
@@ -179,7 +179,7 @@ export default function StorePage() {
                 item={item}
                 owned={isOwned(item)}
                 equipped={isEquipped(item)}
-                dabsBalance={dabsBalance}
+                dobsBalance={dobsBalance}
                 isEmailVerified={isEmailVerified}
                 onPurchased={handlePurchased}
                 onEquipped={handleEquipped}

@@ -46,11 +46,11 @@ exports.handler = async function () {
       const count = forceFinished?.length ?? 0
       console.log(`room-cleanup: midnight reset — force-finished ${count} room(s)`)
 
-      // Award Dabs for each force-finished room (idempotent RPC — safe if already awarded)
+      // Award Dobs for each force-finished room (idempotent RPC — safe if already awarded)
       for (const room of forceFinished ?? []) {
-        const { error: dabsErr } = await supabase.rpc('award_game_dabs', { p_room_id: room.id })
-        if (dabsErr) {
-          console.warn(`room-cleanup: award_game_dabs failed for room ${room.id}`, dabsErr.message)
+        const { error: dobsErr } = await supabase.rpc('award_game_dabs', { p_room_id: room.id })
+        if (dobsErr) {
+          console.warn(`room-cleanup: award_game_dabs failed for room ${room.id}`, dobsErr.message)
         }
       }
     }

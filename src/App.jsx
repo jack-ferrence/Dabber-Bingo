@@ -42,7 +42,7 @@ function App() {
               lineHeight: 1,
             }}
           >
-            DABBER
+            DOBBER
           </Link>
           {user && (
             <span style={{ color: '#555577', fontSize: 12, fontFamily: 'var(--db-font-mono)' }}>

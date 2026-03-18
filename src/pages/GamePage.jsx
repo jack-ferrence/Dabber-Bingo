@@ -35,12 +35,14 @@ function GamePage() {
   // Apply room patches from the consolidated channel
   useEffect(() => {
     if (!roomPatch) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRoom((prev) => (prev ? { ...prev, ...roomPatch } : prev))
   }, [roomPatch])
 
   // Apply card patches from the consolidated channel
   useEffect(() => {
     if (!cardPatch) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCard((prev) => (prev ? { ...prev, ...cardPatch } : prev))
   }, [cardPatch])
 
@@ -72,6 +74,7 @@ function GamePage() {
     const next = room?.status
     prevStatusRef.current = next
     if (next === 'live' && prev !== 'live') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setGameStartedNotification(true)
       const t = setTimeout(() => setGameStartedNotification(false), 4000)
       return () => clearTimeout(t)
@@ -122,7 +125,7 @@ function GamePage() {
           if (debug) console.warn('[GamePage] deduct_entry_fee not found, skipping', feeError.message)
         } else if (feeResult && !feeResult.success) {
           if (feeResult.reason === 'insufficient_dabs') {
-            setError(`Not enough Dabs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dabs.`)
+            setError(`Not enough Dobs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dobs.`)
           } else if (feeResult.reason !== 'already_joined' && feeResult.reason !== 'free_entry') {
             setError('Could not join: ' + feeResult.reason)
           }
@@ -257,7 +260,7 @@ function GamePage() {
   const flatSquares = useMemo(() => {
     if (!card?.squares) return []
     return Array.isArray(card.squares[0]) ? card.squares.flat() : card.squares.slice(0, 25)
-  }, [card?.squares])
+  }, [card])
 
   const isCreator = room?.created_by === user?.id
 

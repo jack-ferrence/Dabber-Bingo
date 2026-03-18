@@ -41,6 +41,7 @@ function BingoBoard({
       const lineNum = newCount
       setToast({ id: Date.now(), lineNum, exiting: false })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [winningLines.length])
 
   useEffect(() => {
@@ -49,6 +50,7 @@ function BingoBoard({
       setToast((t) => (t ? { ...t, exiting: true } : null))
     }, 2500)
     return () => clearTimeout(dismiss)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast?.id])
 
   useEffect(() => {

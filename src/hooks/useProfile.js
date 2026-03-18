@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth.jsx'
 
 /**
- * Fetches the current user's profile row (dabs_balance, etc.)
+ * Fetches the current user's profile row (dobs_balance/dabs_balance, etc.)
  * and subscribes to realtime UPDATE events so the balance stays live.
  */
 export function useProfile() {
@@ -27,7 +27,7 @@ export function useProfile() {
     load()
 
     const ch = supabase
-      .channel(`profile-dabs-${user.id}`)
+      .channel(`profile-dobs-${user.id}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
@@ -42,7 +42,7 @@ export function useProfile() {
   }, [user?.id])
 
   return {
-    dabsBalance:   profile?.dabs_balance   ?? null,
+    dobsBalance:   profile?.dabs_balance   ?? null,
     username:      profile?.username       ?? null,
     nameColor:     profile?.name_color     ?? null,
     nameFont:      profile?.name_font      ?? 'default',

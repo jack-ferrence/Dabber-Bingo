@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import DabberLogo from '../components/ui/DabberLogo.jsx'
+import DobberLogo from '../components/ui/DobberLogo.jsx'
 
 const inputStyle = {
   width: '100%',
@@ -62,9 +62,9 @@ function LoginPage() {
 
         {/* Logo lockup */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-          <DabberLogo size={64} />
+          <DobberLogo size={64} />
           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 28, fontWeight: 900, letterSpacing: '6px', color: '#e0e0f0' }}>
-            DABBER
+            DOBBER
           </span>
         </div>
 

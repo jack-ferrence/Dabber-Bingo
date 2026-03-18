@@ -167,7 +167,7 @@ function SidebarContent({ onClose }) {
           </button>
         )}
 
-        <p className="text-[10px]" style={{ color: '#3a3a55' }}>Dabber v0.1</p>
+        <p className="text-[10px]" style={{ color: '#3a3a55' }}>Dobber v0.1</p>
       </div>
     </div>
   )

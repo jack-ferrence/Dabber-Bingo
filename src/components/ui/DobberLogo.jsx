@@ -1,10 +1,10 @@
-function DabberLogo({ size = 28 }) {
+function DobberLogo({ size = 28 }) {
   return (
     <svg
       viewBox="0 0 120 120"
       width={size}
       height={size}
-      aria-label="Dabber"
+      aria-label="Dobber"
       role="img"
       style={{ flexShrink: 0 }}
     >
@@ -20,4 +20,4 @@ function DabberLogo({ size = 28 }) {
   )
 }
 
-export default DabberLogo
+export default DobberLogo

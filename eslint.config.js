@@ -27,7 +27,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['netlify/**/*.js', 'src/lib/statsProvider.js'],
+    files: ['netlify/**/*.js'],
     languageOptions: {
       globals: globals.node,
       sourceType: 'commonjs',
