@@ -8,8 +8,9 @@ const SPORT_KEY_MAP = {
   ncaa: 'basketball_ncaab',
 }
 
-// All player prop markets we want (including combos for PRA-style props)
-const MARKETS = [
+// All markets in one request — TheOddsAPI counts this as a single API call
+const ALL_MARKETS = [
+  // Featured (one line per player per stat)
   'player_points',
   'player_rebounds',
   'player_assists',
@@ -20,6 +21,13 @@ const MARKETS = [
   'player_points_rebounds',
   'player_points_assists',
   'player_rebounds_assists',
+  // Alternates (multiple real-odds thresholds per player per stat)
+  'player_points_alternate',
+  'player_rebounds_alternate',
+  'player_assists_alternate',
+  'player_threes_alternate',
+  'player_steals_alternate',
+  'player_blocks_alternate',
 ].join(',')
 
 const VIG_FACTOR = 1.05
@@ -30,16 +38,24 @@ const CACHE_TTL = 15 * 60 * 1000 // 15 min — critical for free tier (500 req/m
 
 // Stat type mapping from TheOddsAPI market → our stat_type
 const MARKET_MAP = {
+  // Standard
   player_points:                    { stat: 'points',      label: 'PTS' },
   player_rebounds:                  { stat: 'rebounds',    label: 'REB' },
   player_assists:                   { stat: 'assists',     label: 'AST' },
   player_threes:                    { stat: 'threes',      label: '3PM' },
   player_steals:                    { stat: 'steals',      label: 'STL' },
   player_blocks:                    { stat: 'blocks',      label: 'BLK' },
-  player_points_rebounds_assists:   { stat: 'pts_reb_ast', label: 'PTS+REB+AST' },
-  player_points_rebounds:           { stat: 'pts_reb',     label: 'PTS+REB' },
-  player_points_assists:            { stat: 'pts_ast',     label: 'PTS+AST' },
-  player_rebounds_assists:          { stat: 'reb_ast',     label: 'REB+AST' },
+  player_points_rebounds_assists:   { stat: 'pts_reb_ast', label: 'PRA' },
+  player_points_rebounds:           { stat: 'pts_reb',     label: 'PR' },
+  player_points_assists:            { stat: 'pts_ast',     label: 'PA' },
+  player_rebounds_assists:          { stat: 'reb_ast',     label: 'RA' },
+  // Alternates (same stat mapping, multiple thresholds per player)
+  player_points_alternate:          { stat: 'points',      label: 'PTS' },
+  player_rebounds_alternate:        { stat: 'rebounds',    label: 'REB' },
+  player_assists_alternate:         { stat: 'assists',     label: 'AST' },
+  player_threes_alternate:          { stat: 'threes',      label: '3PM' },
+  player_steals_alternate:          { stat: 'steals',      label: 'STL' },
+  player_blocks_alternate:          { stat: 'blocks',      label: 'BLK' },
 }
 
 // ---------------------------------------------------------------------------
@@ -276,7 +292,7 @@ exports.handler = async function(event) {
     }
 
     // Step 2: Fetch odds
-    const oddsUrl = `${ODDS_API_BASE}/sports/${sportKey}/events/${matched.id}/odds?apiKey=${API_KEY}&regions=us&markets=${MARKETS}&oddsFormat=american`
+    const oddsUrl = `${ODDS_API_BASE}/sports/${sportKey}/events/${matched.id}/odds?apiKey=${API_KEY}&regions=us&markets=${ALL_MARKETS}&oddsFormat=american`
     const oddsRes = await fetch(oddsUrl)
     if (!oddsRes.ok) throw new Error(`Odds API: ${oddsRes.status}`)
     const oddsData = await oddsRes.json()
