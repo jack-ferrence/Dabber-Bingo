@@ -99,6 +99,17 @@ function parseThreePointers(fgStr) {
   return match ? Number(match[1]) : 0
 }
 
+/**
+ * Parse a stat value that may be in "made-attempted" format (e.g. "5-12")
+ * or a plain number. Returns the "made" portion for compound values.
+ */
+function parseStatValue(raw) {
+  const str = String(raw ?? '0')
+  const dashMatch = str.match(/^(\d+)-(\d+)$/)
+  if (dashMatch) return Number(dashMatch[1])
+  return Number(str) || 0
+}
+
 async function fetchJson(url) {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`ESPN fetch failed: ${res.status} ${res.statusText} for ${url}`)
@@ -129,11 +140,18 @@ async function fetchEspnStats(espnGameId, sport = 'nba') {
       if (!athlete.stats?.length || athlete.didNotPlay) continue
 
       const mapped = mapStatsByLabel(athlete, statLabels, period)
-      if (mapped.length) {
+      if (mapped.length > 0) {
         events.push(...mapped)
+      } else if (statLabels.length === 0) {
+        // No labels at all — rare edge case, try positional
+        events.push(...parsePlayerStats(athlete, period))
       } else {
-        // Labels were empty or player had no qualifying stats via label path.
-        // parsePlayerStats() will warn if it resorts to positional indexing.
+        // Labels existed but produced no events — log warning and try positional
+        const pname = athlete.athlete?.displayName ?? 'unknown'
+        console.warn(
+          `statsProvider: mapStatsByLabel returned 0 events for ${pname} ` +
+          `with labels [${statLabels.join(', ')}], stats [${(athlete.stats ?? []).slice(0, 5).join(', ')}...]. Trying positional fallback.`
+        )
         events.push(...parsePlayerStats(athlete, period))
       }
     }
@@ -171,6 +189,13 @@ const LABEL_ALIASES = {
   '+/-': 'PM', PM: 'PM',
   // Minutes
   MIN: 'MIN',
+  // Compound labels (NCAA "MADE-ATTEMPTED" single-column format)
+  'FGM-FGA': 'FGM', 'FG-FGA': 'FGM',
+  '3FGM-3FGA': '3PM', '3FG-3FGA': '3PM', '3PM-3PA': '3PM', 'FG3M-FG3A': '3PM',
+  'FTM-FTA': 'FTM', 'FT-FTA': 'FTM',
+  // Additional NCAA single-column variants
+  '3FG': '3PM', FG3M: '3PM', FG3: '3PM',
+  PF: 'PF', FOULS: 'PF',
 }
 
 /**
@@ -194,18 +219,24 @@ function mapStatsByLabel(athlete, labels, period) {
     }
   })
 
-  const pts = Number(statMap['PTS']) || 0
-  const stl = Number(statMap['STL']) || 0
-  const blk = Number(statMap['BLK']) || 0
-  const threes = parseThreePointers(statMap['3PM'] ?? '0')
-
-  // Prefer the explicit total rebounds label; fall back to OR + DR sum.
-  let reb = Number(statMap['REB']) || 0
-  if (!reb && (statMap['OREB'] !== undefined || statMap['DREB'] !== undefined)) {
-    reb = (Number(statMap['OREB']) || 0) + (Number(statMap['DREB']) || 0)
+  const KNOWN_CANONICAL = new Set(['PTS', 'REB', 'OREB', 'DREB', 'AST', 'STL', 'BLK', '3PM', 'MIN', 'FGM', 'FGA', 'FTM', 'FTA', 'TO', 'PM', 'PF'])
+  const unmapped = Object.keys(statMap).filter(k => !KNOWN_CANONICAL.has(k))
+  if (unmapped.length > 0) {
+    console.warn(`statsProvider: unmapped labels for ${pname}: [${unmapped.join(', ')}] — raw: [${labels.join(', ')}]`)
   }
 
-  const ast = Number(statMap['AST']) || 0
+  const pts = parseStatValue(statMap['PTS'])
+  const stl = parseStatValue(statMap['STL'])
+  const blk = parseStatValue(statMap['BLK'])
+  const threes = parseStatValue(statMap['3PM'])
+
+  // Prefer the explicit total rebounds label; fall back to OR + DR sum.
+  let reb = parseStatValue(statMap['REB'])
+  if (!reb && (statMap['OREB'] !== undefined || statMap['DREB'] !== undefined)) {
+    reb = parseStatValue(statMap['OREB']) + parseStatValue(statMap['DREB'])
+  }
+
+  const ast = parseStatValue(statMap['AST'])
 
   for (const threshold of STAT_THRESHOLDS.points) {
     if (pts >= threshold) {

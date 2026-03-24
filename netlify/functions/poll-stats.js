@@ -186,6 +186,7 @@ export async function handler() {
       log.push(`game_id=${gameId} got ${events.length} events`)
 
       for (const ev of events) {
+        // Try to insert the stat event row
         const { error: insertError } = await supabase.from('stat_events').insert({
           game_id: ev.game_id ?? gameId,
           player_id: ev.player_id,
@@ -194,15 +195,23 @@ export async function handler() {
           period: ev.period,
         })
 
-        if (insertError) {
-          if (insertError.code === '23505') continue
+        const isNew = !insertError
+        const isDuplicate = insertError?.code === '23505'
+
+        if (insertError && !isDuplicate) {
           console.error('poll-stats: insert failed', insertError)
           Sentry.captureException(insertError, { tags: { game_id: gameId } })
           continue
         }
 
-        inserted += 1
+        if (isNew) inserted += 1
 
+        // ALWAYS call mark_squares_for_event — even for duplicate inserts.
+        // The RPC is idempotent: it only marks previously-unmarked squares
+        // where event_value >= threshold. This ensures that if a player's
+        // stat value increased since the last poll (e.g., points went from
+        // 20 to 25), the new higher value triggers marking even though the
+        // stat_event row may already exist.
         const { data: cardsUpdated, error: rpcError } = await supabase.rpc(
           'mark_squares_for_event',
           {
