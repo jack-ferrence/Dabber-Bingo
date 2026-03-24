@@ -4,7 +4,9 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useRoomChannel } from '../hooks/useRoomChannel.js'
 import GameRoom from '../components/game/GameRoom.jsx'
-import { matchOddsToRoster, generateOddsBasedCard } from '../game/oddsCardGenerator.js'
+import { generateOddsBasedCard } from '../game/oddsCardGenerator.js'
+
+const MIN_PROPS_FOR_CARD = 24
 
 function GamePage() {
   const { roomId } = useParams()
@@ -145,143 +147,72 @@ function GamePage() {
         }
       }
 
-      // ── Step 3: Fetch roster ─────────────────────────────────────────────────
-      let players = null
-      let rosterTeams = []
-      if (room.game_id) {
-        try {
-          const rosterUrl = `/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`
-          const res = await fetch(rosterUrl)
-          if (res.ok) {
-            const roster = await res.json()
-            players = (roster.players ?? []).map((p) => ({
-              id: p.id,
-              name: p.name,
-              lastName: p.lastName,
-              team: p.team,
-            }))
-            setRosterPlayers(players)
-            // Extract unique team names for odds lookup
-            const teams = [...new Set(players.map((p) => p.team).filter(Boolean))]
-            rosterTeams = teams
-          } else if (debug) {
-            console.warn('[GamePage] roster fetch non-ok', res.status)
-          }
-        } catch (rosterErr) {
-          if (debug) console.warn('[GamePage] roster fetch threw', rosterErr)
+      // ── Step 3: Get odds pool from room (server-managed by refresh-odds) ──────
+      const roomOddsPool = room.odds_pool ?? []
+      const oddsReady    = room.odds_status === 'ready' && roomOddsPool.length >= MIN_PROPS_FOR_CARD
+
+      if (roomOddsPool.length > 0) {
+        setOddsPool(roomOddsPool)
+      }
+
+      // Returning users: odds pool now set for swaps — done
+      if (cardAlreadyExists) {
+        // Kick off roster fetch for PlayerStatsPanel in the background
+        if (room.game_id) {
+          fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`)
+            .then(res => res.ok ? res.json() : null)
+            .then(roster => { if (roster?.players) setRosterPlayers(roster.players.map(p => ({ id: p.id, name: p.name, lastName: p.lastName, team: p.team }))) })
+            .catch(() => {})
         }
+        return
       }
 
-      // ── Step 4: Fetch odds (NBA + NCAA, best-effort) ─────────────────────────
-      let oddsProps = null
-      if (rosterTeams.length >= 2) {
-        try {
-          const homeTeam = encodeURIComponent(rosterTeams[0])
-          const awayTeam = encodeURIComponent(rosterTeams[1])
-          const oddsUrl = `/.netlify/functions/get-odds?home_team=${homeTeam}&away_team=${awayTeam}&sport=${room.sport || 'nba'}`
-          const res = await fetch(oddsUrl)
-          if (res.ok) {
-            const oddsData = await res.json()
-            if (oddsData.props?.length > 0) {
-              oddsProps = oddsData.props
-              if (debug) console.log(`[GamePage] odds: ${oddsProps.length} props for ${oddsData.meta?.home_team} vs ${oddsData.meta?.away_team}`)
-            } else if (debug) {
-              console.warn('[GamePage] odds empty — reason:', oddsData.meta?.reason ?? 'no props returned', oddsData.meta)
-            }
-          }
-        } catch (oddsErr) {
-          if (debug) console.warn('[GamePage] odds fetch threw', oddsErr)
+      // ── Step 4: Generate card from server-managed odds pool ───────────────────
+      if (!oddsReady) {
+        if (room.odds_status === 'insufficient') {
+          setError("This game doesn't have enough prop odds from sportsbooks. Try a different game.")
+        } else {
+          setError('Odds are still loading for this game. Try again in a few minutes.')
         }
+        setLoadingCard(false)
+        return
       }
 
-      // ── Step 4b: Match odds to roster, populate oddsPool, build enrichment ──
-      let matched = []
-      let enrichSquares = null
-      if (oddsProps && players) {
-        matched = matchOddsToRoster(oddsProps, players)
-        setOddsPool(matched)
+      try {
+        const oddsCard = generateOddsBasedCard(roomOddsPool)
+        if (oddsCard) {
+          const { data: savedCard, error: saveError } = await supabase
+            .from('cards')
+            .insert({ room_id: roomId, user_id: user.id, squares: oddsCard })
+            .select()
+            .maybeSingle()
 
-        if (matched.length > 0) {
-          // Normalize RPC stat_types → TheOddsAPI stat_types for lookup
-          const normalizeStatType = (st) => {
-            if (!st) return st
-            if (st.startsWith('points_')) return 'points'
-            if (st.startsWith('rebound_')) return 'rebounds'
-            if (st.startsWith('assist_')) return 'assists'
-            if (st === 'three_pointer') return 'threes'
-            if (st === 'steal') return 'steals'
-            if (st === 'block') return 'blocks'
-            return st
-          }
-          // Build lookup: Map<"playerName|normalizedStat", props[]>
-          const oddsLookup = new Map()
-          for (const prop of matched) {
-            const key = `${prop.player_name}|${prop.stat_type}`
-            if (!oddsLookup.has(key)) oddsLookup.set(key, [])
-            oddsLookup.get(key).push(prop)
-          }
-          // Client-side only: overlay american_odds/implied_prob/tier onto null-odds squares
-          enrichSquares = (squares) => {
-            if (!squares?.length) return squares
-            const flat = Array.isArray(squares[0]) ? squares.flat() : squares
-            return flat.map((sq) => {
-              if (!sq || sq.stat_type === 'free' || sq.american_odds != null) return sq
-              const key = `${sq.player_name}|${normalizeStatType(sq.stat_type)}`
-              const props = oddsLookup.get(key)
-              if (!props?.length) return sq
-              const best = props.reduce((a, b) =>
-                Math.abs(a.threshold - sq.threshold) <= Math.abs(b.threshold - sq.threshold) ? a : b
-              )
-              return { ...sq, american_odds: best.american_odds, implied_prob: best.implied_prob, tier: best.tier }
-            })
-          }
-        }
-      }
-
-      // Enrich existing card squares for returning users (client-side only, not saved to DB)
-      if (cardAlreadyExists && existingCard && enrichSquares) {
-        const enrichedSquares = enrichSquares(existingCard.squares)
-        setCard({ ...existingCard, squares: enrichedSquares })
-      }
-
-      // Returning users: roster + odds now loaded for display and swaps — done
-      if (cardAlreadyExists) return
-
-      // ── Step 5: Try odds-based card generation ───────────────────────────────
-      if (matched.length > 0) {
-        try {
-          const oddsCard = generateOddsBasedCard(matched)
-          if (oddsCard) {
-            // Save the client-generated card to the database
-            const { data: savedCard, error: saveError } = await supabase
-              .from('cards')
-              .insert({ room_id: roomId, user_id: user.id, squares: oddsCard })
-              .select()
-              .maybeSingle()
-
-            if (!saveError && savedCard) {
-              if (debug) console.log('[GamePage] odds-based card saved', savedCard.id)
-              setCard(savedCard)
-              setLoadingCard(false)
-              return
-            }
-            if (debug) console.warn('[GamePage] card save failed, using in-memory', saveError?.message)
-            // Use card in-memory if save failed (will regenerate on refresh)
-            setCard({ room_id: roomId, user_id: user.id, squares: oddsCard })
+          if (!saveError && savedCard) {
+            if (debug) console.log('[GamePage] odds-based card saved', savedCard.id)
+            setCard(savedCard)
             setLoadingCard(false)
+            // Kick off roster fetch for PlayerStatsPanel in the background
+            if (room.game_id) {
+              fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`)
+                .then(res => res.ok ? res.json() : null)
+                .then(roster => { if (roster?.players) setRosterPlayers(roster.players.map(p => ({ id: p.id, name: p.name, lastName: p.lastName, team: p.team }))) })
+                .catch(() => {})
+            }
             return
           }
-          if (debug) console.warn('[GamePage] generateOddsBasedCard returned null — not enough real props to fill a card')
-        } catch (oddsCardErr) {
-          if (debug) console.warn('[GamePage] odds card generation threw', oddsCardErr)
+          if (debug) console.warn('[GamePage] card save failed, using in-memory', saveError?.message)
+          setCard({ room_id: roomId, user_id: user.id, squares: oddsCard })
+          setLoadingCard(false)
+          return
         }
-      }
 
-      // ── Step 6: No odds available — show error ──────────────────────────────
-      // Dobber requires real odds to generate cards. If we got here, the game
-      // doesn't have enough prop data from sportsbooks to create a bingo card.
-      setError("This game doesn't have enough prop odds available yet. Try again closer to game time, or pick a different game.")
-      setLoadingCard(false)
+        setError('Unable to generate a card with the available odds. Try again shortly.')
+        setLoadingCard(false)
+      } catch (cardErr) {
+        if (debug) console.error('[GamePage] card generation threw', cardErr)
+        setError('Error generating card. Please try again.')
+        setLoadingCard(false)
+      }
     }
     loadOrCreateCard()
   }, [roomId, user, authLoading, room?.id, retryCount])

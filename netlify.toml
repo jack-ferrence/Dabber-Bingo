@@ -26,3 +26,7 @@
 # Scheduled function: create public rooms for today's NBA games (every 5 min)
 [functions."sync-games"]
   schedule = "*/5 * * * *"
+
+# Scheduled function: pre-fetch and refresh player prop odds onto lobby rooms (every 5 min)
+[functions."refresh-odds"]
+  schedule = "*/5 * * * *"

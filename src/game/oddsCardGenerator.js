@@ -133,7 +133,7 @@ export function generateOddsBasedCard(matchedProps) {
   }
 
   // Second pass: backfill from any tier if quotas weren't fully met
-  for (let attempt = 0; attempt < MAX_PICK_ATTEMPTS && selected.length < 24; attempt++) {
+  for (let attempt = 0; attempt < MAX_PICK_ATTEMPTS * 3 && selected.length < 24; attempt++) {
     for (const t of [2, 1, 3]) {
       const prop = pickOneWeighted(matchedProps, usedIds, usedConflictKeys, t)
       if (prop) {
