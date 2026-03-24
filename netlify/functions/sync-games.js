@@ -128,7 +128,6 @@ export async function handler() {
       .from('rooms')
       .select('game_id, sport')
       .eq('room_type', 'public')
-      .neq('status', 'finished')
       .in('game_id', actionableIds)
 
     if (fetchErr) {
