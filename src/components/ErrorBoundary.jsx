@@ -8,17 +8,41 @@ function FallbackUI() {
           Something went wrong
         </h1>
         <p style={{ marginTop: 8, fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#8888aa' }}>
-          An unexpected error occurred. Refresh to rejoin your game.
+          An unexpected error occurred.
         </p>
         <button
           type="button"
-          onClick={() => window.location.reload()}
-          style={{ marginTop: 20, background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, padding: '8px 20px', fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}
+          onClick={() => { window.location.href = '/' }}
+          style={{
+            marginTop: 20, width: '100%',
+            background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4,
+            padding: '8px 20px', fontFamily: 'var(--db-font-mono)', fontSize: 11,
+            fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
+            transition: 'background 100ms ease',
+          }}
           onMouseEnter={(e) => { e.currentTarget.style.background = '#ff8855' }}
           onMouseLeave={(e) => { e.currentTarget.style.background = '#ff6b35' }}
         >
+          Back to Lobby
+        </button>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          style={{
+            marginTop: 8, width: '100%',
+            background: 'none', color: '#555577', border: '1px solid #2a2a44', borderRadius: 4,
+            padding: '8px 20px', fontFamily: 'var(--db-font-mono)', fontSize: 11,
+            fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
+            transition: 'color 100ms ease, border-color 100ms ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#8888aa'; e.currentTarget.style.borderColor = '#3a3a55' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#555577'; e.currentTarget.style.borderColor = '#2a2a44' }}
+        >
           Refresh Page
         </button>
+        <p style={{ marginTop: 16, fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55' }}>
+          Dobber v0.1
+        </p>
       </div>
     </div>
   )

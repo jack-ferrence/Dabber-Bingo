@@ -114,7 +114,7 @@ function Toggle({ value, onChange, disabled = false }) {
 
 function ProfileTab() {
   const { user } = useAuth()
-  const { dabsBalance, username } = useProfile()
+  const { dobsBalance: dabsBalance, username } = useProfile()
   const navigate = useNavigate()
   const [stats, setStats] = useState({ gamesPlayed: null, totalLines: null, totalSquares: null })
   const [txns, setTxns] = useState([])
