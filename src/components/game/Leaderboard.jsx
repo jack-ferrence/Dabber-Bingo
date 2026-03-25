@@ -27,6 +27,7 @@ function binaryInsert(arr, item) {
 
 const LeaderboardRow = memo(function LeaderboardRow({
   rank,
+  userId,
   username,
   nameColor,
   nameFont,
@@ -36,6 +37,7 @@ const LeaderboardRow = memo(function LeaderboardRow({
   isMe,
   isFlashing,
   hasRankChange,
+  onNameClick,
 }) {
   const rankColor = rank <= 3 ? RANK_COLORS[rank - 1] : 'text-text-muted'
   const badge = equippedBadge ? getBadge(equippedBadge) : null
@@ -56,16 +58,27 @@ const LeaderboardRow = memo(function LeaderboardRow({
         {rank}
       </span>
 
-      <span
-        className={`min-w-0 flex-1 truncate text-xs font-medium ${nameColor === 'rainbow' ? 'name-rainbow' : ''}`}
-        style={{ color: nameColor && nameColor !== 'rainbow' ? nameColor : undefined, fontFamily: getFontFamily(nameFont) }}
+      <button
+        type="button"
+        onClick={() => onNameClick?.(userId)}
+        className={`min-w-0 flex-1 truncate text-xs font-medium text-left ${nameColor === 'rainbow' ? 'name-rainbow' : ''}`}
+        style={{
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          cursor: isMe ? 'default' : 'pointer',
+          color: nameColor && nameColor !== 'rainbow' ? nameColor : undefined,
+          fontFamily: getFontFamily(nameFont),
+        }}
+        onMouseEnter={(e) => { if (!isMe) e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.textDecorationColor = '#555577' }}
+        onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}
       >
         {badge && <span style={{ marginRight: 3, fontSize: 11 }}>{badge.emoji}</span>}
         {username.length > 12 ? username.slice(0, 12) + '…' : username}
         {isMe && (
           <span className="ml-1 text-[9px] text-accent-green">(you)</span>
         )}
-      </span>
+      </button>
 
       <span className="shrink-0 font-display text-[10px] tabular-nums text-text-secondary">
         {linesCompleted}/12
@@ -78,7 +91,7 @@ const LeaderboardRow = memo(function LeaderboardRow({
   )
 })
 
-function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined }) {
+function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined, onPlayerClick }) {
   const [rows, setRows] = useState([])
   const [profiles, setProfiles] = useState({})
   const flashRef = useRef(new Set())
@@ -253,6 +266,7 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined }
               <LeaderboardRow
                 key={row.user_id}
                 rank={row.rank}
+                userId={row.user_id}
                 username={profiles[row.user_id]?.username ?? 'Guest'}
                 nameColor={profiles[row.user_id]?.nameColor ?? null}
                 nameFont={profiles[row.user_id]?.nameFont ?? 'default'}
@@ -262,6 +276,7 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined }
                 isMe={row.user_id === currentUserId}
                 isFlashing={flashIds.has(row.user_id)}
                 hasRankChange={!!rankChanges[row.user_id]}
+                onNameClick={(uid) => onPlayerClick?.(uid, profiles[uid]?.username ?? 'Guest')}
               />
             )
           })}

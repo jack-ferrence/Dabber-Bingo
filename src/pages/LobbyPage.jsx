@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth.jsx'
 import { useHomeData } from '../hooks/useHomeData.js'
 import SportSection from '../components/home/SportSection.jsx'
 import JoinConfirmModal from '../components/home/JoinConfirmModal.jsx'
+import TopPlayers from '../components/home/TopPlayers.jsx'
 
 const SPORT_SECTIONS = [
   { sport: 'nba',  label: '🏀 NBA' },
@@ -193,6 +194,11 @@ export default function LobbyPage() {
           {error || joinError}
         </div>
       )}
+
+      {/* Top players */}
+      <div style={{ marginBottom: 24 }}>
+        <TopPlayers />
+      </div>
 
       {/* Sport sections */}
       <div className="space-y-10">

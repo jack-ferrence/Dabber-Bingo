@@ -43,9 +43,10 @@ ALTER TABLE public.rooms
   ADD COLUMN IF NOT EXISTS away_score         int         DEFAULT 0,
   ADD COLUMN IF NOT EXISTS game_status_detail text        DEFAULT NULL;
 
--- cards: swap_count added in 007
+-- cards: swap_count added in 007, swapped_indices added in 015
 ALTER TABLE public.cards
-  ADD COLUMN IF NOT EXISTS swap_count int NOT NULL DEFAULT 0;
+  ADD COLUMN IF NOT EXISTS swap_count      int   NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS swapped_indices jsonb          DEFAULT '[]'::jsonb;
 
 -- dabs_transactions: created in 003
 CREATE TABLE IF NOT EXISTS public.dabs_transactions (

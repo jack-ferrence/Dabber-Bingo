@@ -12,6 +12,7 @@ import { useProfile } from '../../hooks/useProfile.js'
 
 const Leaderboard = lazy(() => import('./Leaderboard.jsx'))
 const LiveChat = lazy(() => import('./LiveChat.jsx'))
+const CardViewerModal = lazy(() => import('./CardViewerModal.jsx'))
 
 const PanelFallback = () => (
   <div className="flex items-center justify-center p-4">
@@ -49,6 +50,7 @@ function GameRoom({
   const [activeRooms, setActiveRooms] = useState([])
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
   const [gameOverDismissed, setGameOverDismissed] = useState(false)
+  const [viewingCard, setViewingCard] = useState(null)
   const gamesDropdownRef = useRef(null)
 
   useEffect(() => {
@@ -174,6 +176,23 @@ function GameRoom({
     onCardSwap?.({ squareIndex, newSquare })
   }, [onCardSwap])
   const handleToggleMobileLeaderboard = useCallback(() => setMobileLeaderboard((v) => !v), [])
+
+  const handlePlayerClick = useCallback(async (userId, username) => {
+    if (userId === user?.id) return
+    setViewingCard({ userId, username, squares: null, loading: true })
+    const { data } = await supabase
+      .from('cards')
+      .select('squares, squares_marked, lines_completed')
+      .eq('room_id', roomId)
+      .eq('user_id', userId)
+      .maybeSingle()
+    if (data) {
+      const flat = Array.isArray(data.squares?.[0]) ? data.squares.flat() : (data.squares ?? [])
+      setViewingCard({ userId, username, squares: flat, squaresMarked: data.squares_marked ?? 0, linesCompleted: data.lines_completed ?? 0, loading: false })
+    } else {
+      setViewingCard({ userId, username, squares: null, loading: false })
+    }
+  }, [user?.id, roomId])
 
   const { username: profileUsername, dobsBalance, boardSkin } = useProfile()
   const username = profileUsername
@@ -564,6 +583,7 @@ function GameRoom({
                 currentUserId={user?.id}
                 realtimeCards={leaderboardCards}
                 participantJoined={participantJoined}
+                onPlayerClick={handlePlayerClick}
               />
             </Suspense>
           </div>
@@ -605,6 +625,7 @@ function GameRoom({
                 currentUserId={user?.id}
                 realtimeCards={leaderboardCards}
                 participantJoined={participantJoined}
+                onPlayerClick={handlePlayerClick}
               />
             </Suspense>
           </div>
@@ -683,6 +704,7 @@ function GameRoom({
                 currentUserId={user?.id}
                 realtimeCards={leaderboardCards}
                 participantJoined={participantJoined}
+                onPlayerClick={handlePlayerClick}
               />
             </Suspense>
           </div>
@@ -746,6 +768,7 @@ function GameRoom({
                   currentUserId={user?.id}
                   realtimeCards={leaderboardCards}
                   participantJoined={participantJoined}
+                  onPlayerClick={handlePlayerClick}
                 />
               </Suspense>
             </div>
@@ -771,6 +794,21 @@ function GameRoom({
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Card Viewer Modal ── */}
+      {viewingCard && (
+        <Suspense fallback={null}>
+          <CardViewerModal
+            isOpen={!!viewingCard}
+            onClose={() => setViewingCard(null)}
+            playerName={viewingCard.username}
+            squares={viewingCard.squares}
+            squaresMarked={viewingCard.squaresMarked ?? 0}
+            linesCompleted={viewingCard.linesCompleted ?? 0}
+            loading={viewingCard.loading}
+          />
+        </Suspense>
       )}
 
       {/* ── Swap Modal ── */}
