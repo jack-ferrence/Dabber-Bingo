@@ -7,7 +7,8 @@ ALTER TABLE public.rooms
   ADD COLUMN IF NOT EXISTS odds_pool jsonb DEFAULT NULL,
   ADD COLUMN IF NOT EXISTS odds_updated_at timestamptz DEFAULT NULL,
   ADD COLUMN IF NOT EXISTS odds_status text DEFAULT 'pending'
-    CHECK (odds_status IN ('pending', 'ready', 'insufficient'));
+    CHECK (odds_status IN ('pending', 'ready', 'insufficient')),
+  ADD COLUMN IF NOT EXISTS oddsapi_event_id text DEFAULT NULL;
 
 -- Recreate view to include new columns (r.* now includes odds_pool etc.)
 DROP VIEW IF EXISTS public.rooms_with_counts;

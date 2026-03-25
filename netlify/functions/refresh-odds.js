@@ -22,7 +22,13 @@ import { createClient } from '@supabase/supabase-js'
 
 const ODDS_API_BASE = 'https://api.the-odds-api.com/v4'
 const SPORT_KEY_MAP = { nba: 'basketball_nba', ncaa: 'basketball_ncaab' }
-const MARKETS = [
+const VIG_FACTOR = 1.05
+const MIN_UNIQUE_CONFLICT_KEYS = 16  // need 16+ distinct player+stat combos for a full card
+
+// All markets in one string — TheOddsAPI counts a single /events/{id}/odds call
+// regardless of how many markets are requested, so combining saves API budget.
+const ALL_MARKETS = [
+  // Featured (one line per player per stat)
   'player_points',
   'player_rebounds',
   'player_assists',
@@ -33,9 +39,14 @@ const MARKETS = [
   'player_points_rebounds',
   'player_points_assists',
   'player_rebounds_assists',
+  // Alternates (multiple real-odds thresholds per player per stat)
+  'player_points_alternate',
+  'player_rebounds_alternate',
+  'player_assists_alternate',
+  'player_threes_alternate',
+  'player_steals_alternate',
+  'player_blocks_alternate',
 ].join(',')
-const VIG_FACTOR = 1.05
-const MIN_PROPS = 24
 
 const ESPN_SUMMARY_NBA  = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary'
 const ESPN_SUMMARY_NCAA = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary'
@@ -43,16 +54,24 @@ const ESPN_TEAMS_NBA    = 'https://site.api.espn.com/apis/site/v2/sports/basketb
 const ESPN_TEAMS_NCAA   = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams'
 
 const MARKET_MAP = {
+  // Standard
   player_points:                  { stat: 'points',      label: 'PTS' },
   player_rebounds:                { stat: 'rebounds',    label: 'REB' },
   player_assists:                 { stat: 'assists',     label: 'AST' },
   player_threes:                  { stat: 'threes',      label: '3PM' },
   player_steals:                  { stat: 'steals',      label: 'STL' },
   player_blocks:                  { stat: 'blocks',      label: 'BLK' },
-  player_points_rebounds_assists: { stat: 'pts_reb_ast', label: 'PTS+REB+AST' },
-  player_points_rebounds:         { stat: 'pts_reb',     label: 'PTS+REB' },
-  player_points_assists:          { stat: 'pts_ast',     label: 'PTS+AST' },
-  player_rebounds_assists:        { stat: 'reb_ast',     label: 'REB+AST' },
+  player_points_rebounds_assists: { stat: 'pts_reb_ast', label: 'PRA' },
+  player_points_rebounds:         { stat: 'pts_reb',     label: 'PR' },
+  player_points_assists:          { stat: 'pts_ast',     label: 'PA' },
+  player_rebounds_assists:        { stat: 'reb_ast',     label: 'RA' },
+  // Alternates (same stat types, multiple thresholds per player)
+  player_points_alternate:        { stat: 'points',      label: 'PTS' },
+  player_rebounds_alternate:      { stat: 'rebounds',    label: 'REB' },
+  player_assists_alternate:       { stat: 'assists',     label: 'AST' },
+  player_threes_alternate:        { stat: 'threes',      label: '3PM' },
+  player_steals_alternate:        { stat: 'steals',      label: 'STL' },
+  player_blocks_alternate:        { stat: 'blocks',      label: 'BLK' },
 }
 
 // ---------------------------------------------------------------------------
@@ -300,30 +319,49 @@ async function fetchRoster(gameId, sport) {
 }
 
 // ---------------------------------------------------------------------------
-// TheOddsAPI fetch
+// TheOddsAPI fetch — event list cached per invocation, odds in one call
 // ---------------------------------------------------------------------------
 
-async function fetchOddsForRoom(room, apiKey) {
+async function getEventList(sport, apiKey, ctx) {
+  if (ctx.eventListCache.has(sport)) return ctx.eventListCache.get(sport)
+  const sportKey = SPORT_KEY_MAP[sport] ?? SPORT_KEY_MAP.nba
+  ctx.apiCallsMade++
+  console.log(`refresh-odds: API call #${ctx.apiCallsMade} — event list for ${sport}`)
+  const events = await fetchJson(`${ODDS_API_BASE}/sports/${sportKey}/events?apiKey=${apiKey}`)
+  ctx.eventListCache.set(sport, events)
+  return events
+}
+
+async function fetchOddsForRoom(room, apiKey, ctx) {
   const sport    = room.sport || 'nba'
   const sportKey = SPORT_KEY_MAP[sport] ?? SPORT_KEY_MAP.nba
 
-  // Room name format: "AWY vs HOM"
-  const nameParts = (room.name || '').split(' vs ')
-  if (nameParts.length < 2) return { props: [], reason: 'bad_room_name' }
+  let eventId = room.oddsapi_event_id
 
-  const events = await fetchJson(`${ODDS_API_BASE}/sports/${sportKey}/events?apiKey=${apiKey}`)
-  const matched = events.find(e =>
-    (teamsMatch(e.home_team, nameParts[1]) && teamsMatch(e.away_team, nameParts[0])) ||
-    (teamsMatch(e.home_team, nameParts[0]) && teamsMatch(e.away_team, nameParts[1]))
-  )
-  if (!matched) return { props: [], reason: 'no_matching_event' }
+  if (!eventId) {
+    // First check — need to find the event in TheOddsAPI
+    const nameParts = (room.name || '').split(' vs ')
+    if (nameParts.length < 2) return { props: [], reason: 'bad_room_name' }
 
+    const events = await getEventList(sport, apiKey, ctx)
+    const matched = events.find(e =>
+      (teamsMatch(e.home_team, nameParts[1]) && teamsMatch(e.away_team, nameParts[0])) ||
+      (teamsMatch(e.home_team, nameParts[0]) && teamsMatch(e.away_team, nameParts[1]))
+    )
+    if (!matched) return { props: [], reason: 'no_matching_event' }
+    eventId = matched.id
+  }
+
+  // Single API call with all markets combined
+  ctx.apiCallsMade++
+  console.log(`refresh-odds: API call #${ctx.apiCallsMade} — odds for ${room.game_id} (event ${eventId})`)
   const oddsData = await fetchJson(
-    `${ODDS_API_BASE}/sports/${sportKey}/events/${matched.id}/odds` +
-    `?apiKey=${apiKey}&regions=us&markets=${MARKETS}&oddsFormat=american`
+    `${ODDS_API_BASE}/sports/${sportKey}/events/${eventId}/odds` +
+    `?apiKey=${apiKey}&regions=us&markets=${ALL_MARKETS}&oddsFormat=american`
   )
+
   const book = oddsData.bookmakers?.[0]
-  if (!book) return { props: [], reason: 'no_bookmakers' }
+  if (!book) return { props: [], reason: 'no_bookmakers', eventId }
 
   const props = []
   const seen  = new Set()
@@ -336,25 +374,26 @@ async function fetchOddsForRoom(room, apiKey) {
       const { description: playerName, point: threshold, price: americanOdds } = oc
       if (!playerName || threshold == null || typeof americanOdds !== 'number') continue
 
-      const deVigged = deVig(americanToImplied(americanOdds))
-      const label    = `${getLastName(playerName)} ${threshold}+ ${mapping.label}`
+      const deVigged    = deVig(americanToImplied(americanOdds))
+      const conflictKey = `${playerName}|${mapping.stat}`
+      const label       = `${getLastName(playerName)} ${threshold}+ ${mapping.label}`
       if (seen.has(label)) continue
       seen.add(label)
 
       props.push({
-        player_name:  playerName,
-        stat_type:    mapping.stat,
+        player_name:   playerName,
+        stat_type:     mapping.stat,
         threshold,
-        display_text: label,
+        display_text:  label,
         american_odds: americanOdds,
         implied_prob:  Math.round(deVigged * 1000) / 1000,
         tier:          assignTier(deVigged),
-        conflict_key:  `${playerName}|${mapping.stat}`,
+        conflict_key:  conflictKey,
       })
     }
   }
 
-  return { props, source: book.key }
+  return { props, source: book.key, eventId }
 }
 
 // ---------------------------------------------------------------------------
@@ -390,7 +429,7 @@ async function reconcileCards(supabase, roomId, newPool) {
 
   const { data: cards, error: cardsErr } = await supabase
     .from('cards')
-    .select('id, user_id, squares, swap_count')
+    .select('id, user_id, squares, swap_count, swapped_indices')
     .eq('room_id', roomId)
 
   if (cardsErr || !cards?.length) return
@@ -399,15 +438,17 @@ async function reconcileCards(supabase, roomId, newPool) {
     const squares = card.squares
     if (!squares || squares.length < 25) continue
 
+    const swappedIndices = new Set((card.swapped_indices ?? []).map(Number))
+
     let changed = false
-    const newSquares   = [...squares]
-    let   refundAmount = 0
-    const wasSwapped   = (card.swap_count ?? 0) > 0
+    const newSquares = [...squares]
 
     for (let i = 0; i < 25; i++) {
       const sq = squares[i]
       if (!sq || i === 12 || sq.stat_type === 'free') continue
       if (sq.marked === true || sq.marked === 'true') continue
+      // Never touch squares the user explicitly paid to swap
+      if (swappedIndices.has(i)) continue
 
       const key     = `${sq.player_id}|${sq.stat_type}`
       const newProp = newLookup.get(key)
@@ -426,7 +467,7 @@ async function reconcileCards(supabase, roomId, newPool) {
           changed = true
         }
       } else if (!newPlayerIds.has(sq.player_id)) {
-        // Player completely gone — must replace with a new prop
+        // Player completely gone — replace with a new prop
         const usedKeys = new Set(
           newSquares
             .filter((s, j) => j !== i && s?.stat_type !== 'free')
@@ -448,19 +489,12 @@ async function reconcileCards(supabase, roomId, newPool) {
             marked:        false,
           }
           changed = true
-          if (wasSwapped) refundAmount += 10 // Refund one swap cost per displaced square
         }
       }
     }
 
     if (changed) {
       await supabase.from('cards').update({ squares: newSquares }).eq('id', card.id)
-
-      if (refundAmount > 0) {
-        await supabase
-          .rpc('refund_dabs', { p_user_id: card.user_id, p_amount: refundAmount, p_room_id: roomId })
-          .catch(err => console.warn(`refresh-odds: refund failed for user ${card.user_id}:`, err.message))
-      }
     }
   }
 }
@@ -469,8 +503,8 @@ async function reconcileCards(supabase, roomId, newPool) {
 // Handler
 // ---------------------------------------------------------------------------
 
-// Process at most 3 rooms per invocation to avoid the 10s scheduled-function timeout
-const MAX_ROOMS_PER_RUN = 3
+// Process at most 5 rooms per invocation (event list caching keeps API calls low)
+const MAX_ROOMS_PER_RUN = 5
 
 export async function handler() {
   const url        = process.env.SUPABASE_URL
@@ -491,13 +525,16 @@ export async function handler() {
     return { statusCode: 200, body: JSON.stringify({ skipped: true, reason: 'no_api_key' }) }
   }
 
+  // Invocation-scoped state (not module-level — each call gets a fresh context)
+  const ctx = { eventListCache: new Map(), apiCallsMade: 0 }
+
   const supabase = createClient(url, serviceKey)
   const now = new Date()
   const log = []
 
   const { data: rooms, error: roomsErr } = await supabase
     .from('rooms')
-    .select('id, game_id, sport, name, starts_at, odds_pool, odds_updated_at, odds_status')
+    .select('id, game_id, sport, name, starts_at, odds_pool, odds_updated_at, odds_status, oddsapi_event_id')
     .eq('room_type', 'public')
     .eq('status', 'lobby')
 
@@ -531,21 +568,32 @@ export async function handler() {
     const lastUpdate    = room.odds_updated_at ? new Date(room.odds_updated_at) : null
     const msSinceUpdate = lastUpdate ? now - lastUpdate : Infinity
 
+    // Tiered refresh schedule — fetches as soon as room exists, then on approach
     let needsRefresh = false
+    let refreshReason = ''
+
     if (room.odds_status === 'pending') {
+      // Always fetch for new rooms regardless of how far away the game is
       needsRefresh = true
-    } else if (msUntilStart <= 10 * 60 * 1000 && msSinceUpdate > 5 * 60 * 1000) {
-      needsRefresh = true
-    } else if (msUntilStart <= 60 * 60 * 1000 && msSinceUpdate > 15 * 60 * 1000) {
-      needsRefresh = true
-    } else if (msUntilStart <= 2 * 60 * 60 * 1000 && msSinceUpdate > 30 * 60 * 1000) {
-      needsRefresh = true
+      refreshReason = 'first_check'
+    } else if (msUntilStart > 6 * 60 * 60 * 1000) {
+      // > 6h out: refresh every 3h (catches line-move updates day-of)
+      if (msSinceUpdate > 3 * 60 * 60 * 1000) { needsRefresh = true; refreshReason = 'early_refresh' }
+    } else if (msUntilStart > 2 * 60 * 60 * 1000) {
+      // 2-6h out: refresh every 1h
+      if (msSinceUpdate > 60 * 60 * 1000) { needsRefresh = true; refreshReason = 'midday_refresh' }
+    } else if (msUntilStart > 30 * 60 * 1000) {
+      // 30min-2h out: refresh every 20min
+      if (msSinceUpdate > 20 * 60 * 1000) { needsRefresh = true; refreshReason = 'approach_refresh' }
+    } else {
+      // < 30min to tip: refresh every 5min for final injury updates
+      if (msSinceUpdate > 5 * 60 * 1000) { needsRefresh = true; refreshReason = 'final_refresh' }
     }
 
     if (!needsRefresh) continue
 
     processed++
-    console.log(`refresh-odds: processing ${room.game_id} (${room.name}) — odds_status=${room.odds_status}`)
+    console.log(`refresh-odds: processing ${room.game_id} (${room.name}) — status=${room.odds_status} reason=${refreshReason}`)
 
     try {
       // Fetch roster
@@ -556,9 +604,10 @@ export async function handler() {
         continue
       }
 
-      // Fetch odds
-      const { props, reason } = await fetchOddsForRoom(room, apiKey)
+      // Fetch odds (event list cached per invocation; all markets in one call)
+      const { props, reason, eventId } = await fetchOddsForRoom(room, apiKey, ctx)
       console.log(`refresh-odds: ${room.game_id} — raw props: ${props.length}${reason ? ` (${reason})` : ''}`)
+
       if (props.length === 0) {
         await supabase
           .from('rooms')
@@ -568,15 +617,22 @@ export async function handler() {
         continue
       }
 
+      // Persist the OddsAPI event ID so future checks skip the event-list lookup
+      if (eventId && !room.oddsapi_event_id) {
+        await supabase.from('rooms').update({ oddsapi_event_id: eventId }).eq('id', room.id)
+      }
+
       // Match to roster
       const matched = matchOddsToRoster(props, roster)
-      console.log(`refresh-odds: ${room.game_id} — matched: ${matched.length}/${MIN_PROPS} required`)
-      if (matched.length < MIN_PROPS) {
+      const uniqueKeys = new Set(matched.map(p => p.conflict_key))
+      console.log(`refresh-odds: ${room.game_id} — matched: ${matched.length} lines, ${uniqueKeys.size} unique player+stat combos`)
+
+      if (uniqueKeys.size < MIN_UNIQUE_CONFLICT_KEYS) {
         await supabase
           .from('rooms')
           .update({ odds_status: 'insufficient', odds_updated_at: now.toISOString() })
           .eq('id', room.id)
-        log.push(`${room.game_id}: only ${matched.length}/${MIN_PROPS} matched props`)
+        log.push(`${room.game_id}: ${uniqueKeys.size} unique combos (need ${MIN_UNIQUE_CONFLICT_KEYS}), ${matched.length} total lines`)
         continue
       }
 
@@ -594,7 +650,7 @@ export async function handler() {
       }
 
       refreshed++
-      log.push(`${room.game_id}: ready — ${matched.length} props${hadPreviousPool ? ' (reconciled)' : ''}`)
+      log.push(`${room.game_id}: ready — ${matched.length} lines, ${uniqueKeys.size} combos${hadPreviousPool ? ' (reconciled)' : ''}`)
     } catch (err) {
       log.push(`${room.game_id}: ERROR — ${err.message}`)
       console.error(`refresh-odds: failed for game ${room.game_id}:`, err)
@@ -604,7 +660,7 @@ export async function handler() {
   console.log('refresh-odds:', log.join(' | '))
   return {
     statusCode: 200,
-    body: JSON.stringify({ refreshed, processed, total: rooms?.length ?? 0, log }),
+    body: JSON.stringify({ refreshed, processed, apiCallsMade: ctx.apiCallsMade, total: rooms?.length ?? 0, log }),
     headers: { 'Content-Type': 'application/json' },
   }
 }

@@ -73,6 +73,33 @@ function GameBrowserPage() {
       return
     }
 
+    // Charge entry fee before inserting participant
+    try {
+      const { data: feeResult, error: rpcError } = await supabase.rpc('deduct_entry_fee', {
+        p_user_id: user.id,
+        p_room_id: data.id,
+      })
+      if (rpcError) {
+        const isMissing = rpcError.code === 'PGRST202' || rpcError.code === '42883' ||
+          rpcError.message?.toLowerCase().includes('function')
+        if (!isMissing) {
+          setCreateError('Failed to process entry fee: ' + rpcError.message)
+          setCreateLoading(false)
+          return
+        }
+      } else if (feeResult && !feeResult.success) {
+        if (feeResult.reason === 'insufficient_dabs') {
+          setCreateError(`Not enough Dobs! You need 10 but only have ${feeResult.balance}.`)
+        } else {
+          setCreateError('Could not process entry fee: ' + feeResult.reason)
+        }
+        setCreateLoading(false)
+        return
+      }
+    } catch (feeErr) {
+      console.warn('[GameBrowserPage] deduct_entry_fee threw', feeErr)
+    }
+
     await supabase
       .from('room_participants')
       .insert({ room_id: data.id, user_id: user.id })

@@ -16,7 +16,10 @@
       "Bash(ls node_modules/.bin/vite 2>/dev/null || echo \"not found, installing\" && npm install --silent 2>&1 | tail -5)",
       "Bash(npm install:*)",
       "Bash(cp /Users/jackferrence/Downloads/dabber-favicon.svg /Users/jackferrence/Downloads/Chalk-Bingo-main/public/dabber-favicon.svg && cp /Users/jackferrence/Downloads/dabber-icon.svg /Users/jackferrence/Downloads/Chalk-Bingo-main/public/dabber-icon.svg && echo \"copied\")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(grep -A 50 \"CREATE TABLE.*cards\" /Users/jackferrence/Desktop/Dabber-Bingo-main/supabase/migrations/*.sql | head -80)",
+      "Bash(grep -l \"mark_squares_for_event\" /Users/jackferrence/Desktop/Dabber-Bingo-main/supabase/migrations/*.sql)",
+      "Bash(node scripts/test-espn-live.js 2>&1 | head -80)"
     ]
   }
 }

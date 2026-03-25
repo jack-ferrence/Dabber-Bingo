@@ -157,14 +157,19 @@ function GamePage() {
           } else if (feeResult && !feeResult.success) {
             if (feeResult.reason === 'insufficient_dabs') {
               setError(`Not enough Dobs! You need 10 but only have ${feeResult.balance}. Play more games to earn Dobs.`)
-            } else if (feeResult.reason !== 'already_joined' && feeResult.reason !== 'free_entry') {
+              setLoadingCard(false)
+              return
+            } else if (feeResult.reason === 'profile_not_found') {
+              setError('Profile not found. Try logging out and back in.')
+              setLoadingCard(false)
+              return
+            } else {
               setError('Could not join: ' + feeResult.reason)
-            }
-            if (feeResult.reason === 'insufficient_dabs') {
               setLoadingCard(false)
               return
             }
           }
+          // already_charged and march_madness_free are expected — continue silently
         } catch (feeErr) {
           if (debug) console.warn('[GamePage] deduct_entry_fee threw', feeErr)
         }
@@ -193,9 +198,11 @@ function GamePage() {
       // ── Step 4: Generate card from server-managed odds pool ───────────────────
       if (!oddsReady) {
         if (room.odds_status === 'insufficient') {
-          setError("This game doesn't have enough prop odds from sportsbooks. Try a different game.")
+          setError("Not enough player props available for this game. Try a different game.")
         } else {
-          setError('Odds are still loading for this game. Try again in a few minutes.')
+          // odds_status is 'pending' — refresh-odds will populate within a few minutes
+          // The useEffect re-runs automatically when room.odds_status changes to 'ready'
+          setError('Odds are being loaded for this game. Check back in a minute or two.')
         }
         setLoadingCard(false)
         return
@@ -238,7 +245,7 @@ function GamePage() {
       }
     }
     loadOrCreateCard()
-  }, [roomId, user, authLoading, room?.id, retryCount])
+  }, [roomId, user, authLoading, room?.id, room?.odds_status, retryCount])
 
   const flatSquares = useMemo(() => {
     if (!card?.squares) return []

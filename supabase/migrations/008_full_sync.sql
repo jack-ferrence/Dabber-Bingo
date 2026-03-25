@@ -30,6 +30,19 @@ ALTER TABLE public.rooms
   ADD COLUMN IF NOT EXISTS sport text NOT NULL DEFAULT 'nba'
   CHECK (sport IN ('nba', 'ncaa'));
 
+-- rooms: odds columns added in 012, game status columns added in 013
+ALTER TABLE public.rooms
+  ADD COLUMN IF NOT EXISTS odds_pool          jsonb       DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS odds_updated_at    timestamptz DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS odds_status        text        DEFAULT 'pending'
+    CHECK (odds_status IN ('pending', 'ready', 'insufficient')),
+  ADD COLUMN IF NOT EXISTS oddsapi_event_id   text        DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS game_period        int         DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS game_clock         text        DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS home_score         int         DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS away_score         int         DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS game_status_detail text        DEFAULT NULL;
+
 -- cards: swap_count added in 007
 ALTER TABLE public.cards
   ADD COLUMN IF NOT EXISTS swap_count int NOT NULL DEFAULT 0;
@@ -256,19 +269,24 @@ BEGIN
 END;
 $$;
 
--- deduct_entry_fee (004)
+-- deduct_entry_fee (004, fixed in 014)
 CREATE OR REPLACE FUNCTION public.deduct_entry_fee(p_user_id uuid, p_room_id uuid, p_amount int DEFAULT 10)
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
-  v_balance        int;
-  v_room_sport     text;
-  v_already_joined boolean;
+  v_balance         int;
+  v_room_sport      text;
+  v_already_charged boolean;
 BEGIN
+  -- Idempotency: check dabs_transactions (not room_participants — participant row
+  -- is inserted before navigation, so room_participants check always skipped the fee)
   SELECT EXISTS(
-    SELECT 1 FROM room_participants WHERE room_id = p_room_id AND user_id = p_user_id
-  ) INTO v_already_joined;
-  IF v_already_joined THEN
-    RETURN jsonb_build_object('success', true, 'charged', 0, 'reason', 'already_joined');
+    SELECT 1 FROM dabs_transactions
+    WHERE user_id = p_user_id
+      AND room_id  = p_room_id
+      AND reason   = 'entry_fee'
+  ) INTO v_already_charged;
+  IF v_already_charged THEN
+    RETURN jsonb_build_object('success', true, 'charged', 0, 'reason', 'already_charged');
   END IF;
 
   SELECT sport INTO v_room_sport FROM rooms WHERE id = p_room_id;

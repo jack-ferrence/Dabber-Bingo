@@ -48,6 +48,7 @@ function GameRoom({
   const [mobileStats, setMobileStats] = useState(false)
   const [activeRooms, setActiveRooms] = useState([])
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
+  const [gameOverDismissed, setGameOverDismissed] = useState(false)
   const gamesDropdownRef = useRef(null)
 
   useEffect(() => {
@@ -717,14 +718,23 @@ function GameRoom({
       </footer>
 
       {/* ── Game Over modal ── */}
-      {room?.status === 'finished' && (
+      {room?.status === 'finished' && !gameOverDismissed && (
         <div
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4"
           role="dialog"
           aria-modal="true"
           aria-label="Final leaderboard"
+          onClick={(e) => { if (e.target === e.currentTarget) setGameOverDismissed(true) }}
         >
-          <div className="w-full max-w-md machine-glow" style={{ background: '#12121e', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: 24 }}>
+          <div className="w-full max-w-md machine-glow" style={{ position: 'relative', background: '#12121e', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: 24 }}>
+            <button
+              type="button"
+              onClick={() => setGameOverDismissed(true)}
+              style={{ position: 'absolute', top: 12, right: 14, background: 'none', border: 'none', color: '#555577', cursor: 'pointer', fontFamily: 'var(--db-font-mono)', fontSize: 16, lineHeight: 1, padding: 4 }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#e0e0f0' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#555577' }}
+              aria-label="Close"
+            >✕</button>
             <h2 className="font-display text-lg font-bold tracking-wide text-accent-gold">
               Game Over
             </h2>
@@ -738,6 +748,26 @@ function GameRoom({
                   participantJoined={participantJoined}
                 />
               </Suspense>
+            </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setGameOverDismissed(true)}
+                style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '8px 18px', borderRadius: 4, background: 'rgba(255,107,53,0.10)', color: '#ff6b35', border: '1px solid rgba(255,107,53,0.25)', cursor: 'pointer', transition: 'background 0.1s ease' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.18)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.10)' }}
+              >
+                VIEW BOARD
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '8px 18px', borderRadius: 4, background: '#ff6b35', color: '#0c0c14', border: 'none', cursor: 'pointer', transition: 'background 0.1s ease' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#ff8855' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#ff6b35' }}
+              >
+                BACK TO LOBBY
+              </button>
             </div>
           </div>
         </div>

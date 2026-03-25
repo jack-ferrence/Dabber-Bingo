@@ -51,6 +51,38 @@ export default function LobbyPage() {
     setJoinError('')
     setJoiningRoomId(roomId)
 
+    // Charge entry fee before inserting participant row
+    try {
+      const { data: feeResult, error: rpcError } = await supabase.rpc('deduct_entry_fee', {
+        p_user_id: user.id,
+        p_room_id: roomId,
+      })
+
+      if (rpcError) {
+        const isMissing = rpcError.code === 'PGRST202' || rpcError.code === '42883' ||
+          rpcError.message?.toLowerCase().includes('function')
+        if (!isMissing) {
+          setJoinError('Failed to process entry fee: ' + rpcError.message)
+          setJoiningRoomId(null)
+          return
+        }
+        // Function not found — graceful fallback, continue
+        console.warn('[LobbyPage] deduct_entry_fee not found, skipping fee')
+      } else if (feeResult && !feeResult.success) {
+        if (feeResult.reason === 'insufficient_dabs') {
+          setJoinError(`Not enough Dobs! You need 10 but only have ${feeResult.balance}.`)
+        } else if (feeResult.reason === 'profile_not_found') {
+          setJoinError('Profile not found. Try logging out and back in.')
+        } else {
+          setJoinError('Could not join: ' + feeResult.reason)
+        }
+        setJoiningRoomId(null)
+        return
+      }
+    } catch (feeErr) {
+      console.warn('[LobbyPage] deduct_entry_fee threw', feeErr)
+    }
+
     const { error: err } = await supabase
       .from('room_participants')
       .upsert(
