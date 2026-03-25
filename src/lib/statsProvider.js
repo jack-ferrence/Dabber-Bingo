@@ -117,47 +117,59 @@ async function fetchJson(url) {
 }
 
 /**
- * Fetch live stat events from ESPN for a specific game.
- * @param {string} espnGameId - ESPN event ID (the game_id stored in rooms)
+ * Fetch live stat events AND game status from ESPN in a single API call.
+ * @param {string} espnGameId
  * @param {'nba'|'ncaa'} sport
- * @returns {Promise<Array<{player_id, player_name, stat_type, value, period}>>}
+ * @returns {Promise<{events: Array, gameStatus: {period, clock, homeScore, awayScore, statusDetail}}>}
  */
-async function fetchEspnStats(espnGameId, sport = 'nba') {
+async function fetchEspnStatsAndStatus(espnGameId, sport = 'nba') {
   const { summary } = getEndpoints(sport)
   const data = await fetchJson(`${summary}?event=${espnGameId}`)
 
   const boxScore = data.boxscore
-  if (!boxScore?.players?.length) return []
-
-  const period = data.header?.competitions?.[0]?.status?.period ?? 0
+  const competition = data.header?.competitions?.[0]
+  const statusObj = competition?.status ?? {}
+  const period = statusObj.period ?? 0
   const events = []
 
-  for (const team of boxScore.players) {
-    const statLabels = team.statistics?.[0]?.labels ?? []
-    const athletes = team.statistics?.[0]?.athletes ?? []
+  if (boxScore?.players?.length) {
+    for (const team of boxScore.players) {
+      const statLabels = team.statistics?.[0]?.labels ?? []
+      const athletes = team.statistics?.[0]?.athletes ?? []
 
-    for (const athlete of athletes) {
-      if (!athlete.stats?.length || athlete.didNotPlay) continue
+      for (const athlete of athletes) {
+        if (!athlete.stats?.length || athlete.didNotPlay) continue
 
-      const mapped = mapStatsByLabel(athlete, statLabels, period)
-      if (mapped.length > 0) {
-        events.push(...mapped)
-      } else if (statLabels.length === 0) {
-        // No labels at all — rare edge case, try positional
-        events.push(...parsePlayerStats(athlete, period))
-      } else {
-        // Labels existed but produced no events — log warning and try positional
-        const pname = athlete.athlete?.displayName ?? 'unknown'
-        console.warn(
-          `statsProvider: mapStatsByLabel returned 0 events for ${pname} ` +
-          `with labels [${statLabels.join(', ')}], stats [${(athlete.stats ?? []).slice(0, 5).join(', ')}...]. Trying positional fallback.`
-        )
-        events.push(...parsePlayerStats(athlete, period))
+        const mapped = mapStatsByLabel(athlete, statLabels, period)
+        if (mapped.length > 0) {
+          events.push(...mapped)
+        } else if (statLabels.length === 0) {
+          events.push(...parsePlayerStats(athlete, period))
+        } else {
+          const pname = athlete.athlete?.displayName ?? 'unknown'
+          console.warn(
+            `statsProvider: mapStatsByLabel returned 0 events for ${pname} ` +
+            `with labels [${statLabels.join(', ')}], stats [${(athlete.stats ?? []).slice(0, 5).join(', ')}...]. Trying positional fallback.`
+          )
+          events.push(...parsePlayerStats(athlete, period))
+        }
       }
     }
   }
 
-  return events
+  const competitors = competition?.competitors ?? []
+  const home = competitors.find(c => c.homeAway === 'home')
+  const away = competitors.find(c => c.homeAway === 'away')
+
+  const gameStatus = {
+    period: statusObj.period ?? 0,
+    clock: statusObj.displayClock ?? null,
+    homeScore: parseInt(home?.score ?? '0', 10),
+    awayScore: parseInt(away?.score ?? '0', 10),
+    statusDetail: statusObj.type?.shortDetail ?? statusObj.type?.detail ?? null,
+  }
+
+  return { events, gameStatus }
 }
 
 // ---------------------------------------------------------------------------
@@ -383,14 +395,17 @@ function generateMockEvents(gameId) {
 async function getStatsForGame(gameId, source = 'mock', sport = 'nba') {
   if (source === 'espn') {
     try {
-      const raw = await fetchEspnStats(gameId, sport)
-      return raw.map((ev) => ({ ...ev, game_id: gameId }))
+      const { events, gameStatus } = await fetchEspnStatsAndStatus(gameId, sport)
+      return {
+        events: events.map((ev) => ({ ...ev, game_id: gameId })),
+        gameStatus,
+      }
     } catch (err) {
       console.warn(`statsProvider: ESPN fetch failed for ${gameId}, falling back to mock:`, err.message)
-      return generateMockEvents(gameId)
+      return { events: generateMockEvents(gameId), gameStatus: null }
     }
   }
-  return generateMockEvents(gameId)
+  return { events: generateMockEvents(gameId), gameStatus: null }
 }
 
 export {

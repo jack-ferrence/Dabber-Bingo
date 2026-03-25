@@ -3,12 +3,12 @@ import { supabase } from '../../lib/supabase'
 import Badge from '../ui/Badge.jsx'
 
 const STAT_KEYS = [
-  { key: 'points',   label: 'PTS',  types: ['points_10', 'points_15', 'points_20', 'points_25'] },
-  { key: 'rebounds',  label: 'REB',  types: ['rebound_5', 'rebound_10'] },
-  { key: 'assists',   label: 'AST',  types: ['assist_5', 'assist_10'] },
-  { key: 'threes',    label: '3PM',  types: ['three_pointer'] },
-  { key: 'steals',    label: 'STL',  types: ['steal'] },
-  { key: 'blocks',    label: 'BLK',  types: ['block'] },
+  { key: 'points',   label: 'PTS',  types: ['points', 'points_10', 'points_15', 'points_20', 'points_25'] },
+  { key: 'rebounds',  label: 'REB',  types: ['rebounds', 'rebound_5', 'rebound_10'] },
+  { key: 'assists',   label: 'AST',  types: ['assists', 'assist_5', 'assist_10'] },
+  { key: 'threes',    label: '3PM',  types: ['threes', 'three_pointer'] },
+  { key: 'steals',    label: 'STL',  types: ['steals', 'steal'] },
+  { key: 'blocks',    label: 'BLK',  types: ['blocks', 'block'] },
 ]
 
 function bestValueForCategory(events, types) {

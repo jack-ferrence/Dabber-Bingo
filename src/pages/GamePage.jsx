@@ -114,6 +114,29 @@ function GamePage() {
         // DON'T return — continue to fetch roster + odds for display and swaps
       }
 
+      // ── Late entry check for live games ─────────────────────────────────────
+      if (!cardAlreadyExists && room.status === 'live') {
+        const sport = room.sport || 'nba'
+        const period = room.game_period ?? 0
+        const clock = room.game_clock ?? ''
+        let lateEntryAllowed = false
+
+        if (sport === 'nba') {
+          lateEntryAllowed = period <= 1
+        } else if (sport === 'ncaa') {
+          if (period <= 1) {
+            const mins = parseInt(clock.split(':')[0], 10)
+            lateEntryAllowed = !isNaN(mins) && mins >= 10
+          }
+        }
+
+        if (!lateEntryAllowed) {
+          setError('Late entry is closed for this game. You can join the next game from the lobby.')
+          setLoadingCard(false)
+          return
+        }
+      }
+
       // ── Step 2: Charge entry fee (skip for returning users) ─────────────────
       if (!cardAlreadyExists) {
         try {

@@ -325,6 +325,79 @@ function GameRoom({
         </div>
       </header>
 
+      {/* ── Live Scoreboard ── */}
+      {room?.status === 'live' && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+            padding: '6px 16px',
+            background: '#12121e',
+            borderBottom: '1px solid #2a2a44',
+            fontFamily: 'var(--db-font-mono)',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#c0c0d8', letterSpacing: '0.06em' }}>
+              {room.name?.split(' vs ')[0] ?? 'AWAY'}
+            </span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#e0e0f0', fontVariantNumeric: 'tabular-nums' }}>
+              {room.away_score ?? 0}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 60 }}>
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              {room.game_status_detail || (room.game_period ? `Q${room.game_period}` : 'PRE')}
+            </span>
+            {room.game_clock && (
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#e0e0f0', fontVariantNumeric: 'tabular-nums' }}>
+                {room.game_clock}
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#e0e0f0', fontVariantNumeric: 'tabular-nums' }}>
+              {room.home_score ?? 0}
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#c0c0d8', letterSpacing: '0.06em' }}>
+              {room.name?.split(' vs ')[1] ?? 'HOME'}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* ── Final Score ── */}
+      {room?.status === 'finished' && (room.home_score > 0 || room.away_score > 0) && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+            padding: '6px 16px',
+            background: '#12121e',
+            borderBottom: '1px solid #2a2a44',
+            fontFamily: 'var(--db-font-mono)',
+            flexShrink: 0,
+          }}
+        >
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#555577' }}>
+            {room.name?.split(' vs ')[0]} {room.away_score}
+          </span>
+          <span style={{ fontSize: 9, fontWeight: 700, color: '#555577', letterSpacing: '0.1em' }}>
+            FINAL
+          </span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#555577' }}>
+            {room.home_score} {room.name?.split(' vs ')[1]}
+          </span>
+        </div>
+      )}
+
       {/* ── Notifications ── */}
       {gameStartedNotification && (
         <div className="border-b border-accent-green/30 bg-accent-green/10 px-4 py-2 text-center text-xs font-semibold text-accent-green animate-in-from-top">

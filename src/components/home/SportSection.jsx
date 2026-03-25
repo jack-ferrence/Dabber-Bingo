@@ -19,8 +19,11 @@ function tomorrowPacific() {
 function getDayLabel(startsAt) {
   if (!startsAt) return 'today'
   const gameDate = pacificDateStr(new Date(startsAt))
-  if (gameDate === tomorrowPacific()) return 'tomorrow'
-  return 'today'
+  const today = todayPacific()
+  const tomorrow = tomorrowPacific()
+  if (gameDate === today) return 'today'
+  if (gameDate === tomorrow) return 'tomorrow'
+  return 'future'
 }
 
 function fmtDate(isoDate) {
@@ -104,13 +107,12 @@ function SliderWithDays({ games, joinedRoomIds, joiningRoomId, onJoin, onContinu
   const byStartTime = (a, b) => new Date(a.starts_at) - new Date(b.starts_at)
   const todayGames    = games.filter((g) => getDayLabel(g.starts_at) === 'today').sort(byStartTime)
   const tomorrowGames = games.filter((g) => getDayLabel(g.starts_at) === 'tomorrow').sort(byStartTime)
+  const futureGames   = games.filter((g) => getDayLabel(g.starts_at) === 'future').sort(byStartTime)
 
   const todayDateStr    = fmtDate(todayPacific())
   const tomorrowDateStr = fmtDate(tomorrowPacific())
 
-  // Only show day labels when there's content from more than one day OR
-  // when all games are tomorrow (so the user knows why they're not today)
-  const showLabels = tomorrowGames.length > 0
+  const showLabels = tomorrowGames.length > 0 || futureGames.length > 0
 
   if (!showLabels) {
     // All games are today — no separators needed
@@ -142,14 +144,35 @@ function SliderWithDays({ games, joinedRoomIds, joiningRoomId, onJoin, onContinu
       )}
 
       {/* TOMORROW section */}
-      <DaySeparator label="TOMORROW" sub={tomorrowDateStr} />
-      <GameCardItems
-        games={tomorrowGames}
-        joinedRoomIds={joinedRoomIds}
-        joiningRoomId={joiningRoomId}
-        onJoin={onJoin}
-        onContinue={onContinue}
-      />
+      {tomorrowGames.length > 0 && (
+        <>
+          <DaySeparator label="TOMORROW" sub={tomorrowDateStr} />
+          <GameCardItems
+            games={tomorrowGames}
+            joinedRoomIds={joinedRoomIds}
+            joiningRoomId={joiningRoomId}
+            onJoin={onJoin}
+            onContinue={onContinue}
+          />
+        </>
+      )}
+
+      {/* UPCOMING section */}
+      {futureGames.length > 0 && (
+        <>
+          <DaySeparator
+            label="UPCOMING"
+            sub={futureGames[0]?.starts_at ? fmtDate(pacificDateStr(new Date(futureGames[0].starts_at))) : ''}
+          />
+          <GameCardItems
+            games={futureGames}
+            joinedRoomIds={joinedRoomIds}
+            joiningRoomId={joiningRoomId}
+            onJoin={onJoin}
+            onContinue={onContinue}
+          />
+        </>
+      )}
     </HorizontalSlider>
   )
 }

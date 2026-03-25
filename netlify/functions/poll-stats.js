@@ -175,15 +175,35 @@ export async function handler() {
       Sentry.setTag('game_id', gameId)
       const sport = gameSportMap.get(gameId) ?? 'nba'
 
-      let events
+      let result
       try {
-        events = await getStatsForGame(gameId, statsSource, sport)
+        result = await getStatsForGame(gameId, statsSource, sport)
       } catch (fetchErr) {
         log.push(`game_id=${gameId} fetch failed: ${fetchErr.message}`)
         Sentry.captureException(fetchErr, { tags: { game_id: gameId } })
         continue
       }
+
+      const events = result.events ?? []
+      const gameStatus = result.gameStatus ?? null
       log.push(`game_id=${gameId} got ${events.length} events`)
+
+      // Update room with live game status (period, clock, scores)
+      if (gameStatus) {
+        const { error: statusErr } = await supabase
+          .from('rooms')
+          .update({
+            game_period: gameStatus.period,
+            game_clock: gameStatus.clock,
+            home_score: gameStatus.homeScore,
+            away_score: gameStatus.awayScore,
+            game_status_detail: gameStatus.statusDetail,
+          })
+          .eq('game_id', gameId)
+          .eq('status', 'live')
+
+        if (statusErr) console.warn(`poll-stats: status update failed for ${gameId}:`, statusErr.message)
+      }
 
       for (const ev of events) {
         // Try to insert the stat event row

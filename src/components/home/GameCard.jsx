@@ -18,11 +18,43 @@ function formatTipoff(dateStr) {
   }
 }
 
+function formatDateLabel(dateStr) {
+  if (!dateStr) return null
+  try {
+    const gameDate = new Date(dateStr)
+    const gamePacific = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(gameDate)
+    const todayPacific = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(new Date())
+    if (gamePacific === todayPacific) return null
+    return gameDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'America/Los_Angeles',
+    })
+  } catch {
+    return null
+  }
+}
+
+function isLateEntryOpen(game) {
+  if (game.status !== 'live') return false
+  const sport = game.sport || 'nba'
+  const period = game.game_period ?? 0
+  if (sport === 'nba') return period <= 1
+  if (sport === 'ncaa') {
+    if (period > 1) return false
+    const mins = parseInt((game.game_clock ?? '').split(':')[0], 10)
+    return !isNaN(mins) && mins >= 10
+  }
+  return false
+}
+
 export default function GameCard({ game, isJoined, joining, onJoin, onContinue }) {
   const { away, home } = parseTeams(game.name)
   const homeColor = NBA_TEAM_COLORS[home] ?? NBA_TEAM_COLORS.DEFAULT
   const awayColor = NBA_TEAM_COLORS[away] ?? NBA_TEAM_COLORS.DEFAULT
   const isLive = game.status === 'live'
+  const lateEntryOpen = isLateEntryOpen(game)
   const isFinished = game.status === 'finished'
   const { dobsBalance } = useProfile()
   const isNcaa = game.sport === 'ncaa'
@@ -120,9 +152,24 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
               GAME OVER
             </span>
           ) : (
-            <span style={{ color: '#555577', fontSize: 11, fontWeight: 600 }}>
-              {formatTipoff(game.starts_at)}
-            </span>
+            <>
+              {formatDateLabel(game.starts_at) && (
+                <span style={{
+                  fontFamily: 'var(--db-font-mono)',
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  color: '#8888aa',
+                  textTransform: 'uppercase',
+                  display: 'block',
+                }}>
+                  {formatDateLabel(game.starts_at)}
+                </span>
+              )}
+              <span style={{ color: '#555577', fontSize: 11, fontWeight: 600 }}>
+                {formatTipoff(game.starts_at)}
+              </span>
+            </>
           )}
           <div style={{ color: '#555577', fontSize: 11, marginTop: 2 }}>
             {game.participant_count ?? 0} playing
@@ -139,9 +186,13 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
               FINISHED
             </span>
           )
+        ) : isLive && !isJoined && !lateEntryOpen ? (
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 600, color: '#3a3a55', letterSpacing: '0.06em' }}>
+            IN PROGRESS
+          </span>
         ) : isJoined ? (
           <button type="button" onClick={() => onContinue(game.id)} className="btn-joined">
-            JOINED ✓
+            {isLive ? 'PLAYING ✓' : 'JOINED ✓'}
           </button>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
@@ -153,7 +204,7 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
               title={!canAfford ? `Need ${ENTRY_COST} Dobs to join (you have ${dobsBalance})` : undefined}
               style={!canAfford ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
             >
-              {joining ? '…' : 'JOIN'}
+              {joining ? '…' : lateEntryOpen ? 'LATE JOIN' : 'JOIN'}
             </button>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.06em' }}>
               {isNcaa ? (
