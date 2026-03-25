@@ -1,48 +1,33 @@
 /**
- * Odds-based card generator for Dabber.
+ * Band-based card generator for Dabber.
  *
- * Architecture matches the Super Bowl Prop Bingo system:
- * - Props come from TheOddsAPI with real American odds
- * - Cards have weighted tier quotas for balanced difficulty
- * - Conflict keys prevent redundant props (same player + same stat family)
- * - Every card has equal expected value but different specific props
+ * Every card has a single "band" of 100 American odds. All 24 props on the
+ * card fall within that band. The band midpoint is determined by player count:
+ * fewer players → more negative odds (easier to hit).
+ * More players → more positive odds (harder to hit, rarer lines).
  *
- * Difficulty profiles (24 non-free squares):
+ * Math:
+ *   targetProb = 0.60 - (0.004 × clamp(playerCount, 1, 75))
+ *   midpoint   = probToAmerican(targetProb)
+ *   band       = [midpoint - 50, midpoint + 50]
  *
- *   easy     — Tier 1 heavy (high-prob props), minProb 0.48
- *              Tier 1 (≥55% implied): 12 squares
- *              Tier 2 (45-54%):        8 squares
- *              Tier 3 (<45%):          4 squares
- *
- *   standard — Balanced (default), minProb 0.32
- *              Tier 1: 8 squares
- *              Tier 2: 10 squares
- *              Tier 3: 6 squares
- *
- *   hard     — Tier 3 heavy (low-prob props), minProb 0.20
- *              Tier 1: 4 squares
- *              Tier 2: 8 squares
- *              Tier 3: 12 squares
+ * Example bands:
+ *    1 player  → p≈0.596 → midpoint≈-147  → band [-197, -97]
+ *    5 players → p=0.580 → midpoint≈-138  → band [-188, -88]
+ *   10 players → p=0.560 → midpoint≈-127  → band [-177, -77]
+ *   25 players → p=0.500 → midpoint≈-100  → band [-150, -50]
+ *   40 players → p=0.440 → midpoint≈+127  → band [+77, +177]
+ *   50 players → p=0.400 → midpoint≈+150  → band [+100, +200]
+ *   75 players → p=0.300 → midpoint≈+233  → band [+183, +283]
  */
-
-const DIFFICULTY_PROFILES = {
-  easy:     { quotas: { 1: 12, 2: 8,  3: 4  }, minProb: 0.48 },
-  standard: { quotas: { 1: 8,  2: 10, 3: 6  }, minProb: 0.32 },
-  hard:     { quotas: { 1: 4,  2: 8,  3: 12 }, minProb: 0.20 },
-}
 
 const TOTAL_SQUARES = 25
 const CENTER_INDEX = 12
-const MAX_PICK_ATTEMPTS = 100
-const DIFFICULTY_BIAS = {
-  1: 2.0,  // easy: strong weight
-  2: 1.5,  // medium: moderate weight
-  3: 1.0,  // hard: base weight
-}
+const BAND_WIDTH = 100  // American odds width on each side of midpoint
 
-export function getDifficultyProfile(name) {
-  return DIFFICULTY_PROFILES[name] ?? DIFFICULTY_PROFILES.standard
-}
+// ---------------------------------------------------------------------------
+// Utility
+// ---------------------------------------------------------------------------
 
 function randomId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
@@ -67,48 +52,93 @@ function normalizeName(name) {
   return (name ?? '').toLowerCase().replace(/[^a-z]/g, '')
 }
 
-/**
- * Pick one prop from pool using weighted random, respecting conflict keys.
- */
-function pickOneWeighted(pool, usedIds, usedConflictKeys, tier) {
-  const candidates = pool.filter(p =>
-    p.tier === tier &&
-    !usedIds.has(p.display_text) &&
-    !usedConflictKeys.has(p.conflict_key)
-  )
-  if (candidates.length === 0) return null
+// ---------------------------------------------------------------------------
+// Band math
+// ---------------------------------------------------------------------------
 
-  const weights = candidates.map(c => DIFFICULTY_BIAS[c.tier] || 1)
-  const total = weights.reduce((a, b) => a + b, 0)
-  let roll = Math.random() * total
-  for (let i = 0; i < candidates.length; i++) {
-    roll -= weights[i]
-    if (roll <= 0) return candidates[i]
+/**
+ * Convert implied probability (0-1) to American odds.
+ */
+export function probToAmerican(prob) {
+  if (prob >= 1) return -10000
+  if (prob <= 0) return +10000
+  if (prob >= 0.5) {
+    return Math.round(-100 * prob / (1 - prob))
+  } else {
+    return Math.round(100 * (1 - prob) / prob)
   }
-  return candidates[candidates.length - 1]
 }
+
+/**
+ * Convert American odds to implied probability (0-1).
+ */
+export function americanToProb(odds) {
+  if (odds < 0) return Math.abs(odds) / (Math.abs(odds) + 100)
+  return 100 / (odds + 100)
+}
+
+/**
+ * Calculate the band midpoint in American odds based on player count.
+ *
+ * Formula: target probability decreases linearly from 0.60 (1 player)
+ * to ~0.30 (75+ players), producing a smooth difficulty curve.
+ */
+export function calculateBandMidpoint(playerCount) {
+  const clamped = Math.max(1, Math.min(playerCount, 75))
+  const targetProb = 0.60 - (0.004 * clamped)
+  return probToAmerican(targetProb)
+}
+
+/**
+ * Get the [low, high] band range for a given player count.
+ * Returns American odds values. The band is always 100 wide on each side.
+ *
+ * Note: comparison for "is this prop in band" must handle the
+ * negative/positive discontinuity by converting to implied probability.
+ */
+export function getBand(playerCount) {
+  const mid = calculateBandMidpoint(playerCount)
+  return {
+    midpoint: mid,
+    low: mid - Math.round(BAND_WIDTH / 2),
+    high: mid + Math.round(BAND_WIDTH / 2),
+  }
+}
+
+/**
+ * Check if American odds fall within a band using direct numeric comparison.
+ *
+ * American odds form a discontinuous scale (no values between -100 and +100),
+ * but direct comparison works correctly in practice because real prop odds
+ * never appear in that dead zone. This avoids the probability-comparison bug
+ * where +150 would fall inside a [-150, -50] band due to overlapping prob ranges.
+ */
+function isInBand(odds, band) {
+  return odds >= band.low && odds <= band.high
+}
+
+// ---------------------------------------------------------------------------
+// Roster matching
+// ---------------------------------------------------------------------------
 
 /**
  * Match odds props to ESPN roster players by name.
  * Only returns props that matched a roster player (with ESPN player_id attached).
  *
- * @param {Array} oddsProps - from get-odds.js: { player_name, stat_type, threshold, ... }
- * @param {Array} rosterPlayers - from get-roster: { id, name, lastName, ... }
+ * @param {Array} oddsProps - { player_name, stat_type, threshold, ... }
+ * @param {Array} rosterPlayers - { id, name, lastName, ... }
  * @returns {Array} matched props with player_id attached
  */
 export function matchOddsToRoster(oddsProps, rosterPlayers) {
   if (!rosterPlayers?.length) return []
 
-  // Build lookup maps
   const byFullName = new Map()
   const byLastName = new Map()
 
   for (const player of rosterPlayers) {
     byFullName.set(normalizeName(player.name), player)
     const last = normalizeName(player.lastName || getLastName(player.name))
-    if (last && !byLastName.has(last)) {
-      byLastName.set(last, player)
-    }
+    if (last && !byLastName.has(last)) byLastName.set(last, player)
   }
 
   const matched = []
@@ -116,68 +146,19 @@ export function matchOddsToRoster(oddsProps, rosterPlayers) {
     const fullNorm = normalizeName(prop.player_name)
     const lastNorm = normalizeName(getLastName(prop.player_name))
     const match = byFullName.get(fullNorm) || (lastNorm ? byLastName.get(lastNorm) : null)
-    if (match) {
-      matched.push({ ...prop, player_id: match.id, player_name: match.name })
-    }
+    if (match) matched.push({ ...prop, player_id: match.id, player_name: match.name })
   }
   return matched
 }
 
+// ---------------------------------------------------------------------------
+// Card assembly helpers
+// ---------------------------------------------------------------------------
+
 /**
- * Generate a single bingo card from matched odds props.
- * Returns flat array of 25 squares, or null if not enough props.
- *
- * @param {Array}  matchedProps - output of matchOddsToRoster
- * @param {string} difficulty   - 'easy' | 'standard' | 'hard' (default 'standard')
- * @returns {Array|null} flat 25-element array or null if insufficient props
+ * Assemble the final 25-square card from 24 selected props.
  */
-export function generateOddsBasedCard(matchedProps, difficulty = 'standard') {
-  if (!matchedProps?.length) return null
-
-  const profile = getDifficultyProfile(difficulty)
-  // Filter pool to props whose implied_prob meets the profile's minimum
-  const pool = matchedProps.filter(p => (p.implied_prob ?? 0) >= profile.minProb)
-  if (pool.length < 24) return null
-
-  const selected = []
-  const usedIds = new Set()
-  const usedConflictKeys = new Set()
-
-  // First pass: fill exact tier quotas
-  for (const [tier, quota] of Object.entries(profile.quotas)) {
-    let picked = 0
-    const t = Number(tier)
-
-    for (let attempt = 0; attempt < MAX_PICK_ATTEMPTS && picked < quota; attempt++) {
-      const prop = pickOneWeighted(pool, usedIds, usedConflictKeys, t)
-      if (!prop) break
-      usedIds.add(prop.display_text)
-      usedConflictKeys.add(prop.conflict_key)
-      selected.push(prop)
-      picked++
-    }
-  }
-
-  // Second pass: backfill from any tier if quotas weren't fully met
-  for (let attempt = 0; attempt < MAX_PICK_ATTEMPTS * 3 && selected.length < 24; attempt++) {
-    for (const t of [2, 1, 3]) {
-      const prop = pickOneWeighted(pool, usedIds, usedConflictKeys, t)
-      if (prop) {
-        usedIds.add(prop.display_text)
-        usedConflictKeys.add(prop.conflict_key)
-        selected.push(prop)
-        break
-      }
-    }
-  }
-
-  // Must have 24 real props — no fabrication
-  if (selected.length < 24) return null
-
-  // Shuffle all 24 selected — completely random positions
-  const shuffled = shuffle(selected)
-
-  // Build 25-square card with FREE at center (index 12)
+function assembleCard(selected) {
   const card = []
   let idx = 0
   for (let i = 0; i < TOTAL_SQUARES; i++) {
@@ -196,7 +177,7 @@ export function generateOddsBasedCard(matchedProps, difficulty = 'standard') {
         marked: true,
       })
     } else {
-      const p = shuffled[idx++]
+      const p = selected[idx++]
       card.push({
         id: randomId(),
         player_id: p.player_id,
@@ -206,47 +187,126 @@ export function generateOddsBasedCard(matchedProps, difficulty = 'standard') {
         display_text: p.display_text,
         american_odds: p.american_odds,
         implied_prob: p.implied_prob,
-        tier: p.tier,
+        tier: p.tier,  // kept for display dot color; not used in generation
         conflict_key: p.conflict_key,
         marked: false,
       })
     }
   }
-
   return card
 }
 
 /**
- * Find a swap candidate: a prop from the pool with American odds
- * within ±25 of the original, not already on the card, respecting conflict keys.
- *
- * @param {Object} originalSquare - the square being replaced (needs american_odds)
- * @param {Array}  fullPropPool   - output of matchOddsToRoster (the full matched pool)
- * @param {Array}  currentCardSquares - all 25 squares currently on the card
- * @returns {Object|null} a candidate prop (same shape as pool entry), or null
+ * Build a card from a filtered pool, targeting an average near midpoint.
+ * Tries 50 times; falls back to best-effort if tolerance never met.
  */
-export function findSwapCandidate(originalSquare, fullPropPool, currentCardSquares) {
-  const candidates = findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, 1)
+function buildCard(pool, targetMidpoint) {
+  const targetProb = americanToProb(targetMidpoint)
+  const tolerance  = 0.03  // ±3% implied probability tolerance for the average
+
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const selected = []
+    const usedConflictKeys  = new Set()
+    const usedDisplayTexts  = new Set()
+
+    for (const prop of shuffle(pool)) {
+      if (selected.length >= 24) break
+      if (usedConflictKeys.has(prop.conflict_key)) continue
+      if (usedDisplayTexts.has(prop.display_text)) continue
+      usedConflictKeys.add(prop.conflict_key)
+      usedDisplayTexts.add(prop.display_text)
+      selected.push(prop)
+    }
+
+    if (selected.length < 24) continue
+
+    const avgProb = selected.reduce((sum, p) => sum + americanToProb(p.american_odds), 0) / selected.length
+    if (Math.abs(avgProb - targetProb) <= tolerance) {
+      return assembleCard(shuffle(selected))
+    }
+  }
+
+  // Fallback: build the card even if the average isn't within tolerance
+  const selected = []
+  const usedConflictKeys = new Set()
+  const usedDisplayTexts = new Set()
+  for (const prop of shuffle(pool)) {
+    if (selected.length >= 24) break
+    if (usedConflictKeys.has(prop.conflict_key)) continue
+    if (usedDisplayTexts.has(prop.display_text)) continue
+    usedConflictKeys.add(prop.conflict_key)
+    usedDisplayTexts.add(prop.display_text)
+    selected.push(prop)
+  }
+  if (selected.length < 24) return null
+  return assembleCard(shuffle(selected))
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate a bingo card from the prop pool using band-based selection.
+ *
+ * All 24 non-free squares are populated with props whose American odds
+ * fall within the band for the given player count.
+ *
+ * @param {Array}  matchedProps - output of matchOddsToRoster
+ * @param {number} playerCount  - number of players in the room (determines band)
+ * @returns {Array|null} flat 25-element array or null if insufficient props
+ */
+export function generateOddsBasedCard(matchedProps, playerCount = 5) {
+  if (!matchedProps?.length) return null
+
+  const band = getBand(playerCount)
+
+  // Filter pool to props within the band
+  const inBandPool = matchedProps.filter(p =>
+    p.american_odds != null && isInBand(p.american_odds, band)
+  )
+
+  const uniqueKeys = new Set(inBandPool.map(p => p.conflict_key))
+  if (uniqueKeys.size >= 16) {
+    return buildCard(inBandPool, band.midpoint)
+  }
+
+  // Not enough props in the tight band — widen by 50 on each side
+  const wideBand = { ...band, low: band.low - 50, high: band.high + 50 }
+  const widePool = matchedProps.filter(p =>
+    p.american_odds != null && isInBand(p.american_odds, wideBand)
+  )
+  const wideKeys = new Set(widePool.map(p => p.conflict_key))
+  if (wideKeys.size < 16) return null
+
+  return buildCard(widePool, band.midpoint)
+}
+
+/**
+ * Find a single swap candidate (convenience wrapper).
+ */
+export function findSwapCandidate(originalSquare, fullPropPool, currentCardSquares, playerCount = 5) {
+  const candidates = findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, 1, playerCount)
   return candidates.length > 0 ? candidates[0] : null
 }
 
 /**
- * Find up to N swap candidates within ±25 American odds,
- * not conflicting with current card squares.
+ * Find up to N swap candidates within the room's band and within ±30 odds
+ * of the original square.
  *
- * @param {Object} originalSquare     - the square being replaced (needs american_odds)
- * @param {Array}  fullPropPool       - output of matchOddsToRoster (the full matched pool)
- * @param {Array}  currentCardSquares - all 25 squares currently on the card
- * @param {number} count              - max number of candidates to return (default 5)
- * @param {string} difficulty         - 'easy' | 'standard' | 'hard' (default 'standard')
- * @returns {Array} array of up to `count` candidate props
+ * @param {Object} originalSquare      - the square being replaced
+ * @param {Array}  fullPropPool        - the full matched pool
+ * @param {Array}  currentCardSquares  - all 25 squares currently on the card
+ * @param {number} count               - max candidates to return (default 5)
+ * @param {number} playerCount         - room player count (determines band)
+ * @returns {Array} candidate props
  */
-export function findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, count = 5, difficulty = 'standard') {
+export function findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, count = 5, playerCount = 5) {
   if (!fullPropPool?.length) return []
   const origOdds = originalSquare?.american_odds
   if (origOdds == null) return []
 
-  const profile = getDifficultyProfile(difficulty)
+  const band = getBand(playerCount)
 
   const usedConflictKeys = new Set()
   const usedDisplayTexts = new Set()
@@ -255,16 +315,19 @@ export function findSwapCandidates(originalSquare, fullPropPool, currentCardSqua
     if (sq?.display_text) usedDisplayTexts.add(sq.display_text)
   }
 
+  // Candidates must be:
+  // 1. Within the band (same difficulty zone)
+  // 2. Within ±30 of the original square's odds (similar likelihood)
+  // 3. Not already on the card
   const candidates = fullPropPool.filter(p =>
     p.american_odds != null &&
-    Math.abs(p.american_odds - origOdds) <= 25 &&
-    (p.implied_prob ?? 0) >= profile.minProb &&
+    isInBand(p.american_odds, band) &&
+    Math.abs(p.american_odds - origOdds) <= 30 &&
     !usedConflictKeys.has(p.conflict_key) &&
     !usedDisplayTexts.has(p.display_text) &&
     p.display_text !== originalSquare.display_text
   )
 
   if (candidates.length === 0) return []
-  const shuffled = shuffle(candidates)
-  return shuffled.slice(0, count)
+  return shuffle(candidates).slice(0, count)
 }

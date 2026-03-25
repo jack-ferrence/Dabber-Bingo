@@ -19,19 +19,13 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
-import { generateOddsBasedCard } from '../../src/game/oddsCardGenerator.js'
+import { generateOddsBasedCard, getBand } from '../../src/game/oddsCardGenerator.js'
 
 const ODDS_API_BASE = 'https://api.the-odds-api.com/v4'
 const SPORT_KEY_MAP = { nba: 'basketball_nba', ncaa: 'basketball_ncaab' }
 const VIG_FACTOR = 1.05
 const MIN_UNIQUE_CONFLICT_KEYS = 16  // need 16+ distinct player+stat combos for a full card
 const LOCK_WINDOW_MS = 10 * 60 * 1000  // lock cards T-10 minutes before tip-off
-
-function difficultyProfileName(playerCount) {
-  if (playerCount <= 4)  return 'easy'
-  if (playerCount <= 12) return 'standard'
-  return 'hard'
-}
 
 // All markets in one string — TheOddsAPI counts a single /events/{id}/odds call
 // regardless of how many markets are requested, so combining saves API budget.
@@ -667,11 +661,12 @@ export async function handler() {
   }
 
   // ── T-10 card lock pass ──────────────────────────────────────────────────────
-  // For every lobby room that is within 10 minutes of tip-off and not yet locked,
-  // snapshot cards with a difficulty-appropriate profile, then mark the room locked.
+  // For every lobby room within 10 minutes of tip-off and not yet locked,
+  // regenerate all cards using the band for the actual player count,
+  // then mark the room locked so reconciliation stops touching them.
   const { data: lockableRooms } = await supabase
     .from('rooms')
-    .select('id, game_id, starts_at, odds_pool, difficulty_profile')
+    .select('id, game_id, starts_at, odds_pool')
     .eq('room_type', 'public')
     .eq('status', 'lobby')
     .eq('cards_locked', false)
@@ -682,39 +677,42 @@ export async function handler() {
     const startsAt = lRoom.starts_at ? new Date(lRoom.starts_at) : null
     if (!startsAt) continue
     const msUntil = startsAt - now
-    // Only lock rooms in the window: from T-10 down to T+1 min (small grace)
+    // Lock window: T-10 down to T+1 min (small grace for the exact boundary)
     if (msUntil > LOCK_WINDOW_MS || msUntil < -60_000) continue
 
     const oddsPool = lRoom.odds_pool ?? []
     if (oddsPool.length < 24) continue
 
-    // Count current participants to determine difficulty
+    // Count participants to determine the band
     const { count: playerCount } = await supabase
       .from('room_participants')
       .select('*', { count: 'exact', head: true })
       .eq('room_id', lRoom.id)
 
-    const profile = difficultyProfileName(playerCount ?? 0)
+    const actualCount = playerCount ?? 0
+    if (actualCount === 0) continue
 
-    // Fetch all cards for this room
+    const band = getBand(actualCount)
+
+    // Fetch all cards, preserving swapped squares
     const { data: cards } = await supabase
       .from('cards')
-      .select('id, squares')
+      .select('id, squares, swapped_indices')
       .eq('room_id', lRoom.id)
 
     let regenCount = 0
     for (const card of cards ?? []) {
-      const newSquares = generateOddsBasedCard(oddsPool, profile)
-      if (!newSquares) continue
-      // Preserve marked state from existing squares where possible
-      const existing = Array.isArray(card.squares?.[0]) ? card.squares.flat() : (card.squares ?? [])
-      const markedIds = new Set(existing.filter(s => s?.marked && s?.stat_type !== 'free').map(s => s?.display_text))
-      const merged = newSquares.map(sq =>
-        sq.stat_type !== 'free' && markedIds.has(sq.display_text)
-          ? { ...sq, marked: true }
-          : sq
-      )
-      await supabase.from('cards').update({ squares: merged }).eq('id', card.id)
+      const swappedIndices = new Set((card.swapped_indices ?? []).map(Number))
+      const newCard = generateOddsBasedCard(oddsPool, actualCount)
+      if (!newCard) continue
+
+      // Preserve any squares the player explicitly paid to swap
+      const finalSquares = newCard.map((sq, i) => {
+        if (swappedIndices.has(i)) return card.squares[i]
+        return sq
+      })
+
+      await supabase.from('cards').update({ squares: finalSquares }).eq('id', card.id)
       regenCount++
     }
 
@@ -723,14 +721,14 @@ export async function handler() {
       .from('rooms')
       .update({
         cards_locked: true,
-        difficulty_profile: profile,
-        player_count_at_lock: playerCount ?? 0,
+        difficulty_profile: `band_${band.midpoint}`,
+        player_count_at_lock: actualCount,
         locked_at: now.toISOString(),
       })
       .eq('id', lRoom.id)
 
     locked++
-    log.push(`${lRoom.game_id}: locked T-${Math.round(msUntil / 60_000)}min — ${profile} (${playerCount} players, ${regenCount} cards)`)
+    log.push(`${lRoom.game_id}: locked T-${Math.round(msUntil / 60_000)}min — band ${band.midpoint} (${actualCount} players, ${regenCount} cards regen'd)`)
   }
 
   console.log('refresh-odds:', log.join(' | '))

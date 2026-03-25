@@ -162,7 +162,8 @@ function GameRoom({
 
   const handleSwapRequest = useCallback((square, squareIndex) => {
     if (!square || swapCount >= 2) return
-    const candidates = findSwapCandidates(square, oddsPool, flatSquares, 5, room?.difficulty_profile ?? 'standard')
+    const playerCount = room?.participant_count ?? room?.player_count_at_lock ?? 5
+    const candidates = findSwapCandidates(square, oddsPool, flatSquares, 5, playerCount)
     setSwapTarget({ square, index: squareIndex, candidates })
     setSwapModalOpen(true)
     setSwapError('')
@@ -301,51 +302,14 @@ function GameRoom({
           <Badge variant={statusVariant} pulse={room?.status === 'live'}>
             {statusLabel}
           </Badge>
-          {room?.difficulty_profile && room.difficulty_profile !== 'standard' && (
-            <span
-              style={{
-                fontFamily: 'var(--db-font-mono)',
-                fontSize: 9,
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                padding: '2px 6px',
-                borderRadius: 3,
-                background: room.difficulty_profile === 'easy'
-                  ? 'rgba(34,197,94,0.15)'
-                  : 'rgba(239,68,68,0.15)',
-                color: room.difficulty_profile === 'easy' ? '#22c55e' : '#ef4444',
-                border: `1px solid ${room.difficulty_profile === 'easy' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
-                textTransform: 'uppercase',
-              }}
-            >
-              {room.difficulty_profile}
+          {room?.participant_count != null && !room?.cards_locked && room?.status === 'lobby' && (
+            <span className="hidden text-[10px] text-text-muted sm:inline">
+              {room.participant_count} player{room.participant_count === 1 ? '' : 's'} — cards lock at T-10
             </span>
           )}
-          {room?.cards_locked && room?.status === 'lobby' && (
-            <span
-              style={{
-                fontFamily: 'var(--db-font-mono)',
-                fontSize: 9,
-                color: '#ff6b35',
-                letterSpacing: '0.06em',
-              }}
-            >
-              {room.player_count_at_lock != null
-                ? `Locked · ${room.player_count_at_lock} players`
-                : 'Locked'}
-            </span>
-          )}
-          {!room?.cards_locked && room?.status === 'lobby' && room?.player_count_at_lock == null && (
-            <span
-              className="hidden sm:inline"
-              style={{
-                fontFamily: 'var(--db-font-mono)',
-                fontSize: 9,
-                color: '#3a3a55',
-                letterSpacing: '0.06em',
-              }}
-            >
-              {/* participant count shown here if we had it — omitted until lock */}
+          {room?.cards_locked && room?.player_count_at_lock != null && (
+            <span className="hidden text-[10px] text-text-muted sm:inline">
+              Locked for {room.player_count_at_lock} player{room.player_count_at_lock === 1 ? '' : 's'}
             </span>
           )}
           {room?.status === 'lobby' && room?.starts_at && (

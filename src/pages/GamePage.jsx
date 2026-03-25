@@ -55,7 +55,7 @@ function GamePage() {
       setLoadingRoom(true)
       setError('')
       const { data, error: roomError } = await supabase
-        .from('rooms')
+        .from('rooms_with_counts')
         .select('*')
         .eq('id', roomId)
         .maybeSingle()
@@ -209,7 +209,9 @@ function GamePage() {
       }
 
       try {
-        const oddsCard = generateOddsBasedCard(roomOddsPool, room.difficulty_profile ?? 'standard')
+        // Use participant count for band-based difficulty scaling
+        const playerCount = room.participant_count ?? room.player_count_at_lock ?? 1
+        const oddsCard = generateOddsBasedCard(roomOddsPool, playerCount)
         if (oddsCard) {
           const { data: savedCard, error: saveError } = await supabase
             .from('cards')
