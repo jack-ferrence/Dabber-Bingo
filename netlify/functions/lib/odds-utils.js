@@ -304,20 +304,26 @@ export async function getEventList(sport, apiKey, ctx, supabase) {
   if (ctx.eventListCache.has(sport)) return ctx.eventListCache.get(sport)
 
   // Check Supabase cache (valid for 6 hours — saves API calls across invocations)
+  // Wrapped in try/catch: odds_cache table is optional and may not exist yet
   if (supabase) {
-    const cacheKey = `events_${sport}`
-    const { data: cached } = await supabase
-      .from('odds_cache')
-      .select('data, fetched_at')
-      .eq('key', cacheKey)
-      .maybeSingle()
+    try {
+      const cacheKey = `events_${sport}`
+      const { data: cached, error: cacheErr } = await supabase
+        .from('odds_cache')
+        .select('data, fetched_at')
+        .eq('key', cacheKey)
+        .maybeSingle()
 
-    if (cached) {
-      const ageMs = Date.now() - new Date(cached.fetched_at).getTime()
-      if (ageMs < 6 * 60 * 60 * 1000) {
-        ctx.eventListCache.set(sport, cached.data)
-        return cached.data
+      if (!cacheErr && cached) {
+        const ageMs = Date.now() - new Date(cached.fetched_at).getTime()
+        if (ageMs < 6 * 60 * 60 * 1000) {
+          ctx.eventListCache.set(sport, cached.data)
+          return cached.data
+        }
       }
+    } catch {
+      // odds_cache table may not exist yet — fall through to API fetch
+      console.warn('odds-utils: odds_cache read failed — table may not exist')
     }
   }
 
