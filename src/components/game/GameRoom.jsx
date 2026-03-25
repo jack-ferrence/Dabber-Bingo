@@ -194,7 +194,7 @@ function GameRoom({
     }
   }, [user?.id, roomId])
 
-  const { username: profileUsername, dobsBalance, boardSkin } = useProfile()
+  const { username: profileUsername, dobsBalance, boardSkin, daubStyle } = useProfile()
   const username = profileUsername
     ?? (user?.is_anonymous ? `Guest_${user.id.slice(0, 8)}` : (user?.email ?? 'Guest'))
 
@@ -491,6 +491,7 @@ function GameRoom({
                 hasBingo={bingoResult.hasBingo}
                 onSquareClick={handleSquareClick}
                 boardSkin={boardSkin}
+                daubStyle={daubStyle}
                 isLobby={room?.status === 'lobby'}
                 onSwapRequest={handleSwapRequest}
                 swappingSquareIndex={swappingSquareIndex}

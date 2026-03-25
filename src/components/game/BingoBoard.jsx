@@ -10,6 +10,7 @@ function BingoBoard({
   hasBingo = false,
   onSquareClick,
   boardSkin = 'default',
+  daubStyle = 'classic',
   isLobby = false,
   onSwapRequest,
   swappingSquareIndex = null,
@@ -85,6 +86,7 @@ function BingoBoard({
               isSwapping={swappingSquareIndex === index}
               swapsExhausted={swapCount >= 2}
               nextSwapCost={swapCount === 0 ? 10 : 50}
+              daubStyle={daubStyle}
             />
           ))}
         </div>

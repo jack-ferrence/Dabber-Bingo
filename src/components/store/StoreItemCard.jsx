@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { getFontFamily, getBadge } from '../../lib/fontMap'
+import DaubOverlay from '../game/DaubOverlay.jsx'
 
 // ── Previews ─────────────────────────────────────────────────────────────────
 
@@ -56,6 +57,22 @@ function SkinPreview({ skinClass }) {
         return isMarked
           ? { background: 'rgba(245,158,11,0.08)', border: '1px solid #f59e0b' }
           : { background: '#0c0c14', border: '1px solid rgba(245,158,11,0.25)' }
+      case 'terminal':
+        return isMarked
+          ? { background: '#0a1a0a', border: '1px solid #33ff33', borderRadius: 0 }
+          : { background: '#0a0a0a', border: '1px solid #1a3a1a', borderRadius: 0 }
+      case 'courtside':
+        return isMarked
+          ? { background: 'rgba(90,58,18,0.8)', border: '2px solid rgba(255,255,255,0.35)', borderRadius: '50%' }
+          : { background: 'rgba(61,37,8,0.6)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 2 }
+      case 'scoreboard':
+        return isMarked
+          ? { background: '#0c0c0c', border: '1px solid #1a1a1a', boxShadow: '0 0 4px rgba(255,45,45,0.4)', borderRadius: 1 }
+          : { background: '#0c0c0c', border: '1px solid #1a1a1a', borderRadius: 1 }
+      case 'scratch':
+        return isMarked
+          ? { background: '#f5eed8', border: '1px solid #d0c0a0', borderRadius: 3 }
+          : { background: '#b0a080', border: '1px solid #a09070', borderRadius: 3 }
       default:
         return isMarked
           ? { background: '#2a1a10', border: '1px solid #ff6b35' }
@@ -74,6 +91,33 @@ function SkinPreview({ skinClass }) {
   )
 }
 
+function DaubPreview({ daubStyle }) {
+  const cells = [true, false, false, true]
+  return (
+    <div style={{
+      display: 'grid', gridTemplateColumns: 'repeat(2, 28px)', gap: 3,
+      justifyContent: 'center', alignContent: 'center', height: 72,
+    }}>
+      {cells.map((marked, i) => (
+        <div key={i} style={{
+          width: 28, height: 28, borderRadius: 3,
+          background: marked ? '#2a1a10' : '#1a1a2e',
+          border: `1px solid ${marked ? '#ff6b35' : '#2a2a44'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          {marked && daubStyle === 'classic' && (
+            <span style={{ fontSize: 8, color: '#ff6b35', position: 'absolute', right: 2, top: 1 }}>✓</span>
+          )}
+          {marked && daubStyle !== 'classic' && (
+            <DaubOverlay style={daubStyle} size={28} animated={false} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function ItemPreview({ item }) {
   switch (item.category) {
     case 'name_color':
@@ -86,6 +130,8 @@ function ItemPreview({ item }) {
     }
     case 'board_skin':
       return <SkinPreview skinClass={item.metadata?.class || 'default'} />
+    case 'daub_style':
+      return <DaubPreview daubStyle={item.metadata?.style || 'classic'} />
     default:
       return null
   }

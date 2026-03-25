@@ -12,6 +12,7 @@ const TABS = [
   { key: 'name_font',  label: 'FONTS' },
   { key: 'badge',      label: 'BADGES' },
   { key: 'board_skin', label: 'BOARD SKINS' },
+  { key: 'daub_style', label: 'DAUBS' },
   { key: 'chat_emote', label: 'EMOTES' },
 ]
 

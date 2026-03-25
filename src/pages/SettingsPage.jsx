@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useProfile } from '../hooks/useProfile.js'
 import { getFontFamily, getBadge } from '../lib/fontMap'
+import DaubOverlay from '../components/game/DaubOverlay.jsx'
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
 function getPref(key, defaultVal) {
@@ -363,12 +364,13 @@ function ProfileTab() {
 
 function CustomizeTab() {
   const { user } = useAuth()
-  const { nameColor, nameFont, equippedBadge, boardSkin, username } = useProfile()
+  const { nameColor, nameFont, equippedBadge, boardSkin, daubStyle, username } = useProfile()
 
   const [previewColor, setPreviewColor] = useState(nameColor)
   const [previewFont, setPreviewFont] = useState(nameFont ?? 'default')
   const [previewBadge, setPreviewBadge] = useState(equippedBadge)
   const [previewSkin, setPreviewSkin] = useState(boardSkin ?? 'default')
+  const [previewDaub, setPreviewDaub] = useState(daubStyle ?? 'classic')
 
   const [storeItems, setStoreItems] = useState([])
   const [inventory, setInventory] = useState(new Set())
@@ -379,6 +381,7 @@ function CustomizeTab() {
   useEffect(() => { setPreviewFont(nameFont ?? 'default') }, [nameFont])
   useEffect(() => { setPreviewBadge(equippedBadge) }, [equippedBadge])
   useEffect(() => { setPreviewSkin(boardSkin ?? 'default') }, [boardSkin])
+  useEffect(() => { setPreviewDaub(daubStyle ?? 'classic') }, [daubStyle])
 
   useEffect(() => {
     if (!user) return
@@ -424,6 +427,16 @@ function CustomizeTab() {
     await equip(item.id)
   }
 
+  const handleDaubSelect = async (item) => {
+    setPreviewDaub(item.metadata?.style ?? 'classic')
+    await equip(item.id)
+  }
+
+  const handleDefaultDaubSelect = async () => {
+    setPreviewDaub('classic')
+    await supabase.from('profiles').update({ daub_style: 'classic' }).eq('id', user.id)
+  }
+
   const handleDefaultColorSelect = async () => {
     setPreviewColor(null)
     await supabase.from('profiles').update({ name_color: null }).eq('id', user.id)
@@ -444,9 +457,10 @@ function CustomizeTab() {
     setPreviewFont('default')
     setPreviewBadge(null)
     setPreviewSkin('default')
+    setPreviewDaub('classic')
     await supabase
       .from('profiles')
-      .update({ name_color: null, name_font: 'default', equipped_badge: null, board_skin: 'default' })
+      .update({ name_color: null, name_font: 'default', equipped_badge: null, board_skin: 'default', daub_style: 'classic' })
       .eq('id', user.id)
     setResetMsg('Reset to defaults!')
     setTimeout(() => setResetMsg(''), 3000)
@@ -455,6 +469,7 @@ function CustomizeTab() {
   const colorItems = storeItems.filter((i) => i.category === 'name_color')
   const fontItems  = storeItems.filter((i) => i.category === 'name_font')
   const badgeItems = storeItems.filter((i) => i.category === 'badge')
+  const daubItems  = storeItems.filter((i) => i.category === 'daub_style')
   const skinItems  = storeItems.filter((i) => i.category === 'board_skin')
 
   const displayName = username ?? 'YourName'
@@ -629,6 +644,66 @@ function CustomizeTab() {
                       </span>
                     )}
                   </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Daub Style */}
+          <div>
+            <SectionLabel>Daub Style</SectionLabel>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-start' }}>
+              {/* Classic — always available */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <button
+                  type="button"
+                  onClick={handleDefaultDaubSelect}
+                  style={{
+                    width: 52, height: 52,
+                    background: previewDaub === 'classic' ? '#1a1a2e' : '#12121e',
+                    border: previewDaub === 'classic' ? '2px solid #ff6b35' : '1px solid #2a2a44',
+                    borderRadius: 6, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative', overflow: 'hidden',
+                    padding: 0,
+                  }}
+                >
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 18, color: '#ff6b35' }}>✓</span>
+                </button>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', textTransform: 'uppercase' }}>Classic</span>
+              </div>
+              {daubItems.map((item) => {
+                const owned = inventory.has(item.id)
+                const daubKey = item.metadata?.style ?? 'classic'
+                const isEquipped = previewDaub === daubKey
+                return (
+                  <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: owned ? 1 : 0.3 }}>
+                    <button
+                      type="button"
+                      onClick={owned ? () => handleDaubSelect(item) : undefined}
+                      title={owned ? item.name : `${item.name} (locked)`}
+                      style={{
+                        width: 52, height: 52,
+                        background: isEquipped ? '#2a1a10' : '#12121e',
+                        border: isEquipped ? '2px solid #ff6b35' : '1px solid #2a2a44',
+                        borderRadius: 6,
+                        cursor: owned ? 'pointer' : 'default',
+                        position: 'relative', overflow: 'hidden',
+                        padding: 0,
+                      }}
+                    >
+                      {/* Mini marked square preview */}
+                      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                        <DaubOverlay style={daubKey} animated={false} />
+                      </div>
+                      {!owned && (
+                        <span style={{ position: 'absolute', top: 3, right: 3, fontSize: 9 }}>🔒</span>
+                      )}
+                    </button>
+                    <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', textTransform: 'uppercase' }}>
+                      {item.name}
+                    </span>
+                  </div>
                 )
               })}
             </div>

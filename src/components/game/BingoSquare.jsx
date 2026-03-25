@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
+import DaubOverlay from './DaubOverlay.jsx'
 
 const BingoSquare = memo(function BingoSquare({
   square,
@@ -11,6 +12,7 @@ const BingoSquare = memo(function BingoSquare({
   isSwapping = false,
   swapsExhausted = false,
   nextSwapCost = 10,
+  daubStyle = 'classic',
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
@@ -133,7 +135,10 @@ const BingoSquare = memo(function BingoSquare({
             {oddsLabel}
           </span>
         )}
-        <span style={{ position: 'absolute', right: 3, top: 2, fontSize: 8, color: '#ff6b35' }}>✓</span>
+        {daubStyle === 'classic' && (
+          <span style={{ position: 'absolute', right: 3, top: 2, fontSize: 8, color: '#ff6b35' }}>✓</span>
+        )}
+        <DaubOverlay style={daubStyle} animated={justMarked} />
         {tierColor && (
           <span
             title={tierPct != null ? `${square.tier} — ${tierPct}%` : square.tier}
