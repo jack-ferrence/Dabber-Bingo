@@ -57,7 +57,7 @@ export async function handler() {
 
   const { data: rooms, error: roomsErr } = await supabase
     .from('rooms')
-    .select('id, game_id, sport, name, starts_at, odds_pool, odds_updated_at, odds_status, oddsapi_event_id, cards_locked')
+    .select('*')
     .eq('room_type', 'public')
     .eq('status', 'lobby')
 

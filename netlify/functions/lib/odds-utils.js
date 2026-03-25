@@ -330,11 +330,13 @@ export async function getEventList(sport, apiKey, ctx, supabase) {
   ctx.eventListCache.set(sport, events)
 
   if (supabase) {
-    await supabase.from('odds_cache').upsert({
-      key: `events_${sport}`,
-      data: events,
-      fetched_at: new Date().toISOString(),
-    }).catch(() => {})
+    try {
+      await supabase.from('odds_cache').upsert({
+        key: `events_${sport}`,
+        data: events,
+        fetched_at: new Date().toISOString(),
+      })
+    } catch { /* non-fatal — in-memory cache already populated */ }
   }
 
   return events
