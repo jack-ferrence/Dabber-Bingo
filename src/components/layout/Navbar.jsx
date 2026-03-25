@@ -121,6 +121,16 @@ export default function Navbar({ onMenuClick }) {
                     className="absolute right-0 top-10 z-20 w-44 py-1 animate-in-from-top"
                     style={{ background: '#12121e', border: '1px solid #2a2a44', borderRadius: 4 }}
                   >
+                    <Link
+                      to="/settings"
+                      onClick={() => setDropdownOpen(false)}
+                      className="block w-full px-4 py-2.5 text-left"
+                      style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#8888aa', textDecoration: 'none', letterSpacing: '0.03em', display: 'block' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#1a1a2e'; e.currentTarget.style.color = '#e0e0f0' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#8888aa' }}
+                    >
+                      Settings
+                    </Link>
                     <button
                       type="button"
                       onClick={() => { supabase.auth.signOut(); setDropdownOpen(false) }}
