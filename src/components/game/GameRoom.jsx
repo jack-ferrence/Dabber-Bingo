@@ -45,7 +45,7 @@ function GameRoom({
 }) {
   const navigate = useNavigate()
   const [selectedSquare, setSelectedSquare] = useState(null)
-  const [mobileLeaderboard, setMobileLeaderboard] = useState(true)
+  const [mobileLeaderboard, setMobileLeaderboard] = useState(false)
   const [mobileStats, setMobileStats] = useState(false)
   const [activeRooms, setActiveRooms] = useState([])
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
@@ -239,7 +239,7 @@ function GameRoom({
   return (
     <div className="game-room-root flex h-[calc(100vh-4rem)] flex-col bg-bg-primary">
       {/* ── Header ── */}
-      <header className="game-room-header flex h-14 shrink-0 items-center justify-between border-b border-border-subtle bg-bg-secondary px-4">
+      <header className="game-room-header flex h-12 shrink-0 items-center justify-between border-b border-border-subtle bg-bg-secondary px-3 md:px-4">
         <div className="flex items-center gap-3 min-w-0">
           {/* Back button */}
           <button
@@ -479,7 +479,7 @@ function GameRoom({
       <div className="game-room-main flex flex-1 overflow-hidden">
 
         {/* LEFT: Bingo Board */}
-        <div className={`game-room-board flex shrink-0 flex-col items-center justify-center overflow-y-auto p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[45%]' : 'w-full lg:w-[65%]'}`}>
+        <div className={`game-room-board flex shrink-0 flex-col items-center justify-center overflow-y-auto p-2 md:p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[45%]' : 'w-full lg:w-[65%]'}`}>
           {loadingCard ? (
             <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#555577' }}>Loading your card...</div>
           ) : card ? (
@@ -726,8 +726,8 @@ function GameRoom({
       </div>
 
       {/* ── Footer ── */}
-      <footer className="flex h-10 shrink-0 items-center justify-between border-t border-border-subtle bg-bg-secondary px-4">
-        <div className="flex items-center gap-4 text-[11px] text-text-muted">
+      <footer className="flex h-8 md:h-10 shrink-0 items-center justify-between border-t border-border-subtle bg-bg-secondary px-3 md:px-4">
+        <div className="flex items-center gap-4 text-[10px] md:text-[11px] text-text-muted">
           <span>
             <span className="font-semibold text-text-primary">{markedCount}</span>/25 marked
           </span>
@@ -749,7 +749,7 @@ function GameRoom({
           aria-label="Final leaderboard"
           onClick={(e) => { if (e.target === e.currentTarget) setGameOverDismissed(true) }}
         >
-          <div className="w-full max-w-md machine-glow" style={{ position: 'relative', background: '#12121e', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: 24 }}>
+          <div className="w-full max-w-md max-h-[85vh] overflow-y-auto machine-glow" style={{ position: 'relative', background: '#12121e', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: 24 }}>
             <button
               type="button"
               onClick={() => setGameOverDismissed(true)}

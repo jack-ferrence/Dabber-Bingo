@@ -20,19 +20,8 @@ export default function Navbar({ onMenuClick }) {
       {/* Top row */}
       <div className="flex h-12 items-center justify-between px-4">
 
-        {/* Left: hamburger + wordmark */}
+        {/* Left: logo (hamburger hidden on mobile — bottom tab bar replaces it) */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onMenuClick}
-            className="md:hidden"
-            style={{ color: '#555577', background: 'none', border: 'none', padding: '4px', cursor: 'pointer' }}
-            aria-label="Open menu"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
           <Link
             to="/"
             style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}
@@ -48,52 +37,70 @@ export default function Navbar({ onMenuClick }) {
         {loading ? null : user ? (
           <div className="flex items-center gap-3">
 
-            {/* Store link */}
+            {/* Dobs balance — visible on mobile (tapping goes to store) */}
+            {dobsBalance !== null && (
+              <>
+                {/* Mobile: compact balance pill */}
+                <Link
+                  to="/store"
+                  title="Open Dobs Store"
+                  className="flex items-center md:hidden"
+                  style={{
+                    gap: 4,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.04em' }}>
+                    {dobsBalance.toLocaleString()} ◈
+                  </span>
+                </Link>
+                {/* Desktop: full balance badge */}
+                <Link
+                  to="/store"
+                  title="Open Dobs Store"
+                  className="hidden md:flex items-center"
+                  style={{
+                    background: '#1a1a2e',
+                    border: '1px solid #2a2a44',
+                    borderRadius: 4,
+                    padding: '4px 10px',
+                    gap: 4,
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 12px rgba(255,107,53,0.2)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '' }}
+                >
+                  <span style={{ color: '#ff6b35', fontSize: 10, marginRight: 4 }}>◆</span>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 800, color: '#ff6b35' }}>
+                    {dobsBalance.toLocaleString()}
+                  </span>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', marginLeft: 3 }}>
+                    DOBS
+                  </span>
+                </Link>
+              </>
+            )}
+
+            {/* Store link — desktop only */}
             <Link
               to="/store"
+              className="hidden md:flex"
               style={{
                 fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700,
                 letterSpacing: '0.06em', textTransform: 'uppercase', textDecoration: 'none',
                 color: isStore ? '#ff6b35' : '#555577',
-                display: 'flex', alignItems: 'center', gap: 4,
+                alignItems: 'center', gap: 4,
               }}
               onMouseEnter={(e) => { e.currentTarget.style.color = '#ff6b35' }}
               onMouseLeave={(e) => { e.currentTarget.style.color = isStore ? '#ff6b35' : '#555577' }}
             >
               <span style={{ fontSize: 13 }}>◈</span>
-              <span className="hidden sm:inline">STORE</span>
+              STORE
             </Link>
 
-            {/* Dobs balance */}
-            {dobsBalance !== null && (
-              <Link
-                to="/store"
-                title="Open Dobs Store"
-                className="hidden sm:flex items-center"
-                style={{
-                  background: '#1a1a2e',
-                  border: '1px solid #2a2a44',
-                  borderRadius: 4,
-                  padding: '4px 10px',
-                  gap: 4,
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 12px rgba(255,107,53,0.2)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '' }}
-              >
-                <span style={{ color: '#ff6b35', fontSize: 10, marginRight: 4 }}>◆</span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 800, color: '#ff6b35' }}>
-                  {dobsBalance.toLocaleString()}
-                </span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', marginLeft: 3 }}>
-                  DOBS
-                </span>
-              </Link>
-            )}
-
-            {/* User button + dropdown */}
-            <div className="relative">
+            {/* User button + dropdown — desktop only */}
+            <div className="relative hidden md:block">
               <button
                 type="button"
                 onClick={() => setDropdownOpen((v) => !v)}

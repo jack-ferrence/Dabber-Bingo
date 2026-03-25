@@ -925,7 +925,7 @@ export default function SettingsPage() {
   const [tab, setTab] = useState('profile')
 
   return (
-    <div style={{ minHeight: '100%', background: '#0c0c14', padding: '32px 24px' }}>
+    <div className="px-4 py-5 md:px-6 md:py-8" style={{ minHeight: '100%', background: '#0c0c14' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         {/* Header */}
         <h1 style={{
@@ -940,7 +940,7 @@ export default function SettingsPage() {
         </h1>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #2a2a44', overflowX: 'auto' }}>
+        <div className="scrollbar-hide" style={{ display: 'flex', borderBottom: '1px solid #2a2a44', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {TABS.map((t) => (
             <button
               key={t.key}

@@ -1,0 +1,11 @@
+{
+  "name": "Dobber",
+  "short_name": "Dobber",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0c14",
+  "theme_color": "#ff6b35",
+  "icons": [
+    { "src": "/dobber-icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

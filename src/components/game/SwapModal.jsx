@@ -129,7 +129,7 @@ function SwapModal({
           border: '1px solid #2a2a44',
           borderRadius: 8,
           maxWidth: 400,
-          width: '100%',
+          width: 'calc(100% - 32px)',
           padding: 20,
           display: 'flex',
           flexDirection: 'column',

@@ -189,9 +189,9 @@ export default function LobbyPage() {
   const liveCount = allRooms.filter((r) => r.status === 'live').length
 
   return (
-    <div className="px-6 py-8 max-w-[1200px] mx-auto">
+    <div className="px-4 py-5 md:px-6 md:py-8 max-w-[1200px] mx-auto">
       {/* Page header */}
-      <div className="mb-9">
+      <div className="mb-5 md:mb-9">
         <div className="flex items-baseline gap-3 flex-wrap">
           <h1
             className="lobby-title"
@@ -233,7 +233,7 @@ export default function LobbyPage() {
             </span>
           )}
         </div>
-        <p className="mt-2 text-sm" style={{ color: '#555577' }}>
+        <p className="mt-1 md:mt-2 text-xs md:text-sm" style={{ color: '#555577' }}>
           Live bingo powered by real stats. Pick a game and play.
         </p>
       </div>
@@ -261,7 +261,7 @@ export default function LobbyPage() {
       </div>
 
       {/* Sport sections */}
-      <div className="space-y-10">
+      <div className="space-y-6 md:space-y-10">
         {SPORT_SECTIONS.map((section, i) => (
           <div key={section.sport} id={`sport-section-${section.sport}`}>
             <SportSection

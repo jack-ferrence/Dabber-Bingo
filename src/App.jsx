@@ -29,14 +29,14 @@ function App() {
     return (
       <div className="h-screen flex flex-col" style={{ background: '#0c0c14' }}>
         <header
-          className="flex h-14 shrink-0 items-center justify-between px-4"
+          className="flex h-12 shrink-0 items-center justify-between px-3"
           style={{ background: '#0c0c14', borderBottom: '1px solid #2a2a44' }}
         >
           <Link
             to="/"
             style={{
               fontFamily: 'var(--db-font-display)',
-              fontSize: 24,
+              fontSize: 'clamp(16px, 4vw, 24px)',
               letterSpacing: '0.15em',
               color: '#ff6b35',
               textDecoration: 'none',

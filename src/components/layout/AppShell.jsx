@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Navbar from './Navbar.jsx'
 import Sidebar from './Sidebar.jsx'
+import MobileTabBar from './MobileTabBar.jsx'
 
 export default function AppShell({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -15,10 +16,15 @@ export default function AppShell({ children }) {
       {/* Content area: CSS grid on desktop, single column on mobile */}
       <div className="flex flex-1 overflow-hidden md:grid md:grid-cols-[260px_1fr]">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 overflow-y-auto">
-          {children}
+        <main className="flex-1 overflow-y-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          {/* Extra bottom padding on mobile for tab bar (~60px) */}
+          <div className="pb-16 md:pb-0">
+            {children}
+          </div>
         </main>
       </div>
+
+      <MobileTabBar />
     </div>
   )
 }

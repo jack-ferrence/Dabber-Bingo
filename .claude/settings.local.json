@@ -15,7 +15,11 @@
       "Bash(git checkout:*)",
       "Bash(git reset:*)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(grep -rn \"lifetime\\\\|total_earned\\\\|earned\\\\|dabs_balance\" /Users/jackferrence/Downloads/Chalk-Bingo-main/supabase/migrations/*.sql | grep -i \"lifetime\\\\|total_earned\" | head -10)",
+      "Bash(ls /Users/jackferrence/Downloads/Chalk-Bingo-main/supabase/migrations/*.sql | sort | tail -5)",
+      "Bash(curl -s -H \"x-trigger-secret: bingo\" https://bingo-v04.netlify.app/.netlify/functions/sync-games-trigger 2>&1)",
+      "Bash(sleep 30 && curl -s -H \"x-trigger-secret: bingo\" https://bingo-v04.netlify.app/.netlify/functions/sync-games-trigger 2>&1)"
     ]
   }
 }

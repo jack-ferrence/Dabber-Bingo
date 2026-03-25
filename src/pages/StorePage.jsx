@@ -83,7 +83,7 @@ export default function StorePage() {
   }, [items, tab])
 
   return (
-    <div style={{ minHeight: '100%', background: '#0c0c14', padding: '32px 24px' }}>
+    <div className="px-4 py-5 md:px-6 md:py-8" style={{ minHeight: '100%', background: '#0c0c14' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
 
         {/* Header */}
@@ -170,8 +170,8 @@ export default function StorePage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-              gap: 16,
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gap: 12,
             }}
           >
             {filtered.map((item) => (

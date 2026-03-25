@@ -123,15 +123,15 @@ const BingoSquare = memo(function BingoSquare({
         }}
       >
         {playerLabel && (
-          <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 700, color: 'rgba(255,107,53,0.8)' }}>
+          <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 700, color: 'rgba(255,107,53,0.8)' }}>
             {playerLabel}
           </span>
         )}
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800, color: '#ff6b35', lineHeight: 1.2 }}>
+        <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800, color: '#ff6b35', lineHeight: 1.2 }}>
           {statLabel}
         </span>
         {oddsLabel && (
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: 'rgba(255,107,53,0.6)', lineHeight: 1 }}>
+          <span className="sq-odds" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, color: 'rgba(255,107,53,0.6)', lineHeight: 1 }}>
             {oddsLabel}
           </span>
         )}
@@ -177,15 +177,15 @@ const BingoSquare = memo(function BingoSquare({
       }}
     >
       {playerLabel && (
-        <span style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 600, color: '#8888aa' }}>
+        <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 600, color: '#8888aa' }}>
           {playerLabel}
         </span>
       )}
-      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800, color: '#e0e0f0', lineHeight: 1.2, textAlign: 'center' }}>
+      <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800, color: '#e0e0f0', lineHeight: 1.2, textAlign: 'center' }}>
         {statLabel}
       </span>
       {oddsLabel && (
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 600, color: tierColor ?? '#555577', lineHeight: 1 }}>
+        <span className="sq-odds" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 600, color: tierColor ?? '#555577', lineHeight: 1 }}>
           {oddsLabel}
         </span>
       )}

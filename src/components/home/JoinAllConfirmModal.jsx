@@ -31,7 +31,7 @@ export default function JoinAllConfirmModal({ sport, rooms, onConfirm, onClose, 
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div style={{ background: '#12121e', border: '1px solid #2a2a44', borderRadius: 8, maxWidth: 400, width: '100%', padding: 28, position: 'relative' }}>
+      <div style={{ background: '#12121e', border: '1px solid #2a2a44', borderRadius: 8, maxWidth: 400, width: 'calc(100% - 32px)', padding: 28, position: 'relative' }}>
         {/* Close */}
         <button
           type="button"

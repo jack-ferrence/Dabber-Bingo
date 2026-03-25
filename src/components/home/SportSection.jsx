@@ -245,7 +245,7 @@ export default function SportSection({
   return (
     <section className="sport-section" style={style}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-5 px-1">
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-4 md:mb-5 px-1">
         <div className="flex items-center gap-3">
           <div style={{ width: 3, height: 30, background: '#ff6b35', borderRadius: 2, flexShrink: 0 }} />
           <h2
