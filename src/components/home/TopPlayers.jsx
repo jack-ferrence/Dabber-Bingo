@@ -10,8 +10,8 @@ export default function TopPlayers() {
   useEffect(() => {
     supabase
       .from('profiles')
-      .select('id, username, dabs_balance, name_color, name_font, equipped_badge')
-      .order('dabs_balance', { ascending: false })
+      .select('id, username, total_earned, name_color, name_font, equipped_badge')
+      .order('total_earned', { ascending: false })
       .limit(5)
       .then(({ data }) => setPlayers(data ?? []))
   }, [])
@@ -86,9 +86,9 @@ export default function TopPlayers() {
                   {name}
                 </span>
 
-                {/* Balance */}
+                {/* Lifetime earned */}
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#ff6b35', flexShrink: 0 }}>
-                  {(p.dabs_balance ?? 0).toLocaleString()} ◈
+                  {(p.total_earned ?? 0).toLocaleString()} ◈
                 </span>
               </div>
             )
