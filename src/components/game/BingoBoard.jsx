@@ -60,6 +60,8 @@ function BingoBoard({
     return () => clearTimeout(remove)
   }, [toast?.exiting])
 
+  const [bingoDismissed, setBingoDismissed] = useState(false)
+
   const skinClass = boardSkin && boardSkin !== 'default' ? `board-skin-${boardSkin}` : ''
 
   return (
@@ -96,10 +98,11 @@ function BingoBoard({
       </div>
 
       {/* Full-board BINGO overlay */}
-      {hasBingo && (
+      {hasBingo && !bingoDismissed && (
         <div
           className="absolute inset-0 z-10 flex flex-col items-center justify-center"
-          style={{ borderRadius: 8, background: 'rgba(12,12,20,0.92)', backdropFilter: 'blur(4px)' }}
+          style={{ borderRadius: 8, background: 'rgba(12,12,20,0.92)', backdropFilter: 'blur(4px)', cursor: 'pointer' }}
+          onClick={() => setBingoDismissed(true)}
           role="alert"
           aria-live="polite"
         >
@@ -117,6 +120,23 @@ function BingoBoard({
           </div>
           <p style={{ marginTop: 8, fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#8888aa' }}>
             {winningLines.length} line{winningLines.length === 1 ? '' : 's'} completed
+          </p>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setBingoDismissed(true) }}
+            style={{
+              marginTop: 20,
+              fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700,
+              letterSpacing: '0.08em', textTransform: 'uppercase',
+              padding: '10px 28px', borderRadius: 4,
+              background: '#ff6b35', color: '#0c0c14', border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            CONTINUE PLAYING
+          </button>
+          <p style={{ marginTop: 10, fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55' }}>
+            tap anywhere to dismiss
           </p>
         </div>
       )}

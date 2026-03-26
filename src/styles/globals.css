@@ -575,7 +575,7 @@ html, body {
   }
 
   .sport-section h2 {
-    font-size: 18px !important;
+    font-size: 20px !important;
   }
 
   /* Game cards: sized so 1.5 cards visible (hint to scroll) */
@@ -589,7 +589,7 @@ html, body {
   }
 
   .team-abbr {
-    font-size: 26px !important;
+    font-size: 32px !important;
   }
   .vs-text {
     font-size: 10px !important;
@@ -702,13 +702,13 @@ html, body {
     min-height: 130px !important;
   }
   .team-abbr {
-    font-size: 22px !important;
+    font-size: 26px !important;
   }
   .lobby-title {
     font-size: 22px !important;
   }
   .sport-section h2 {
-    font-size: 16px !important;
+    font-size: 18px !important;
   }
   .bingo-grid {
     gap: 1.5px !important;

@@ -50,19 +50,18 @@ function DaySeparator({ label, sub }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '0 20px',
-        minHeight: 120,
-        borderLeft: '1px solid #2a2a44',
-        borderRight: '1px solid #2a2a44',
-        marginRight: 8,
+        padding: '0 16px',
+        minHeight: 100,
+        borderRight: '1px solid #1a1a2e',
+        marginRight: 4,
       }}
     >
       <span
         style={{
           fontFamily: 'var(--db-font-mono)',
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: 800,
-          color: '#ff6b35',
+          color: '#555577',
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
           whiteSpace: 'nowrap',
@@ -70,17 +69,19 @@ function DaySeparator({ label, sub }) {
       >
         {label}
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--db-font-mono)',
-          fontSize: 10,
-          color: '#555577',
-          marginTop: 4,
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {sub}
-      </span>
+      {sub && (
+        <span
+          style={{
+            fontFamily: 'var(--db-font-mono)',
+            fontSize: 9,
+            color: '#3a3a55',
+            marginTop: 3,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {sub}
+        </span>
+      )}
     </div>
   )
 }

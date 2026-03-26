@@ -237,19 +237,26 @@ export default function LobbyPage() {
     <div className="px-4 py-5 md:px-6 md:py-8 max-w-[1200px] mx-auto">
       {/* Page header */}
       <div className="mb-5 md:mb-9">
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <h1
-            className="lobby-title"
-            style={{
-              fontFamily: 'var(--db-font-display)',
-              fontSize: 'clamp(36px, 4vw, 52px)',
-              letterSpacing: '0.05em',
-              lineHeight: 1,
-              color: '#e0e0f0',
-            }}
-          >
-            Tonight&apos;s Games
-          </h1>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h1
+              className="lobby-title"
+              style={{
+                fontFamily: 'var(--db-font-mono)',
+                fontSize: 'clamp(20px, 3vw, 28px)',
+                fontWeight: 800,
+                letterSpacing: '0.10em',
+                lineHeight: 1,
+                color: '#e0e0f0',
+                textTransform: 'uppercase',
+              }}
+            >
+              Games
+            </h1>
+            <p className="mt-1" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#3a3a55', letterSpacing: '0.06em' }}>
+              Live bingo powered by real stats
+            </p>
+          </div>
           {!loading && liveCount > 0 && (
             <span
               className="inline-flex items-center gap-1.5"
@@ -278,9 +285,6 @@ export default function LobbyPage() {
             </span>
           )}
         </div>
-        <p className="mt-1 md:mt-2 text-xs md:text-sm" style={{ color: '#555577' }}>
-          Live bingo powered by real stats. Pick a game and play.
-        </p>
       </div>
 
       {/* Error */}
