@@ -21,7 +21,7 @@ export default function TopPlayers() {
       background: '#12121e',
       border: '1px solid #2a2a44',
       borderRadius: 6,
-      padding: '14px 18px',
+      padding: '10px 14px',
       fontFamily: 'var(--db-font-mono)',
     }}>
       <p style={{
@@ -56,7 +56,7 @@ export default function TopPlayers() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  height: 28,
+                  height: 26,
                   borderRadius: 3,
                   padding: '0 4px',
                   transition: 'background 0.1s ease',

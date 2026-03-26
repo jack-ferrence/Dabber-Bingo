@@ -48,7 +48,7 @@ async function preGenerateCard(roomId, userId) {
 
 const SPORT_SECTIONS = [
   { sport: 'nba',  label: '🏀 NBA' },
-  { sport: 'ncaa', label: '🏆 NCAA Tournament' },
+  { sport: 'ncaa', label: '🏆 NCAA' },
 ]
 
 export default function LobbyPage() {
@@ -236,7 +236,7 @@ export default function LobbyPage() {
   return (
     <div className="px-4 py-5 md:px-6 md:py-8 max-w-[1200px] mx-auto">
       {/* Page header */}
-      <div className="mb-5 md:mb-9">
+      <div className="mb-3 md:mb-9">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h1
@@ -305,12 +305,12 @@ export default function LobbyPage() {
       )}
 
       {/* Top players */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 16 }}>
         <TopPlayers />
       </div>
 
       {/* Sport sections */}
-      <div className="space-y-6 md:space-y-10">
+      <div className="space-y-4 md:space-y-10">
         {SPORT_SECTIONS.map((section, i) => (
           <div key={section.sport} id={`sport-section-${section.sport}`}>
             <SportSection

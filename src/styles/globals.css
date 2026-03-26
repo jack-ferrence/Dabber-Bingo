@@ -580,12 +580,18 @@ html, body {
 
   /* Game cards: sized so 1.5 cards visible (hint to scroll) */
   .game-card {
-    width: 220px !important;
-    min-height: 140px !important;
+    width: 180px !important;
+    min-height: 120px !important;
   }
   .skeleton-card {
-    width: 220px !important;
-    min-height: 140px !important;
+    width: 180px !important;
+    min-height: 120px !important;
+  }
+
+  /* JOIN ALL button — smaller on mobile */
+  .btn-join-all {
+    font-size: 9px !important;
+    padding: 5px 10px !important;
   }
 
   .team-abbr {
@@ -698,8 +704,8 @@ html, body {
 /* ═══ Small phones (iPhone SE, 375px and below) ═══ */
 @media (max-width: 380px) {
   .game-card {
-    width: 190px !important;
-    min-height: 130px !important;
+    width: 160px !important;
+    min-height: 110px !important;
   }
   .team-abbr {
     font-size: 26px !important;
