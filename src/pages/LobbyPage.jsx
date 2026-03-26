@@ -68,7 +68,26 @@ export default function LobbyPage() {
     [myRooms]
   )
 
-  // Group all public rooms by sport, sorted: live → lobby → finished
+  // Mobile: flat priority-sorted list (live+joined first, then upcoming)
+  const mobileSortedGames = useMemo(() => {
+    const all = allRooms.filter((r) => r.status === 'live' || r.status === 'lobby')
+    return all.sort((a, b) => {
+      const aJoined = joinedRoomIds.has(a.id) ? 1 : 0
+      const bJoined = joinedRoomIds.has(b.id) ? 1 : 0
+      const aLive = a.status === 'live' ? 1 : 0
+      const bLive = b.status === 'live' ? 1 : 0
+      // Priority: live+joined=3, live+unjoined=2, lobby+joined=1, lobby+unjoined=0
+      const aPriority = aLive * 2 + aJoined
+      const bPriority = bLive * 2 + bJoined
+      if (bPriority !== aPriority) return bPriority - aPriority
+      // Within same priority: soonest first
+      const aTime = a.starts_at ? new Date(a.starts_at).getTime() : Infinity
+      const bTime = b.starts_at ? new Date(b.starts_at).getTime() : Infinity
+      return aTime - bTime
+    })
+  }, [allRooms, joinedRoomIds])
+
+  // Desktop: group all public rooms by sport, sorted: live → lobby → finished
   const roomsBySport = useMemo(() => {
     const statusRank = (r) => r.status === 'live' ? 0 : r.status === 'lobby' ? 1 : 2
     const groups = Object.fromEntries(SPORT_SECTIONS.map((s) => [s.sport, []]))
@@ -309,8 +328,8 @@ export default function LobbyPage() {
         <TopPlayers />
       </div>
 
-      {/* Sport sections */}
-      <div className="space-y-4 md:space-y-10">
+      {/* ── Desktop: sport-grouped sections (unchanged) ── */}
+      <div className="hidden md:block space-y-10">
         {SPORT_SECTIONS.map((section, i) => (
           <div key={section.sport} id={`sport-section-${section.sport}`}>
             <SportSection
@@ -327,6 +346,121 @@ export default function LobbyPage() {
             />
           </div>
         ))}
+      </div>
+
+      {/* ── Mobile: flat priority-sorted list ── */}
+      <div className="block md:hidden">
+        {/* Summary line */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          {liveCount > 0 && (
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, fontWeight: 700, padding: '2px 6px', background: 'rgba(255,45,45,0.12)', color: '#ff2d2d', borderRadius: 3 }}>
+              {liveCount} LIVE
+            </span>
+          )}
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55' }}>
+            {loading ? '…' : `${mobileSortedGames.length} game${mobileSortedGames.length === 1 ? '' : 's'}`}
+          </span>
+        </div>
+
+        {/* Skeleton */}
+        {loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} style={{ height: 58, borderRadius: 6, background: '#12121e' }} />
+            ))}
+          </div>
+        )}
+
+        {/* Game rows */}
+        {!loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {mobileSortedGames.length === 0 ? (
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#555577', padding: '12px 0' }}>
+                No games available. Check back later!
+              </p>
+            ) : mobileSortedGames.map((room) => {
+              const nameParts = (room.name || '').split(' vs ')
+              const away = nameParts[0]?.trim() || '?'
+              const home = nameParts[1]?.trim() || '?'
+              const isJoined = joinedRoomIds.has(room.id)
+              const isLive = room.status === 'live'
+              const isNcaa = room.sport === 'ncaa'
+              const tipoff = room.starts_at
+                ? new Date(room.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+                : 'Upcoming'
+
+              return (
+                <div
+                  key={room.id}
+                  onClick={() => isJoined ? navigate(`/room/${room.id}`) : handleJoin(room.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '12px 14px', background: '#12121e', borderRadius: 6,
+                    borderLeft: isLive ? '3px solid #ff2d2d' : '3px solid transparent',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {/* Left: teams + info */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+                    <div style={{ flexShrink: 0 }}>
+                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 18, fontWeight: 800, color: '#8888aa', letterSpacing: '0.04em' }}>{away}</span>
+                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#3a3a55', margin: '0 5px' }}>vs</span>
+                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 18, fontWeight: 800, color: '#e0e0f0', letterSpacing: '0.04em' }}>{home}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {isLive ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#ff2d2d', fontWeight: 700 }}>● LIVE</span>
+                          {room.game_clock && (
+                            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55' }}>
+                              {room.game_period ? `Q${room.game_period} ` : ''}{room.game_clock}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577' }}>{tipoff}</span>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55' }}>
+                          {room.participant_count ?? 0} playing
+                        </span>
+                        {isNcaa && (
+                          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 700, padding: '1px 4px', background: 'rgba(0,200,100,0.10)', color: '#00c864', borderRadius: 2 }}>
+                            NCAA
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: status/action */}
+                  <div style={{ flexShrink: 0, marginLeft: 8 }} onClick={(e) => e.stopPropagation()}>
+                    {isJoined ? (
+                      isLive ? (
+                        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, fontWeight: 700, color: '#555577', background: '#1a1a2e', padding: '5px 10px', borderRadius: 3 }}>
+                          PLAYING
+                        </span>
+                      ) : (
+                        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, fontWeight: 700, color: '#ff6b35', border: '1px solid rgba(255,107,53,0.3)', padding: '5px 10px', borderRadius: 3 }}>
+                          JOINED
+                        </span>
+                      )
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleJoin(room.id) }}
+                        disabled={joiningRoomId === room.id}
+                        style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, fontWeight: 700, color: '#0c0c14', background: '#ff6b35', border: 'none', borderRadius: 4, padding: '6px 14px', cursor: joiningRoomId === room.id ? 'wait' : 'pointer' }}
+                      >
+                        {joiningRoomId === room.id ? '...' : 'JOIN'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* NBA join confirmation modal */}
