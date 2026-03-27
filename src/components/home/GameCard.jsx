@@ -46,6 +46,7 @@ function isLateEntryOpen(game) {
     const mins = parseInt((game.game_clock ?? '').split(':')[0], 10)
     return !isNaN(mins) && mins >= 10
   }
+  if (sport === 'mlb') return period <= 3
   return false
 }
 
@@ -172,7 +173,7 @@ export default function GameCard({ game, isJoined, joining, onJoin, onContinue }
             </>
           )}
           <div style={{ color: '#555577', fontSize: 11, marginTop: 2 }}>
-            {game.participant_count ?? 0} playing
+            {game.participant_count ?? 0} joined
           </div>
         </div>
 

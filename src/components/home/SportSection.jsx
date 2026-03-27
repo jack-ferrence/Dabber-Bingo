@@ -276,28 +276,9 @@ export default function SportSection({
   joiningRoomId,
   onJoin,
   onContinue,
-  onJoinAll,
   style,
 }) {
   const hasUpcoming = games.some((g) => g.status === 'live' || g.status === 'lobby')
-
-  const unjoinedGames = games.filter((g) => {
-    if (joinedRoomIds.has(g.id)) return false
-    if (g.status === 'lobby') return true
-    if (g.status === 'live') {
-      const period = g.game_period ?? 0
-      const clock  = g.game_clock ?? ''
-      if (sport === 'nba') return period <= 1
-      if (sport === 'ncaa') {
-        const mins = parseInt(clock.split(':')[0], 10)
-        return period <= 1 && !isNaN(mins) && mins >= 10
-      }
-      if (sport === 'mlb') return period <= 3
-      return period <= 1
-    }
-    return false
-  })
-  const showJoinAll = !loading && unjoinedGames.length >= 2
 
   return (
     <section className="sport-section" style={style}>
@@ -351,33 +332,6 @@ export default function SportSection({
             </span>
           )}
         </div>
-        {/* JOIN ALL button */}
-        {showJoinAll && (
-          <button
-            type="button"
-            className="btn-join-all"
-            onClick={() => onJoinAll?.(sport, unjoinedGames)}
-            style={{
-              fontFamily: 'var(--db-font-mono)',
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              padding: '5px 12px',
-              borderRadius: 4,
-              background: 'rgba(255,107,53,0.08)',
-              color: '#ff6b35',
-              border: '1px solid rgba(255,107,53,0.20)',
-              cursor: 'pointer',
-              transition: 'background 0.1s ease',
-              flexShrink: 0,
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.15)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.08)' }}
-          >
-            JOIN ALL ({unjoinedGames.length})
-          </button>
-        )}
       </div>
 
       {/* ── Desktop content (horizontal scroll cards) ── */}

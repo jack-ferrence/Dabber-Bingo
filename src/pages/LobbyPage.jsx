@@ -5,7 +5,6 @@ import { useAuth } from '../hooks/useAuth.jsx'
 import { useHomeData } from '../hooks/useHomeData.js'
 import SportSection from '../components/home/SportSection.jsx'
 import JoinConfirmModal from '../components/home/JoinConfirmModal.jsx'
-import JoinAllConfirmModal from '../components/home/JoinAllConfirmModal.jsx'
 import TopPlayers from '../components/home/TopPlayers.jsx'
 import { generateOddsBasedCard } from '../game/oddsCardGenerator.js'
 
@@ -60,8 +59,6 @@ export default function LobbyPage() {
   const [joiningRoomId, setJoiningRoomId] = useState(null)
   const [joinError, setJoinError] = useState('')
   const [pendingJoinRoom, setPendingJoinRoom] = useState(null)
-  const [joinAllPending, setJoinAllPending] = useState(null) // { sport, rooms }
-  const [joinAllInProgress, setJoinAllInProgress] = useState(false)
 
   // Set of room IDs the user has already joined
   const joinedRoomIds = useMemo(
@@ -186,65 +183,6 @@ export default function LobbyPage() {
 
   const handleContinue = (roomId) => navigate(`/room/${roomId}`)
 
-  const handleJoinAll = (sport, unjoinedRooms) => {
-    if (!user) { navigate('/login'); return }
-    setJoinAllPending({ sport, rooms: unjoinedRooms })
-  }
-
-  const handleConfirmJoinAll = async () => {
-    if (!joinAllPending) return
-    setJoinAllInProgress(true)
-    setJoinError('')
-
-    const { rooms } = joinAllPending
-    let failedCount = 0
-
-    for (const room of rooms) {
-      const { data: feeResult, error: feeError } = await supabase.rpc('deduct_entry_fee', {
-        p_user_id: user.id,
-        p_room_id: room.id,
-      })
-
-      if (feeError) {
-        const missing = feeError.code === 'PGRST202' || feeError.code === '42883'
-        if (!missing) {
-          failedCount++
-          continue
-        }
-        // RPC not found — proceed anyway (graceful fallback)
-      } else if (feeResult && !feeResult.success) {
-        if (feeResult.reason === 'insufficient_dabs') {
-          setJoinError(`Ran out of Dobs after joining ${rooms.indexOf(room)} game(s).`)
-          break
-        }
-        if (feeResult.reason !== 'already_charged' && feeResult.reason !== 'march_madness_free') {
-          failedCount++
-          continue
-        }
-      }
-
-      const { error: joinErr } = await supabase
-        .from('room_participants')
-        .upsert(
-          { room_id: room.id, user_id: user.id },
-          { onConflict: 'room_id,user_id', ignoreDuplicates: true }
-        )
-
-      if (joinErr) {
-        failedCount++
-      } else {
-        // Pre-generate card immediately after joining so late-entry check can't block the player
-        await preGenerateCard(room.id, user.id)
-      }
-    }
-
-    setJoinAllInProgress(false)
-    setJoinAllPending(null)
-
-    if (failedCount > 0) {
-      setJoinError(`Joined ${rooms.length - failedCount} of ${rooms.length} games. ${failedCount} failed.`)
-    }
-  }
 
   const handleTabClick = (sportKey) => {
     const el = document.getElementById(`sport-section-${sportKey}`)
@@ -342,7 +280,7 @@ export default function LobbyPage() {
               joiningRoomId={joiningRoomId}
               onJoin={handleJoin}
               onContinue={handleContinue}
-              onJoinAll={handleJoinAll}
+
               style={{ animationDelay: `${i * 100}ms` }}
             />
           </div>
@@ -423,7 +361,7 @@ export default function LobbyPage() {
                       )}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55' }}>
-                          {room.participant_count ?? 0} playing
+                          {room.participant_count ?? 0} joined
                         </span>
                         {isNcaa && (
                           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 700, padding: '1px 4px', background: 'rgba(0,200,100,0.10)', color: '#00c864', borderRadius: 2 }}>
@@ -473,16 +411,7 @@ export default function LobbyPage() {
         />
       )}
 
-      {/* Join All confirmation modal */}
-      {joinAllPending && (
-        <JoinAllConfirmModal
-          sport={joinAllPending.sport}
-          rooms={joinAllPending.rooms}
-          onConfirm={handleConfirmJoinAll}
-          onClose={() => { setJoinAllPending(null); setJoinAllInProgress(false) }}
-          joining={joinAllInProgress}
-        />
-      )}
+
     </div>
   )
 }

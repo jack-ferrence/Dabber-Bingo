@@ -54,6 +54,7 @@ export const MLB_MARKETS = [
   // Pitcher props
   'pitcher_strikeouts',
   'pitcher_hits_allowed',
+  'pitcher_walks',
   'pitcher_earned_runs',
   'pitcher_outs',
   // Alternates
@@ -96,23 +97,24 @@ export const MLB_MARKET_MAP = {
   batter_home_runs:              { stat: 'home_runs',          label: 'HR' },
   batter_hits:                   { stat: 'hits',               label: 'H' },
   batter_total_bases:            { stat: 'total_bases',        label: 'TB' },
-  batter_rbis:                   { stat: 'rbi',                label: 'RBI' },
+  batter_rbis:                   { stat: 'rbis',               label: 'RBI' },
   batter_runs_scored:            { stat: 'runs',               label: 'R' },
   batter_hits_runs_rbis:         { stat: 'hits_runs_rbis',     label: 'HRR' },
   batter_singles:                { stat: 'singles',            label: '1B' },
   batter_doubles:                { stat: 'doubles',            label: '2B' },
-  batter_walks:                  { stat: 'walks_batter',       label: 'BB' },
-  batter_strikeouts:             { stat: 'strikeouts_batter',  label: 'KO' },
+  batter_walks:                  { stat: 'walks',              label: 'BB' },
+  batter_strikeouts:             { stat: 'batter_strikeouts',  label: 'KO' },
   // Pitcher props
-  pitcher_strikeouts:            { stat: 'strikeouts_pitcher', label: 'K' },
+  pitcher_strikeouts:            { stat: 'pitcher_strikeouts', label: 'K' },
   pitcher_hits_allowed:          { stat: 'hits_allowed',       label: 'HA' },
+  pitcher_walks:                 { stat: 'pitcher_walks',      label: 'PBB' },
   pitcher_earned_runs:           { stat: 'earned_runs',        label: 'ER' },
-  pitcher_outs:                  { stat: 'outs_pitched',       label: 'OT' },
+  pitcher_outs:                  { stat: 'pitcher_outs',       label: 'OT' },
   // Alternates
   batter_home_runs_alternate:    { stat: 'home_runs',          label: 'HR' },
   batter_hits_alternate:         { stat: 'hits',               label: 'H' },
   batter_total_bases_alternate:  { stat: 'total_bases',        label: 'TB' },
-  pitcher_strikeouts_alternate:  { stat: 'strikeouts_pitcher', label: 'K' },
+  pitcher_strikeouts_alternate:  { stat: 'pitcher_strikeouts', label: 'K' },
 }
 
 // ESPN abbreviation → lowercase keywords that appear in TheOddsAPI full team names.

@@ -82,7 +82,7 @@ export default function MobileGameRow({ room, isJoined, joining, onJoin, onConti
                 {formatTime(room.starts_at)}
               </span>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55', marginLeft: 6 }}>
-                {room.participant_count ?? 0} playing
+                {room.participant_count ?? 0} joined
               </span>
             </div>
           )}

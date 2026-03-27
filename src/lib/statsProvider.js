@@ -137,24 +137,26 @@ function parseMLBBatterStats(entry, statLabels, period) {
   const r  = parseStatValue(statMap['R'])
   const bb = parseStatValue(statMap['BB'])
   const so = parseStatValue(statMap['SO'])
+  const sb = parseStatValue(statMap['SB'])
   const doubles = parseStatValue(statMap['2B'])
   const triples = parseStatValue(statMap['3B'])
 
   // TB = H + extra bases: doubles +1, triples +2, HRs +3
-  const tb = h + doubles + 2 * triples + 3 * hr
+  const tb = parseStatValue(statMap['TB']) || (h + doubles + 2 * triples + 3 * hr)
   const singles = Math.max(0, h - hr - doubles - triples)
   const hrr = h + r + rbi
 
-  if (h > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'hits',              value: h,       period })
-  if (hr > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'home_runs',         value: hr,      period })
-  if (rbi > 0)     events.push({ player_id: pid, player_name: pname, stat_type: 'rbi',               value: rbi,     period })
-  if (r > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'runs',              value: r,       period })
-  if (bb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'walks_batter',      value: bb,      period })
-  if (so > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'strikeouts_batter', value: so,      period })
-  if (tb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'total_bases',       value: tb,      period })
-  if (singles > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'singles',           value: singles, period })
-  if (doubles > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'doubles',           value: doubles, period })
-  if (hrr > 0)     events.push({ player_id: pid, player_name: pname, stat_type: 'hits_runs_rbis',    value: hrr,     period })
+  if (h > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'hits',             value: h,       period })
+  if (hr > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'home_runs',        value: hr,      period })
+  if (rbi > 0)     events.push({ player_id: pid, player_name: pname, stat_type: 'rbis',             value: rbi,     period })
+  if (r > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'runs',             value: r,       period })
+  if (bb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'walks',            value: bb,      period })
+  if (so > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'batter_strikeouts', value: so,     period })
+  if (sb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'stolen_bases',     value: sb,      period })
+  if (tb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'total_bases',      value: tb,      period })
+  if (singles > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'singles',          value: singles, period })
+  if (doubles > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'doubles',          value: doubles, period })
+  if (hrr > 0)     events.push({ player_id: pid, player_name: pname, stat_type: 'hits_runs_rbis',   value: hrr,     period })
 
   return events
 }
@@ -168,19 +170,21 @@ function parseMLBPitcherStats(entry, statLabels, period) {
   const statMap = {}
   statLabels.forEach((label, i) => { statMap[label.toUpperCase()] = entry.stats[i] ?? '0' })
 
-  const so = parseStatValue(statMap['SO'])
-  const h  = parseStatValue(statMap['H'])
-  const er = parseStatValue(statMap['ER'])
+  const so  = parseStatValue(statMap['SO'] ?? statMap['K'])
+  const h   = parseStatValue(statMap['H'])
+  const bb  = parseStatValue(statMap['BB'])
+  const er  = parseStatValue(statMap['ER'])
 
   // IP is "6.1" = 6 full innings + 1 out → 19 total outs
   const ipStr = String(statMap['IP'] ?? '0')
   const ipParts = ipStr.split('.')
   const outs = (parseInt(ipParts[0], 10) || 0) * 3 + (parseInt(ipParts[1], 10) || 0)
 
-  if (so > 0)   events.push({ player_id: pid, player_name: pname, stat_type: 'strikeouts_pitcher', value: so,   period })
+  if (so > 0)   events.push({ player_id: pid, player_name: pname, stat_type: 'pitcher_strikeouts', value: so,   period })
   if (h >= 0)   events.push({ player_id: pid, player_name: pname, stat_type: 'hits_allowed',       value: h,    period })
+  if (bb > 0)   events.push({ player_id: pid, player_name: pname, stat_type: 'pitcher_walks',      value: bb,   period })
   if (er >= 0)  events.push({ player_id: pid, player_name: pname, stat_type: 'earned_runs',        value: er,   period })
-  if (outs > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'outs_pitched',       value: outs, period })
+  if (outs > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'pitcher_outs',       value: outs, period })
 
   return events
 }
@@ -194,24 +198,19 @@ function parseMLBBoxscore(data) {
   const boxscorePlayerIds = new Set()
 
   for (const team of (data.boxscore?.players ?? [])) {
-    const battingGroup  = team.statistics?.[0]
-    const pitchingGroup = team.statistics?.[1]
+    for (const statsGroup of (team.statistics ?? [])) {
+      const labels = statsGroup.labels ?? []
+      const groupName = (statsGroup.type ?? statsGroup.name ?? '').toLowerCase()
+      const isPitching = groupName.includes('pitch') || labels.includes('IP') || labels.includes('ERA')
 
-    if (battingGroup) {
-      const labels = battingGroup.labels ?? []
-      for (const entry of (battingGroup.athletes ?? [])) {
+      for (const entry of (statsGroup.athletes ?? [])) {
         if (entry.athlete?.id) boxscorePlayerIds.add(String(entry.athlete.id))
         if (!entry.stats?.length || entry.didNotPlay) continue
-        events.push(...parseMLBBatterStats(entry, labels, period))
-      }
-    }
-
-    if (pitchingGroup) {
-      const labels = pitchingGroup.labels ?? []
-      for (const entry of (pitchingGroup.athletes ?? [])) {
-        if (entry.athlete?.id) boxscorePlayerIds.add(String(entry.athlete.id))
-        if (!entry.stats?.length || entry.didNotPlay) continue
-        events.push(...parseMLBPitcherStats(entry, labels, period))
+        if (isPitching) {
+          events.push(...parseMLBPitcherStats(entry, labels, period))
+        } else {
+          events.push(...parseMLBBatterStats(entry, labels, period))
+        }
       }
     }
   }
@@ -222,7 +221,7 @@ function parseMLBBoxscore(data) {
 
   const gameStatus = {
     period,
-    clock: statusObj.displayClock ?? null,
+    clock: null, // MLB has no game clock; statusDetail carries "Top 5th" etc.
     homeScore: parseInt(home?.score ?? '0', 10),
     awayScore: parseInt(away?.score ?? '0', 10),
     statusDetail: statusObj.type?.shortDetail ?? statusObj.type?.detail ?? null,
