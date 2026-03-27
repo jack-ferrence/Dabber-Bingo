@@ -41,7 +41,7 @@ function getTeamColor(abbr, sport) {
   return NBA_TEAM_COLORS[abbr] ?? NBA_TEAM_COLORS.DEFAULT
 }
 
-export default function GameCard({ game, onOpenGame }) {
+export default function GameCard({ game, onOpenGame, rank = 0 }) {
   const { away, home } = parseTeams(game.name)
   const homeColor = getTeamColor(home, game.sport)
   const awayColor = getTeamColor(away, game.sport)
@@ -82,6 +82,21 @@ export default function GameCard({ game, onOpenGame }) {
         opacity: 0.6,
         pointerEvents: 'none',
       }} />
+
+      {/* Placement medal for finished games */}
+      {isFinished && rank > 0 && (
+        <div style={{ position: 'absolute', top: 10, left: 14, zIndex: 1, display: 'flex', alignItems: 'center', gap: 3 }}>
+          <span style={{
+            fontFamily: 'var(--db-font-display)', fontSize: 22, fontWeight: 800, lineHeight: 1,
+            color: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : '#555577',
+          }}>{rank}</span>
+          {rank <= 3 && (
+            <span style={{ fontSize: 14 }}>
+              {rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉'}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Status badge */}
       <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}>
