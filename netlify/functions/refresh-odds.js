@@ -10,11 +10,10 @@
  * Budget: ~240 calls/day (3 sports × 72 batch fetches + 24 event list calls)
  * Scales to ~400/day with 5 sports (NFL + UFC) — stays within 12k/month target.
  *
- * T-10min: cards locked using actual player count (band-based), unchanged.
  */
 
 import { createClient } from '@supabase/supabase-js'
-import { generateOddsBasedCard, getBand } from '../../src/game/oddsCardGenerator.js'
+import { generateOddsBasedCard } from '../../src/game/oddsCardGenerator.js'
 import {
   fetchRoster,
   fetchAllOddsForSport,
@@ -25,7 +24,6 @@ import {
   MIN_UNIQUE_CONFLICT_KEYS,
 } from './lib/odds-utils.js'
 
-const LOCK_WINDOW_MS  = 10 * 60 * 1000   // T-10 minutes
 const BATCH_CACHE_TTL = 20 * 60 * 1000   // 20-minute batch refresh cadence
 
 export async function handler() {
@@ -175,65 +173,6 @@ export async function handler() {
         console.error(`refresh-odds: failed for game ${room.game_id}:`, err)
       }
     }
-  }
-
-  // ── T-10 card lock pass ────────────────────────────────────────────────────
-  const { data: lockableRooms } = await supabase
-    .from('rooms')
-    .select('id, game_id, sport, starts_at, odds_pool')
-    .eq('room_type', 'public')
-    .eq('status', 'lobby')
-    .eq('cards_locked', false)
-    .eq('odds_status', 'ready')
-
-  let locked = 0
-  for (const lRoom of lockableRooms ?? []) {
-    const startsAt = lRoom.starts_at ? new Date(lRoom.starts_at) : null
-    if (!startsAt) continue
-    const msUntil = startsAt - now
-    if (msUntil > LOCK_WINDOW_MS || msUntil < -60_000) continue
-
-    const oddsPool = lRoom.odds_pool ?? []
-    if (oddsPool.length < 24) continue
-
-    const { count: playerCount } = await supabase
-      .from('room_participants')
-      .select('*', { count: 'exact', head: true })
-      .eq('room_id', lRoom.id)
-
-    const actualCount = playerCount ?? 0
-    if (actualCount === 0) continue
-
-    const band = getBand(actualCount)
-
-    const { data: cards } = await supabase
-      .from('cards')
-      .select('id, squares, swapped_indices')
-      .eq('room_id', lRoom.id)
-
-    let regenCount = 0
-    for (const card of cards ?? []) {
-      const swappedIndices = new Set((card.swapped_indices ?? []).map(Number))
-      const newCard = generateOddsBasedCard(oddsPool, actualCount, lRoom.sport || 'nba')
-      if (!newCard) continue
-
-      const finalSquares = newCard.map((sq, i) =>
-        swappedIndices.has(i) ? card.squares[i] : sq
-      )
-
-      await supabase.from('cards').update({ squares: finalSquares }).eq('id', card.id)
-      regenCount++
-    }
-
-    await supabase.from('rooms').update({
-      cards_locked:          true,
-      difficulty_profile:    `band_${band.midpoint}`,
-      player_count_at_lock:  actualCount,
-      locked_at:             now.toISOString(),
-    }).eq('id', lRoom.id)
-
-    locked++
-    log.push(`${lRoom.game_id}: locked T-${Math.round(msUntil / 60_000)}min — band ${band.midpoint} (${actualCount} players, ${regenCount} cards regen'd)`)
   }
 
   await trackApiUsage(supabase, ctx.apiCallsMade, 'refresh-odds')

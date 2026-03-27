@@ -309,7 +309,9 @@ export function generateOddsBasedCard(matchedProps, playerCount = 5, sport = 'nb
     const uniqueKeys = new Set(pool.map(p => p.conflict_key))
     if (uniqueKeys.size < 24) continue
 
-    const card = buildCard(pool, band.midpoint, statMaxPerType)
+    // Try with diversity constraints first; fall back to no constraint if pool
+    // lacks enough stat-type variety (e.g. MLB games heavy on hits props)
+    const card = buildCard(pool, band.midpoint, statMaxPerType) ?? buildCard(pool, band.midpoint, null)
     if (card) return card
   }
 

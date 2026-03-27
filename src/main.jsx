@@ -1,3 +1,11 @@
+// Auto-reload on stale chunk errors (happens after deploys)
+window.addEventListener('error', (e) => {
+  if (e.message?.includes('Failed to fetch dynamically imported module') ||
+      e.message?.includes('Importing a module script failed')) {
+    window.location.reload()
+  }
+})
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
