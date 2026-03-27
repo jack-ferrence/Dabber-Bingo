@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { fetchRoster, fetchOddsForRoom, matchOddsToRoster, MIN_UNIQUE_CONFLICT_KEYS } from './lib/odds-utils.js'
 
-const ESPN_SCOREBOARD_NBA = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
+const ESPN_SCOREBOARD_NBA  = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
 const ESPN_SCOREBOARD_NCAA = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=100&limit=100'
+const ESPN_SCOREBOARD_MLB  = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard'
 
 /**
  * Netlify scheduled function (runs every 5 minutes via cron).
@@ -50,15 +51,22 @@ export async function handler() {
   // NCAA URL already has query params — append dates with &
   const ncaaTodayUrl = ESPN_SCOREBOARD_NCAA
   const ncaaTomorrowUrl = `${ESPN_SCOREBOARD_NCAA}&dates=${tomorrowStr}`
+  const mlbTodayUrl = ESPN_SCOREBOARD_MLB
+  const mlbTomorrowUrl = `${ESPN_SCOREBOARD_MLB}?dates=${tomorrowStr}`
 
-  // ── Step 2: Fetch all four URLs in parallel ──
-  const [nbaTodayResult, nbaTomorrowResult, ncaaTodayResult, ncaaTomorrowResult] =
-    await Promise.allSettled([
-      fetchJson(nbaTodayUrl),
-      fetchJson(nbaTomorrowUrl),
-      fetchJson(ncaaTodayUrl),
-      fetchJson(ncaaTomorrowUrl),
-    ])
+  // ── Step 2: Fetch all six URLs in parallel ──
+  const [
+    nbaTodayResult, nbaTomorrowResult,
+    ncaaTodayResult, ncaaTomorrowResult,
+    mlbTodayResult, mlbTomorrowResult,
+  ] = await Promise.allSettled([
+    fetchJson(nbaTodayUrl),
+    fetchJson(nbaTomorrowUrl),
+    fetchJson(ncaaTodayUrl),
+    fetchJson(ncaaTomorrowUrl),
+    fetchJson(mlbTodayUrl),
+    fetchJson(mlbTomorrowUrl),
+  ])
 
   // NBA today is fatal — we must have at least today's NBA data
   if (nbaTodayResult.status === 'rejected') {
@@ -91,6 +99,21 @@ export async function handler() {
     console.warn('sync-games: ESPN NCAA tomorrow fetch failed —', ncaaTomorrowResult.reason?.message)
   }
 
+  // Parse MLB games (both days non-fatal)
+  let mlbTodayGames = []
+  if (mlbTodayResult.status === 'fulfilled') {
+    mlbTodayGames = parseGames(mlbTodayResult.value.events ?? [], 'mlb')
+  } else {
+    console.warn('sync-games: ESPN MLB today fetch failed —', mlbTodayResult.reason?.message)
+  }
+
+  let mlbTomorrowGames = []
+  if (mlbTomorrowResult.status === 'fulfilled') {
+    mlbTomorrowGames = parseGames(mlbTomorrowResult.value.events ?? [], 'mlb')
+  } else {
+    console.warn('sync-games: ESPN MLB tomorrow fetch failed —', mlbTomorrowResult.reason?.message)
+  }
+
   // ── Step 3: Combine and deduplicate per sport by id:sport ──
   // Today's entries take precedence over tomorrow's (live status is more current)
   const allRaw = [
@@ -98,6 +121,8 @@ export async function handler() {
     ...nbaTomorrowGames,
     ...ncaaTodayGames,
     ...ncaaTomorrowGames,
+    ...mlbTodayGames,
+    ...mlbTomorrowGames,
   ]
 
   const seenKeys = new Set()
@@ -110,9 +135,10 @@ export async function handler() {
     }
   }
 
-  const nbaCount = games.filter((g) => g.sport === 'nba').length
+  const nbaCount  = games.filter((g) => g.sport === 'nba').length
   const ncaaCount = games.filter((g) => g.sport === 'ncaa').length
-  log.push(`schedule: ${nbaCount} NBA + ${ncaaCount} NCAA tournament game(s) (today+tomorrow, deduped)`)
+  const mlbCount  = games.filter((g) => g.sport === 'mlb').length
+  log.push(`schedule: ${nbaCount} NBA + ${ncaaCount} NCAA + ${mlbCount} MLB game(s) (today+tomorrow, deduped)`)
 
   // ── Step 4: Partition games by status ──
   const actionable = games.filter(

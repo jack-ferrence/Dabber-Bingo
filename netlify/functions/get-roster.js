@@ -4,18 +4,24 @@ function dbg(...args) { if (DEBUG) console.log('[get-roster]', ...args) }
 
 const ESPN_SUMMARY_NBA  = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary'
 const ESPN_SUMMARY_NCAA = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary'
+const ESPN_SUMMARY_MLB  = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary'
 const ESPN_TEAMS_NBA    = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams'
 const ESPN_TEAMS_NCAA   = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams'
+const ESPN_TEAMS_MLB    = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/teams'
 
 const rosterCache = new Map()
 const CACHE_TTL = 300_000
 
 function getSummaryBase(sport) {
-  return sport === 'ncaa' ? ESPN_SUMMARY_NCAA : ESPN_SUMMARY_NBA
+  if (sport === 'ncaa') return ESPN_SUMMARY_NCAA
+  if (sport === 'mlb')  return ESPN_SUMMARY_MLB
+  return ESPN_SUMMARY_NBA
 }
 
 function getTeamsBase(sport) {
-  return sport === 'ncaa' ? ESPN_TEAMS_NCAA : ESPN_TEAMS_NBA
+  if (sport === 'ncaa') return ESPN_TEAMS_NCAA
+  if (sport === 'mlb')  return ESPN_TEAMS_MLB
+  return ESPN_TEAMS_NBA
 }
 
 function lastName(fullName) {
@@ -34,19 +40,23 @@ function parseBoxscorePlayers(summaryData) {
   for (const team of teams) {
     const teamName = team.team?.displayName ?? ''
     const teamAbbr = team.team?.abbreviation ?? ''
-    const athletes = team.statistics?.[0]?.athletes ?? []
+    const seen = new Set()
 
-    for (const entry of athletes) {
-      const athlete = entry.athlete
-      if (!athlete?.id) continue
-      players.push({
-        id: String(athlete.id),
-        name: athlete.displayName ?? athlete.fullName ?? '',
-        lastName: lastName(athlete.displayName ?? athlete.fullName ?? ''),
-        team: teamName,
-        teamAbbr,
-        position: athlete.position?.abbreviation ?? '',
-      })
+    // Iterate all statistics groups so MLB pitchers (statistics[1]) are captured too
+    for (const statsGroup of (team.statistics ?? [])) {
+      for (const entry of (statsGroup.athletes ?? [])) {
+        const athlete = entry.athlete
+        if (!athlete?.id || seen.has(String(athlete.id))) continue
+        seen.add(String(athlete.id))
+        players.push({
+          id: String(athlete.id),
+          name: athlete.displayName ?? athlete.fullName ?? '',
+          lastName: lastName(athlete.displayName ?? athlete.fullName ?? ''),
+          team: teamName,
+          teamAbbr,
+          position: athlete.position?.abbreviation ?? '',
+        })
+      }
     }
   }
 

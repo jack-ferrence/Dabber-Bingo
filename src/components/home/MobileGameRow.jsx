@@ -24,6 +24,7 @@ function isLateEntryOpen(room) {
     const mins = parseInt((room.game_clock ?? '').split(':')[0], 10)
     return period <= 1 && !isNaN(mins) && mins >= 10
   }
+  if (sport === 'mlb') return period <= 3
   return false
 }
 
@@ -69,7 +70,7 @@ export default function MobileGameRow({ room, isJoined, joining, onJoin, onConti
               </span>
               {room.game_clock && (
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55', marginLeft: 6 }}>
-                  {room.game_period ? `Q${room.game_period} · ` : ''}{room.game_clock}
+                  {room.game_period ? `${room.sport === 'mlb' ? `Inn ${room.game_period}` : `Q${room.game_period}`} · ` : ''}{room.game_clock}
                 </span>
               )}
             </div>

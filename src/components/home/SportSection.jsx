@@ -292,6 +292,7 @@ export default function SportSection({
         const mins = parseInt(clock.split(':')[0], 10)
         return period <= 1 && !isNaN(mins) && mins >= 10
       }
+      if (sport === 'mlb') return period <= 3
       return period <= 1
     }
     return false

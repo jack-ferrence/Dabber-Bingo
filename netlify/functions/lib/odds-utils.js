@@ -12,7 +12,7 @@ import { generateOddsBasedCard, getBand } from '../../../src/game/oddsCardGenera
 // ---------------------------------------------------------------------------
 
 export const ODDS_API_BASE = 'https://api.the-odds-api.com/v4'
-export const SPORT_KEY_MAP = { nba: 'basketball_nba', ncaa: 'basketball_ncaab' }
+export const SPORT_KEY_MAP = { nba: 'basketball_nba', ncaa: 'basketball_ncaab', mlb: 'baseball_mlb' }
 export const VIG_FACTOR = 1.05
 export const MIN_UNIQUE_CONFLICT_KEYS = 16
 
@@ -39,10 +39,36 @@ export const ALL_MARKETS = [
   'player_blocks_alternate',
 ].join(',')
 
+export const MLB_MARKETS = [
+  // Batter props
+  'batter_home_runs',
+  'batter_hits',
+  'batter_total_bases',
+  'batter_rbis',
+  'batter_runs_scored',
+  'batter_hits_runs_rbis',
+  'batter_singles',
+  'batter_doubles',
+  'batter_walks',
+  'batter_strikeouts',
+  // Pitcher props
+  'pitcher_strikeouts',
+  'pitcher_hits_allowed',
+  'pitcher_earned_runs',
+  'pitcher_outs',
+  // Alternates
+  'batter_home_runs_alternate',
+  'batter_hits_alternate',
+  'batter_total_bases_alternate',
+  'pitcher_strikeouts_alternate',
+].join(',')
+
 const ESPN_SUMMARY_NBA  = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary'
 const ESPN_SUMMARY_NCAA = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary'
+const ESPN_SUMMARY_MLB  = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary'
 const ESPN_TEAMS_NBA    = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams'
 const ESPN_TEAMS_NCAA   = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams'
+const ESPN_TEAMS_MLB    = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/teams'
 
 export const MARKET_MAP = {
   // Standard
@@ -65,45 +91,93 @@ export const MARKET_MAP = {
   player_blocks_alternate:        { stat: 'blocks',      label: 'BLK' },
 }
 
+export const MLB_MARKET_MAP = {
+  // Batter props
+  batter_home_runs:              { stat: 'home_runs',          label: 'HR' },
+  batter_hits:                   { stat: 'hits',               label: 'H' },
+  batter_total_bases:            { stat: 'total_bases',        label: 'TB' },
+  batter_rbis:                   { stat: 'rbi',                label: 'RBI' },
+  batter_runs_scored:            { stat: 'runs',               label: 'R' },
+  batter_hits_runs_rbis:         { stat: 'hits_runs_rbis',     label: 'HRR' },
+  batter_singles:                { stat: 'singles',            label: '1B' },
+  batter_doubles:                { stat: 'doubles',            label: '2B' },
+  batter_walks:                  { stat: 'walks_batter',       label: 'BB' },
+  batter_strikeouts:             { stat: 'strikeouts_batter',  label: 'KO' },
+  // Pitcher props
+  pitcher_strikeouts:            { stat: 'strikeouts_pitcher', label: 'K' },
+  pitcher_hits_allowed:          { stat: 'hits_allowed',       label: 'HA' },
+  pitcher_earned_runs:           { stat: 'earned_runs',        label: 'ER' },
+  pitcher_outs:                  { stat: 'outs_pitched',       label: 'OT' },
+  // Alternates
+  batter_home_runs_alternate:    { stat: 'home_runs',          label: 'HR' },
+  batter_hits_alternate:         { stat: 'hits',               label: 'H' },
+  batter_total_bases_alternate:  { stat: 'total_bases',        label: 'TB' },
+  pitcher_strikeouts_alternate:  { stat: 'strikeouts_pitcher', label: 'K' },
+}
+
 // ESPN abbreviation → lowercase keywords that appear in TheOddsAPI full team names.
 export const ABBR_TO_KEYWORDS = {
   // NBA
-  ATL:  ['hawks', 'atlanta'],
-  BOS:  ['celtics', 'boston'],
+  ATL:  ['hawks', 'braves', 'atlanta'],
+  BOS:  ['celtics', 'red sox', 'boston'],
   BKN:  ['nets', 'brooklyn'],
   CHA:  ['hornets', 'charlotte'],
   CHI:  ['bulls', 'chicago'],
-  CLE:  ['cavaliers', 'cleveland'],
+  CLE:  ['cavaliers', 'guardians', 'cleveland'],
   DAL:  ['mavericks', 'dallas'],
   DEN:  ['nuggets', 'denver'],
-  DET:  ['pistons', 'detroit'],
+  DET:  ['pistons', 'tigers', 'detroit'],
   GS:   ['warriors', 'golden state'],
   GSW:  ['warriors', 'golden state'],
-  HOU:  ['rockets', 'houston'],
+  HOU:  ['rockets', 'astros', 'houston'],
   IND:  ['pacers', 'indiana'],
   LAC:  ['clippers', 'la clippers', 'los angeles clippers'],
   LAL:  ['lakers', 'la lakers', 'los angeles lakers'],
   MEM:  ['grizzlies', 'memphis'],
-  MIA:  ['heat', 'miami'],
-  MIL:  ['bucks', 'milwaukee'],
-  MIN:  ['timberwolves', 'minnesota'],
+  MIA:  ['heat', 'marlins', 'miami'],
+  MIL:  ['bucks', 'brewers', 'milwaukee'],
+  MIN:  ['timberwolves', 'twins', 'minnesota'],
   NO:   ['pelicans', 'new orleans'],
   NOP:  ['pelicans', 'new orleans'],
   NY:   ['knicks', 'new york'],
   NYK:  ['knicks', 'new york'],
   OKC:  ['thunder', 'oklahoma city'],
   ORL:  ['magic', 'orlando'],
-  PHI:  ['76ers', 'sixers', 'philadelphia'],
+  PHI:  ['76ers', 'sixers', 'phillies', 'philadelphia'],
   PHX:  ['suns', 'phoenix'],
   POR:  ['trail blazers', 'blazers', 'portland'],
   SAC:  ['kings', 'sacramento'],
   SA:   ['spurs', 'san antonio'],
   SAS:  ['spurs', 'san antonio'],
-  TOR:  ['raptors', 'toronto'],
+  TOR:  ['raptors', 'blue jays', 'toronto'],
   UTAH: ['jazz', 'utah'],
   UTA:  ['jazz', 'utah'],
-  WAS:  ['wizards', 'washington'],
-  WSH:  ['wizards', 'washington'],
+  WAS:  ['wizards', 'nationals', 'washington'],
+  WSH:  ['wizards', 'nationals', 'washington'],
+  // MLB
+  ARI:  ['diamondbacks', 'arizona diamondbacks'],
+  BAL:  ['orioles', 'baltimore'],
+  CHC:  ['cubs', 'chicago cubs'],
+  CIN:  ['bearcats', 'reds', 'cincinnati'],
+  COL:  ['rockies', 'colorado rockies'],
+  CWS:  ['white sox', 'chicago white sox'],
+  KC:   ['royals', 'kansas city'],
+  KCR:  ['royals', 'kansas city'],
+  LAA:  ['angels', 'los angeles angels', 'anaheim'],
+  LAD:  ['dodgers', 'los angeles dodgers'],
+  NYM:  ['mets', 'new york mets'],
+  NYY:  ['yankees', 'new york yankees'],
+  OAK:  ['athletics', "a's", 'oakland'],
+  PIT:  ['pirates', 'pittsburgh pirates'],
+  SD:   ['padres', 'san diego'],
+  SDP:  ['padres', 'san diego'],
+  SEA:  ['mariners', 'seattle'],
+  SF:   ['giants', 'san francisco'],
+  SFG:  ['giants', 'san francisco'],
+  STL:  ['cardinals', 'st. louis'],
+  TB:   ['rays', 'tampa bay'],
+  TBR:  ['rays', 'tampa bay'],
+  TEX:  ['rangers', 'longhorns', 'texas'],
   // NCAA — major tournament teams
   DUKE: ['duke', 'blue devils'],
   UNC:  ['north carolina', 'tar heels'],
@@ -256,20 +330,42 @@ export async function fetchJson(url) {
 // ESPN roster fetch
 // ---------------------------------------------------------------------------
 
+function getMarketsForSport(sport) {
+  return sport === 'mlb' ? MLB_MARKETS : ALL_MARKETS
+}
+
+function getMarketMapForSport(sport) {
+  return sport === 'mlb' ? MLB_MARKET_MAP : MARKET_MAP
+}
+
 export async function fetchRoster(gameId, sport) {
-  const summaryUrl = sport === 'ncaa' ? ESPN_SUMMARY_NCAA : ESPN_SUMMARY_NBA
-  const teamsUrl   = sport === 'ncaa' ? ESPN_TEAMS_NCAA   : ESPN_TEAMS_NBA
+  let summaryUrl, teamsUrl
+  if (sport === 'ncaa') {
+    summaryUrl = ESPN_SUMMARY_NCAA
+    teamsUrl   = ESPN_TEAMS_NCAA
+  } else if (sport === 'mlb') {
+    summaryUrl = ESPN_SUMMARY_MLB
+    teamsUrl   = ESPN_TEAMS_MLB
+  } else {
+    summaryUrl = ESPN_SUMMARY_NBA
+    teamsUrl   = ESPN_TEAMS_NBA
+  }
 
   const data = await fetchJson(`${summaryUrl}?event=${gameId}`)
   const players = []
 
   // Primary: boxscore (game in progress or recently completed)
+  // Iterate all statistics groups so MLB pitchers (statistics[1]) are captured too
   for (const team of (data.boxscore?.players ?? [])) {
     const teamName = team.team?.displayName ?? ''
-    for (const entry of (team.statistics?.[0]?.athletes ?? [])) {
-      const a = entry.athlete
-      if (!a?.id) continue
-      players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName })
+    const seen = new Set()
+    for (const statsGroup of (team.statistics ?? [])) {
+      for (const entry of (statsGroup.athletes ?? [])) {
+        const a = entry.athlete
+        if (!a?.id || seen.has(String(a.id))) continue
+        seen.add(String(a.id))
+        players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName })
+      }
     }
   }
 
@@ -373,9 +469,11 @@ export async function fetchOddsForRoom(room, apiKey, ctx, supabase) {
 
   ctx.apiCallsMade++
   console.log(`odds-utils: API call #${ctx.apiCallsMade} — odds for event ${eventId}`)
+  const markets   = getMarketsForSport(sport)
+  const marketMap = getMarketMapForSport(sport)
   const oddsData = await fetchJson(
     `${ODDS_API_BASE}/sports/${sportKey}/events/${eventId}/odds` +
-    `?apiKey=${apiKey}&regions=us&markets=${ALL_MARKETS}&oddsFormat=american`
+    `?apiKey=${apiKey}&regions=us&markets=${markets}&oddsFormat=american`
   )
 
   const book = oddsData.bookmakers?.[0]
@@ -385,7 +483,7 @@ export async function fetchOddsForRoom(room, apiKey, ctx, supabase) {
   const seen  = new Set()
 
   for (const market of (book.markets ?? [])) {
-    const mapping = MARKET_MAP[market.key]
+    const mapping = marketMap[market.key]
     if (!mapping) continue
     for (const oc of (market.outcomes ?? [])) {
       if (oc.name?.toLowerCase() !== 'over') continue

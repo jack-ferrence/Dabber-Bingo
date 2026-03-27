@@ -1,14 +1,16 @@
-const ESPN_SCOREBOARD     = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
-const ESPN_SUMMARY        = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary'
+const ESPN_SCOREBOARD      = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
+const ESPN_SUMMARY         = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary'
 const ESPN_NCAA_SCOREBOARD = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard'
 const ESPN_NCAA_SUMMARY    = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary'
+const ESPN_MLB_SCOREBOARD  = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard'
+const ESPN_MLB_SUMMARY     = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary'
 
 function getEndpoints(sport) {
   if (sport === 'ncaa') {
-    return {
-      scoreboard: `${ESPN_NCAA_SCOREBOARD}?groups=100&limit=100`,
-      summary: ESPN_NCAA_SUMMARY,
-    }
+    return { scoreboard: `${ESPN_NCAA_SCOREBOARD}?groups=100&limit=100`, summary: ESPN_NCAA_SUMMARY }
+  }
+  if (sport === 'mlb') {
+    return { scoreboard: ESPN_MLB_SCOREBOARD, summary: ESPN_MLB_SUMMARY }
   }
   return { scoreboard: ESPN_SCOREBOARD, summary: ESPN_SUMMARY }
 }
@@ -116,15 +118,130 @@ async function fetchJson(url) {
   return res.json()
 }
 
+// ---------------------------------------------------------------------------
+// MLB stat parsers
+// ---------------------------------------------------------------------------
+
+function parseMLBBatterStats(entry, statLabels, period) {
+  const events = []
+  const pid = String(entry.athlete?.id ?? '')
+  const pname = entry.athlete?.displayName ?? ''
+  if (!pid || !statLabels.length || !entry.stats?.length) return events
+
+  const statMap = {}
+  statLabels.forEach((label, i) => { statMap[label.toUpperCase()] = entry.stats[i] ?? '0' })
+
+  const h  = parseStatValue(statMap['H'])
+  const hr = parseStatValue(statMap['HR'])
+  const rbi = parseStatValue(statMap['RBI'])
+  const r  = parseStatValue(statMap['R'])
+  const bb = parseStatValue(statMap['BB'])
+  const so = parseStatValue(statMap['SO'])
+  const doubles = parseStatValue(statMap['2B'])
+  const triples = parseStatValue(statMap['3B'])
+
+  // TB = H + extra bases: doubles +1, triples +2, HRs +3
+  const tb = h + doubles + 2 * triples + 3 * hr
+  const singles = Math.max(0, h - hr - doubles - triples)
+  const hrr = h + r + rbi
+
+  if (h > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'hits',              value: h,       period })
+  if (hr > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'home_runs',         value: hr,      period })
+  if (rbi > 0)     events.push({ player_id: pid, player_name: pname, stat_type: 'rbi',               value: rbi,     period })
+  if (r > 0)       events.push({ player_id: pid, player_name: pname, stat_type: 'runs',              value: r,       period })
+  if (bb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'walks_batter',      value: bb,      period })
+  if (so > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'strikeouts_batter', value: so,      period })
+  if (tb > 0)      events.push({ player_id: pid, player_name: pname, stat_type: 'total_bases',       value: tb,      period })
+  if (singles > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'singles',           value: singles, period })
+  if (doubles > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'doubles',           value: doubles, period })
+  if (hrr > 0)     events.push({ player_id: pid, player_name: pname, stat_type: 'hits_runs_rbis',    value: hrr,     period })
+
+  return events
+}
+
+function parseMLBPitcherStats(entry, statLabels, period) {
+  const events = []
+  const pid = String(entry.athlete?.id ?? '')
+  const pname = entry.athlete?.displayName ?? ''
+  if (!pid || !statLabels.length || !entry.stats?.length) return events
+
+  const statMap = {}
+  statLabels.forEach((label, i) => { statMap[label.toUpperCase()] = entry.stats[i] ?? '0' })
+
+  const so = parseStatValue(statMap['SO'])
+  const h  = parseStatValue(statMap['H'])
+  const er = parseStatValue(statMap['ER'])
+
+  // IP is "6.1" = 6 full innings + 1 out → 19 total outs
+  const ipStr = String(statMap['IP'] ?? '0')
+  const ipParts = ipStr.split('.')
+  const outs = (parseInt(ipParts[0], 10) || 0) * 3 + (parseInt(ipParts[1], 10) || 0)
+
+  if (so > 0)   events.push({ player_id: pid, player_name: pname, stat_type: 'strikeouts_pitcher', value: so,   period })
+  if (h >= 0)   events.push({ player_id: pid, player_name: pname, stat_type: 'hits_allowed',       value: h,    period })
+  if (er >= 0)  events.push({ player_id: pid, player_name: pname, stat_type: 'earned_runs',        value: er,   period })
+  if (outs > 0) events.push({ player_id: pid, player_name: pname, stat_type: 'outs_pitched',       value: outs, period })
+
+  return events
+}
+
+function parseMLBBoxscore(data) {
+  const competition = data.header?.competitions?.[0]
+  const statusObj = competition?.status ?? {}
+  const period = statusObj.period ?? 0
+  const events = []
+  const ruledOutPlayers = []
+  const boxscorePlayerIds = new Set()
+
+  for (const team of (data.boxscore?.players ?? [])) {
+    const battingGroup  = team.statistics?.[0]
+    const pitchingGroup = team.statistics?.[1]
+
+    if (battingGroup) {
+      const labels = battingGroup.labels ?? []
+      for (const entry of (battingGroup.athletes ?? [])) {
+        if (entry.athlete?.id) boxscorePlayerIds.add(String(entry.athlete.id))
+        if (!entry.stats?.length || entry.didNotPlay) continue
+        events.push(...parseMLBBatterStats(entry, labels, period))
+      }
+    }
+
+    if (pitchingGroup) {
+      const labels = pitchingGroup.labels ?? []
+      for (const entry of (pitchingGroup.athletes ?? [])) {
+        if (entry.athlete?.id) boxscorePlayerIds.add(String(entry.athlete.id))
+        if (!entry.stats?.length || entry.didNotPlay) continue
+        events.push(...parseMLBPitcherStats(entry, labels, period))
+      }
+    }
+  }
+
+  const competitors = competition?.competitors ?? []
+  const home = competitors.find(c => c.homeAway === 'home')
+  const away = competitors.find(c => c.homeAway === 'away')
+
+  const gameStatus = {
+    period,
+    clock: statusObj.displayClock ?? null,
+    homeScore: parseInt(home?.score ?? '0', 10),
+    awayScore: parseInt(away?.score ?? '0', 10),
+    statusDetail: statusObj.type?.shortDetail ?? statusObj.type?.detail ?? null,
+  }
+
+  return { events, gameStatus, ruledOutPlayers, boxscorePlayerIds }
+}
+
 /**
  * Fetch live stat events AND game status from ESPN in a single API call.
  * @param {string} espnGameId
- * @param {'nba'|'ncaa'} sport
+ * @param {'nba'|'ncaa'|'mlb'} sport
  * @returns {Promise<{events: Array, gameStatus: {period, clock, homeScore, awayScore, statusDetail}}>}
  */
 async function fetchEspnStatsAndStatus(espnGameId, sport = 'nba') {
   const { summary } = getEndpoints(sport)
   const data = await fetchJson(`${summary}?event=${espnGameId}`)
+
+  if (sport === 'mlb') return parseMLBBoxscore(data)
 
   const boxScore = data.boxscore
   const competition = data.header?.competitions?.[0]

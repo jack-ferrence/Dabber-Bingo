@@ -49,6 +49,7 @@ async function preGenerateCard(roomId, userId) {
 const SPORT_SECTIONS = [
   { sport: 'nba',  label: '🏀 NBA' },
   { sport: 'ncaa', label: '🏆 NCAA' },
+  { sport: 'mlb',  label: '⚾ MLB' },
 ]
 
 export default function LobbyPage() {

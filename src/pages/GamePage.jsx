@@ -143,6 +143,8 @@ function GamePage() {
             const mins = parseInt(clock.split(':')[0], 10)
             lateEntryAllowed = !isNaN(mins) && mins >= 10
           }
+        } else if (sport === 'mlb') {
+          lateEntryAllowed = period <= 3
         }
 
         if (!lateEntryAllowed) {
