@@ -9,7 +9,18 @@
 [functions]
   node_bundler = "esbuild"
 
-# SPA fallback — serve index.html for all client-side routes
+# Service worker must not be redirected
+[[redirects]]
+  from = "/sw.js"
+  to = "/sw.js"
+  status = 200
+
+[[redirects]]
+  from = "/workbox-*.js"
+  to = "/workbox-:splat.js"
+  status = 200
+
+# SPA fallback (must be LAST)
 [[redirects]]
   from = "/*"
   to = "/index.html"
