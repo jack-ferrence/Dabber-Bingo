@@ -198,7 +198,7 @@ function GamePage() {
       try {
         // Use participant count for band-based difficulty scaling
         const playerCount = room.participant_count ?? room.player_count_at_lock ?? 1
-        const oddsCard = generateOddsBasedCard(roomOddsPool, playerCount)
+        const oddsCard = generateOddsBasedCard(roomOddsPool, playerCount, room.sport || 'nba')
         if (oddsCard) {
           const { data: savedCard, error: saveError } = await supabase
             .from('cards')

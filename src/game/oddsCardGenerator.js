@@ -1,29 +1,56 @@
 /**
  * Band-based card generator for Dabber.
  *
- * Every card has a single "band" of 100 American odds. All 24 props on the
- * card fall within that band. The band midpoint is determined by player count:
- * fewer players → more negative odds (easier to hit).
- * More players → more positive odds (harder to hit, rarer lines).
+ * Every card has a single "band" of American odds. All 24 props on the
+ * card fall within that band. The band midpoint and width are sport-specific.
  *
- * Math:
- *   targetProb = 0.60 - (0.004 × clamp(playerCount, 1, 75))
- *   midpoint   = probToAmerican(targetProb)
- *   band       = [midpoint - 50, midpoint + 50]
- *
- * Example bands:
- *    1 player  → p≈0.596 → midpoint≈-147  → band [-197, -97]
- *    5 players → p=0.580 → midpoint≈-138  → band [-188, -88]
- *   10 players → p=0.560 → midpoint≈-127  → band [-177, -77]
- *   25 players → p=0.500 → midpoint≈-100  → band [-150, -50]
- *   40 players → p=0.440 → midpoint≈+127  → band [+77, +177]
- *   50 players → p=0.400 → midpoint≈+150  → band [+100, +200]
- *   75 players → p=0.300 → midpoint≈+233  → band [+183, +283]
+ * NBA/NCAA: band width 100, targets -150 to -100 range for typical player counts
+ * MLB: band width 120, caps at ±400 (no longshot garbage), no Infinity fallback
  */
 
 const TOTAL_SQUARES = 25
 const CENTER_INDEX = 12
-const BAND_WIDTH = 100  // American odds width on each side of midpoint
+
+// ---------------------------------------------------------------------------
+// Sport-specific band configuration
+// ---------------------------------------------------------------------------
+
+const SPORT_BAND_CONFIG = {
+  nba: {
+    targetProb: (playerCount) => 0.60 - (0.004 * Math.max(1, Math.min(playerCount, 75))),
+    bandWidth: 100,
+    maxOdds: 500,
+    minOdds: -500,
+    wideningSteps: [0, 50, 100, 200, Infinity],
+  },
+  ncaa: {
+    targetProb: (playerCount) => 0.60 - (0.004 * Math.max(1, Math.min(playerCount, 75))),
+    bandWidth: 100,
+    maxOdds: 500,
+    minOdds: -500,
+    wideningSteps: [0, 50, 100, 200, Infinity],
+  },
+  mlb: {
+    targetProb: (playerCount) => 0.65 - (0.003 * Math.max(1, Math.min(playerCount, 75))),
+    bandWidth: 120,
+    maxOdds: 400,
+    minOdds: -400,
+    wideningSteps: [0, 40, 80, 150],  // No Infinity fallback
+  },
+}
+
+const MLB_MAX_PER_STAT = {
+  hits: 5,
+  total_bases: 5,
+  home_runs: 3,
+  rbis: 4,
+  runs: 4,
+  pitcher_strikeouts: 4,
+}
+
+function getSportBandConfig(sport) {
+  return SPORT_BAND_CONFIG[sport] ?? SPORT_BAND_CONFIG.nba
+}
 
 // ---------------------------------------------------------------------------
 // Utility
@@ -78,30 +105,24 @@ export function americanToProb(odds) {
 }
 
 /**
- * Calculate the band midpoint in American odds based on player count.
- *
- * Formula: target probability decreases linearly from 0.60 (1 player)
- * to ~0.30 (75+ players), producing a smooth difficulty curve.
+ * Calculate the band midpoint in American odds based on player count and sport.
  */
-export function calculateBandMidpoint(playerCount) {
-  const clamped = Math.max(1, Math.min(playerCount, 75))
-  const targetProb = 0.60 - (0.004 * clamped)
-  return probToAmerican(targetProb)
+export function calculateBandMidpoint(playerCount, sport = 'nba') {
+  const config = getSportBandConfig(sport)
+  return probToAmerican(config.targetProb(playerCount))
 }
 
 /**
- * Get the [low, high] band range for a given player count.
- * Returns American odds values. The band is always 100 wide on each side.
- *
- * Note: comparison for "is this prop in band" must handle the
- * negative/positive discontinuity by converting to implied probability.
+ * Get the [low, high] band range for a given player count and sport.
  */
-export function getBand(playerCount) {
-  const mid = calculateBandMidpoint(playerCount)
+export function getBand(playerCount, sport = 'nba') {
+  const config = getSportBandConfig(sport)
+  const mid = calculateBandMidpoint(playerCount, sport)
+  const half = Math.round(config.bandWidth / 2)
   return {
     midpoint: mid,
-    low: mid - Math.round(BAND_WIDTH / 2),
-    high: mid + Math.round(BAND_WIDTH / 2),
+    low: mid - half,
+    high: mid + half,
   }
 }
 
@@ -200,25 +221,37 @@ function assembleCard(selected) {
 /**
  * Build a card from a filtered pool, targeting an average near midpoint.
  * Tries 50 times; falls back to best-effort if tolerance never met.
+ * statMaxPerType: optional map of stat_type → max occurrences (MLB diversity rule).
  */
-function buildCard(pool, targetMidpoint) {
+function buildCard(pool, targetMidpoint, statMaxPerType = null) {
   const targetProb = americanToProb(targetMidpoint)
   const tolerance  = 0.03  // ±3% implied probability tolerance for the average
 
-  for (let attempt = 0; attempt < 50; attempt++) {
+  function selectFrom(shuffled) {
     const selected = []
-    const usedConflictKeys  = new Set()
-    const usedDisplayTexts  = new Set()
+    const usedConflictKeys = new Set()
+    const usedDisplayTexts = new Set()
+    const statTypeCounts   = {}
 
-    for (const prop of shuffle(pool)) {
+    for (const prop of shuffled) {
       if (selected.length >= 24) break
       if (usedConflictKeys.has(prop.conflict_key)) continue
       if (usedDisplayTexts.has(prop.display_text)) continue
+      if (statMaxPerType) {
+        const st = prop.stat_type
+        const max = statMaxPerType[st] ?? 4
+        if ((statTypeCounts[st] ?? 0) >= max) continue
+      }
       usedConflictKeys.add(prop.conflict_key)
       usedDisplayTexts.add(prop.display_text)
+      statTypeCounts[prop.stat_type] = (statTypeCounts[prop.stat_type] ?? 0) + 1
       selected.push(prop)
     }
+    return selected
+  }
 
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const selected = selectFrom(shuffle(pool))
     if (selected.length < 24) continue
 
     const avgProb = selected.reduce((sum, p) => sum + americanToProb(p.american_odds), 0) / selected.length
@@ -228,17 +261,7 @@ function buildCard(pool, targetMidpoint) {
   }
 
   // Fallback: build the card even if the average isn't within tolerance
-  const selected = []
-  const usedConflictKeys = new Set()
-  const usedDisplayTexts = new Set()
-  for (const prop of shuffle(pool)) {
-    if (selected.length >= 24) break
-    if (usedConflictKeys.has(prop.conflict_key)) continue
-    if (usedDisplayTexts.has(prop.display_text)) continue
-    usedConflictKeys.add(prop.conflict_key)
-    usedDisplayTexts.add(prop.display_text)
-    selected.push(prop)
-  }
+  const selected = selectFrom(shuffle(pool))
   if (selected.length < 24) return null
   return assembleCard(shuffle(selected))
 }
@@ -251,38 +274,42 @@ function buildCard(pool, targetMidpoint) {
  * Generate a bingo card from the prop pool using band-based selection.
  *
  * All 24 non-free squares are populated with props whose American odds
- * fall within the band for the given player count.
+ * fall within the band for the given player count and sport.
  *
  * @param {Array}  matchedProps - output of matchOddsToRoster
  * @param {number} playerCount  - number of players in the room (determines band)
+ * @param {string} sport        - 'nba' | 'ncaa' | 'mlb' (determines band config)
  * @returns {Array|null} flat 25-element array or null if insufficient props
  */
-export function generateOddsBasedCard(matchedProps, playerCount = 5) {
+export function generateOddsBasedCard(matchedProps, playerCount = 5, sport = 'nba') {
   if (!matchedProps?.length) return null
 
-  const band = getBand(playerCount)
+  const config = getSportBandConfig(sport)
+  const band = getBand(playerCount, sport)
+  const halfWidth = Math.round(config.bandWidth / 2)
+  const statMaxPerType = sport === 'mlb' ? MLB_MAX_PER_STAT : null
 
-  // Progressive widening: try the exact band first, then widen in steps,
-  // then fall back to the entire pool. This handles NCAA games with
-  // small prop pools that don't have 24 props in a tight band.
-  const widths = [0, 50, 100, 200, Infinity]
+  // Pre-filter: remove props outside the sport's hard odds cap
+  const capped = matchedProps.filter(p =>
+    p.american_odds != null &&
+    p.american_odds <= config.maxOdds &&
+    p.american_odds >= config.minOdds
+  )
 
-  for (const extra of widths) {
+  for (const extra of config.wideningSteps) {
     let pool
     if (extra === Infinity) {
-      // Final fallback: use entire pool, no band filter
-      pool = matchedProps.filter(p => p.american_odds != null)
+      pool = capped
     } else {
-      const wideBand = { ...band, low: band.low - extra, high: band.high + extra }
-      pool = matchedProps.filter(p =>
-        p.american_odds != null && isInBand(p.american_odds, wideBand)
-      )
+      const low  = band.midpoint - halfWidth - extra
+      const high = band.midpoint + halfWidth + extra
+      pool = capped.filter(p => p.american_odds >= low && p.american_odds <= high)
     }
 
     const uniqueKeys = new Set(pool.map(p => p.conflict_key))
     if (uniqueKeys.size < 24) continue
 
-    const card = buildCard(pool, band.midpoint)
+    const card = buildCard(pool, band.midpoint, statMaxPerType)
     if (card) return card
   }
 
@@ -293,28 +320,29 @@ export function generateOddsBasedCard(matchedProps, playerCount = 5) {
 /**
  * Find a single swap candidate (convenience wrapper).
  */
-export function findSwapCandidate(originalSquare, fullPropPool, currentCardSquares, playerCount = 5) {
-  const candidates = findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, 1, playerCount)
+export function findSwapCandidate(originalSquare, fullPropPool, currentCardSquares, playerCount = 5, sport = 'nba') {
+  const candidates = findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, 1, playerCount, sport)
   return candidates.length > 0 ? candidates[0] : null
 }
 
 /**
  * Find up to N swap candidates within the room's band and within ±30 odds
- * of the original square.
+ * of the original square, respecting the sport's odds cap.
  *
  * @param {Object} originalSquare      - the square being replaced
  * @param {Array}  fullPropPool        - the full matched pool
  * @param {Array}  currentCardSquares  - all 25 squares currently on the card
  * @param {number} count               - max candidates to return (default 5)
  * @param {number} playerCount         - room player count (determines band)
+ * @param {string} sport               - 'nba' | 'ncaa' | 'mlb'
  * @returns {Array} candidate props
  */
-export function findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, count = 5, playerCount = 5) {
+export function findSwapCandidates(originalSquare, fullPropPool, currentCardSquares, count = 5, playerCount = 5, sport = 'nba') {
   if (!fullPropPool?.length) return []
   const origOdds = originalSquare?.american_odds
   if (origOdds == null) return []
 
-  const band = getBand(playerCount)
+  const config = getSportBandConfig(sport)
 
   const usedConflictKeys = new Set()
   const usedDisplayTexts = new Set()
@@ -323,12 +351,18 @@ export function findSwapCandidates(originalSquare, fullPropPool, currentCardSqua
     if (sq?.display_text) usedDisplayTexts.add(sq.display_text)
   }
 
+  // Pre-filter by sport's hard odds cap
+  const capped = fullPropPool.filter(p =>
+    p.american_odds != null &&
+    p.american_odds <= config.maxOdds &&
+    p.american_odds >= config.minOdds
+  )
+
   // Progressive odds range: try ±30 first, then widen to ±60, ±100, then any in pool
   const ranges = [30, 60, 100, Infinity]
 
   for (const range of ranges) {
-    const candidates = fullPropPool.filter(p => {
-      if (p.american_odds == null) return false
+    const candidates = capped.filter(p => {
       if (usedConflictKeys.has(p.conflict_key)) return false
       if (usedDisplayTexts.has(p.display_text)) return false
       if (p.display_text === originalSquare.display_text) return false

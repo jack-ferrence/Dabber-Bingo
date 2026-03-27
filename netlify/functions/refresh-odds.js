@@ -180,7 +180,7 @@ export async function handler() {
   // ── T-10 card lock pass ────────────────────────────────────────────────────
   const { data: lockableRooms } = await supabase
     .from('rooms')
-    .select('id, game_id, starts_at, odds_pool')
+    .select('id, game_id, sport, starts_at, odds_pool')
     .eq('room_type', 'public')
     .eq('status', 'lobby')
     .eq('cards_locked', false)
@@ -214,7 +214,7 @@ export async function handler() {
     let regenCount = 0
     for (const card of cards ?? []) {
       const swappedIndices = new Set((card.swapped_indices ?? []).map(Number))
-      const newCard = generateOddsBasedCard(oddsPool, actualCount)
+      const newCard = generateOddsBasedCard(oddsPool, actualCount, lRoom.sport || 'nba')
       if (!newCard) continue
 
       const finalSquares = newCard.map((sq, i) =>

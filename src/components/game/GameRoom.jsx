@@ -164,7 +164,7 @@ function GameRoom({
   const handleSwapRequest = useCallback((square, squareIndex) => {
     if (!square || swapCount >= 2) return
     const playerCount = room?.participant_count ?? room?.player_count_at_lock ?? 5
-    const candidates = findSwapCandidates(square, oddsPool, flatSquares, 5, playerCount)
+    const candidates = findSwapCandidates(square, oddsPool, flatSquares, 5, playerCount, room?.sport || 'nba')
     setSwapTarget({ square, index: squareIndex, candidates })
     setSwapModalOpen(true)
     setSwapError('')
