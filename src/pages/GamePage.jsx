@@ -166,7 +166,6 @@ function GamePage() {
 
       // ── Step 2: Get odds pool from room (server-managed by refresh-odds) ──────
       const roomOddsPool = room.odds_pool ?? []
-      const oddsReady    = room.odds_status === 'ready' && roomOddsPool.length >= MIN_PROPS_FOR_CARD
 
       if (roomOddsPool.length > 0) {
         setOddsPool(roomOddsPool)
@@ -185,10 +184,18 @@ function GamePage() {
       }
 
       // ── Step 3: Generate card from server-managed odds pool ───────────────────
+      // Live rooms: the pool was locked in when the game went live — skip odds_status check
+      // Lobby rooms: wait for odds_status === 'ready' before generating
+      const oddsReady = room.status === 'live'
+        ? roomOddsPool.length >= MIN_PROPS_FOR_CARD
+        : room.odds_status === 'ready' && roomOddsPool.length >= MIN_PROPS_FOR_CARD
+
       if (!oddsReady) {
-        // GameRoom renders a context-aware placeholder based on room.odds_status
-        // ('pending' → animated grid, 'insufficient' → "not enough props" + CHECK AGAIN)
-        // The useEffect re-runs automatically when room.odds_status changes to 'ready'
+        if (room.status === 'live') {
+          setError('This game has no odds available. Try another game.')
+        }
+        // Lobby: GameRoom renders context-aware placeholder (pending/insufficient)
+        // The useEffect re-runs when room.odds_status changes to 'ready'
         setLoadingCard(false)
         return
       }
