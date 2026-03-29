@@ -107,7 +107,7 @@ const BingoSquare = memo(function BingoSquare({
         type="button"
         className={`select-none sq-free-glow ${isWinning ? 'sq-winning' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
-          aspectRatio: '4/5',
+          aspectRatio: '1 / 0.9',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -131,7 +131,7 @@ const BingoSquare = memo(function BingoSquare({
     return (
       <div
         style={{
-          aspectRatio: '4/5',
+          aspectRatio: '1 / 0.9',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -154,7 +154,7 @@ const BingoSquare = memo(function BingoSquare({
         onClick={() => onClick?.(square, index)}
         className={`select-none sq-marked-glow ${justMarked ? 'sq-mark-in sq-shine' : ''} ${isWinning ? 'sq-winning' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
-          aspectRatio: '4/5',
+          aspectRatio: '1 / 0.9',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -220,7 +220,7 @@ const BingoSquare = memo(function BingoSquare({
       onContextMenu={(e) => { if (isLobby) e.preventDefault() }}
       className="select-none"
       style={{
-        aspectRatio: '4/5',
+        aspectRatio: '1 / 0.9',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

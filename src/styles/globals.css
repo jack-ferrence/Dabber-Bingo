@@ -679,8 +679,8 @@ html, body {
   }
 
   /* Square text — mobile readable sizes */
-  .bingo-grid button .sq-player { font-size: 8px !important; }
-  .bingo-grid button .sq-stat   { font-size: 11px !important; }
+  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 700 !important; }
+  .bingo-grid button .sq-stat   { font-size: 12px !important; }
   .bingo-grid button .sq-team   { font-size: 6.5px !important; }
   .bingo-grid button .sq-odds   { font-size: 6.5px !important; }
 
@@ -744,8 +744,8 @@ html, body {
     gap: 2.5px !important;
   }
 
-  .bingo-grid button .sq-player { font-size: 8px !important; }
-  .bingo-grid button .sq-stat   { font-size: 10px !important; }
+  .bingo-grid button .sq-player { font-size: 9px !important; font-weight: 700 !important; }
+  .bingo-grid button .sq-stat   { font-size: 11px !important; }
 
   /* Long-press hint for swappable lobby squares */
   .sq-swap-hint {

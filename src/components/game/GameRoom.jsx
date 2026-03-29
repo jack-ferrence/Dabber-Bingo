@@ -54,6 +54,7 @@ function GameRoom({
   const [activeRooms, setActiveRooms] = useState([])
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false)
   const [gameOverDismissed, setGameOverDismissed] = useState(false)
+  const [bingoDismissed, setBingoDismissed] = useState(false)
   const [viewingCard, setViewingCard] = useState(null)
   const gamesDropdownRef = useRef(null)
 
@@ -469,7 +470,25 @@ function GameRoom({
 
         {/* LEFT: Bingo Board */}
         <div className={`game-room-board flex shrink-0 flex-col items-center justify-center overflow-y-auto p-2 md:p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[45%]' : 'w-full lg:w-[65%]'}`}>
-          {loadingCard ? (
+          {room?.status === 'finished' && !card && !loadingCard ? (
+            // Finished game — user didn't have a card
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '40px 0' }}>
+              <span style={{ fontSize: 28 }}>🏁</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#8888aa', letterSpacing: '0.08em' }}>
+                GAME FINISHED
+              </span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
+                This game has ended. You didn&apos;t have a card for this game.
+              </span>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                style={{ marginTop: 8, background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '10px 20px', cursor: 'pointer' }}
+              >
+                BACK TO LOBBY
+              </button>
+            </div>
+          ) : loadingCard ? (
             <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Loading your card...</div>
           ) : card ? (
             <>
@@ -487,6 +506,9 @@ function GameRoom({
                 swapCount={swapCount}
                 oddsPool={oddsPool}
                 sport={room?.sport}
+                roomStatus={room?.status}
+                bingoDismissed={bingoDismissed}
+                onBingoDismissed={() => setBingoDismissed(true)}
               />
 
               {/* Swap hint + error (lobby only) */}
@@ -828,7 +850,7 @@ function GameRoom({
       </footer>
 
       {/* ── Game Over modal ── */}
-      {dobsSummary && !gameOverDismissed && (
+      {dobsSummary && !gameOverDismissed && (bingoDismissed || !bingoResult.hasBingo) && (
         <div
           style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(5,5,10,0.88)', backdropFilter: 'blur(6px)', padding: 16, zIndex: 100 }}
           role="dialog"

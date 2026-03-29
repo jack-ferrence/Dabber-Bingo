@@ -18,6 +18,9 @@ function BingoBoard({
   swapCount = 0,
   oddsPool = [],
   sport = 'nba',
+  roomStatus,
+  bingoDismissed = false,
+  onBingoDismissed,
 }) {
   const flat = Array.isArray(squares[0]) ? squares.flat() : squares
   const winSet = new Set(winningSquares)
@@ -61,8 +64,6 @@ function BingoBoard({
     const remove = setTimeout(() => setToast(null), 250)
     return () => clearTimeout(remove)
   }, [toast?.exiting])
-
-  const [bingoDismissed, setBingoDismissed] = useState(false)
 
   const skinClass = boardSkin && boardSkin !== 'default' ? `board-skin-${boardSkin}` : ''
 
@@ -124,12 +125,34 @@ function BingoBoard({
         <div style={{ marginTop: 8, height: 1, background: 'rgba(255,255,255,0.04)' }} />
       </div>
 
+      {/* Winning line SVG overlay — visible after bingo is dismissed */}
+      {winningLines.length > 0 && bingoDismissed && (
+        <svg
+          style={{ position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', borderRadius: 12 }}
+          viewBox="0 0 500 500"
+          preserveAspectRatio="none"
+        >
+          {winningLines.map((line, li) => {
+            const startIdx = line[0]
+            const endIdx = line[line.length - 1]
+            const x1 = (startIdx % 5) * 100 + 50
+            const y1 = Math.floor(startIdx / 5) * 100 + 50
+            const x2 = (endIdx % 5) * 100 + 50
+            const y2 = Math.floor(endIdx / 5) * 100 + 50
+            return (
+              <line key={li} x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke="#ff6b35" strokeWidth="6" strokeLinecap="round" opacity="0.5" />
+            )
+          })}
+        </svg>
+      )}
+
       {/* Full-board BINGO overlay */}
       {hasBingo && !bingoDismissed && (
         <div
           className="absolute inset-0 z-10 flex flex-col items-center justify-center"
           style={{ borderRadius: 12, background: 'rgba(8,8,18,0.94)', backdropFilter: 'blur(6px)', cursor: 'pointer' }}
-          onClick={() => setBingoDismissed(true)}
+          onClick={() => onBingoDismissed?.()}
           role="alert"
           aria-live="polite"
         >
@@ -159,7 +182,7 @@ function BingoBoard({
           </div>
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); setBingoDismissed(true) }}
+            onClick={(e) => { e.stopPropagation(); onBingoDismissed?.() }}
             style={{
               marginTop: 28,
               fontFamily: 'var(--db-font-display)',
@@ -174,7 +197,7 @@ function BingoBoard({
               boxShadow: '0 4px 16px rgba(255,107,53,0.4)',
             }}
           >
-            KEEP PLAYING
+            {roomStatus === 'finished' ? 'VIEW CARD' : 'KEEP PLAYING'}
           </button>
           <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.02em' }}>
             tap anywhere to dismiss
