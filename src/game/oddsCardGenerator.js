@@ -33,7 +33,7 @@ const SPORT_BAND_CONFIG = {
   mlb: {
     targetProb: (playerCount) => 0.65 - (0.003 * Math.max(1, Math.min(playerCount, 75))),
     bandWidth: 120,
-    maxOdds: 400,
+    maxOdds: 150,   // was 400 — keeps MLB cards achievable like NBA
     minOdds: -400,
     wideningSteps: [0, 40, 80, 150, Infinity],  // Fall back to full capped pool
   },
