@@ -16,45 +16,6 @@ export const SPORT_KEY_MAP = { nba: 'basketball_nba', ncaa: 'basketball_ncaab', 
 export const VIG_FACTOR = 1.05
 export const MIN_UNIQUE_CONFLICT_KEYS = 16
 
-// Batch markets — used by the sport-level /sports/{key}/odds endpoint.
-// The batch endpoint does NOT support _alternate markets (returns 422), so
-// these constants intentionally omit them. ALL_MARKETS / MLB_MARKETS below
-// are only used by the per-event fetchOddsForRoom which still accepts alternates.
-export const BATCH_NBA_MARKETS = [
-  'player_points',
-  'player_rebounds',
-  'player_assists',
-  'player_threes',
-  'player_steals',
-  'player_blocks',
-  'player_points_rebounds_assists',
-  'player_points_rebounds',
-  'player_points_assists',
-  'player_rebounds_assists',
-].join(',')
-
-export const BATCH_MLB_MARKETS = [
-  'batter_home_runs',
-  'batter_hits',
-  'batter_total_bases',
-  'batter_rbis',
-  'batter_runs_scored',
-  'batter_hits_runs_rbis',
-  'batter_singles',
-  'batter_doubles',
-  'batter_walks',
-  'batter_strikeouts',
-  'pitcher_strikeouts',
-  'pitcher_hits_allowed',
-  'pitcher_walks',
-  'pitcher_earned_runs',
-  'pitcher_outs',
-].join(',')
-
-function getBatchMarketsForSport(sport) {
-  return sport === 'mlb' ? BATCH_MLB_MARKETS : BATCH_NBA_MARKETS
-}
-
 // All markets in one string — TheOddsAPI counts a single /events/{id}/odds call
 // regardless of how many markets are requested, so combining saves API budget.
 export const ALL_MARKETS = [
@@ -485,137 +446,6 @@ export async function getEventList(sport, apiKey, ctx, supabase) {
   return events
 }
 
-// ---------------------------------------------------------------------------
-// Sport-level batch fetch (1 call = all games for that sport)
-// ---------------------------------------------------------------------------
-
-/**
- * Fetch ALL player prop odds for a sport in a single API call.
- * Returns { fromCache, data: Map<oddsApiEventId → eventOddsData>, ageMs }
- *
- * cacheTtlMs defaults to 20 minutes — the caller controls the refresh cadence.
- */
-export async function fetchAllOddsForSport(sport, apiKey, ctx, supabase, cacheTtlMs = 20 * 60 * 1000) {
-  const sportKey  = SPORT_KEY_MAP[sport] ?? SPORT_KEY_MAP.nba
-  const markets   = getBatchMarketsForSport(sport)   // no _alternate — batch endpoint rejects them
-  const marketMap = getMarketMapForSport(sport)
-  const cacheKey  = `odds_batch_${sport}`
-
-  // Check Supabase cache first
-  if (supabase) {
-    try {
-      const { data: cached } = await supabase
-        .from('odds_cache')
-        .select('data, fetched_at')
-        .eq('key', cacheKey)
-        .maybeSingle()
-
-      if (cached) {
-        const ageMs = Date.now() - new Date(cached.fetched_at).getTime()
-        if (ageMs < cacheTtlMs) {
-          return { fromCache: true, data: cached.data, ageMs }
-        }
-      }
-    } catch { /* odds_cache may not exist */ }
-  }
-
-  // ONE API call for the entire sport
-  ctx.apiCallsMade++
-  console.log(`odds-utils: API call #${ctx.apiCallsMade} — BATCH odds for ${sport}`)
-
-  const url = `${ODDS_API_BASE}/sports/${sportKey}/odds`
-    + `?apiKey=${apiKey}&regions=us&markets=${markets}&oddsFormat=american`
-
-  const allEvents = await fetchJson(url)
-  const eventOddsMap = {}
-
-  for (const event of (allEvents ?? [])) {
-    const book = event.bookmakers?.[0]
-    if (!book) continue
-
-    const props = []
-    const seen  = new Set()
-
-    for (const market of (book.markets ?? [])) {
-      const mapping = marketMap[market.key]
-      if (!mapping) continue
-      for (const oc of (market.outcomes ?? [])) {
-        if (oc.name?.toLowerCase() !== 'over') continue
-        const { description: playerName, point: threshold, price: americanOdds } = oc
-        if (!playerName || threshold == null || typeof americanOdds !== 'number') continue
-
-        const deVigged    = deVig(americanToImplied(americanOdds))
-        const conflictKey = `${playerName}|${mapping.stat}`
-        const label       = `${getLastName(playerName)} ${threshold}+ ${mapping.label}`
-        if (seen.has(label)) continue
-        seen.add(label)
-
-        props.push({
-          player_name:   playerName,
-          stat_type:     mapping.stat,
-          threshold,
-          display_text:  label,
-          american_odds: americanOdds,
-          implied_prob:  Math.round(deVigged * 1000) / 1000,
-          tier:          assignTier(deVigged),
-          conflict_key:  conflictKey,
-        })
-      }
-    }
-
-    if (props.length > 0) {
-      eventOddsMap[event.id] = {
-        homeTeam:     event.home_team,
-        awayTeam:     event.away_team,
-        commenceTime: event.commence_time,
-        props,
-        source:       book.key,
-      }
-    }
-  }
-
-  // Cache the batch result
-  if (supabase) {
-    try {
-      await supabase.from('odds_cache').upsert({
-        key:        cacheKey,
-        data:       eventOddsMap,
-        fetched_at: new Date().toISOString(),
-      })
-    } catch { /* non-fatal */ }
-  }
-
-  return { fromCache: false, data: eventOddsMap, ageMs: 0 }
-}
-
-/**
- * Find a room's matching event in the cached batch data.
- * Tries direct oddsapi_event_id match first, then fuzzy team name match.
- */
-export function findRoomOddsInBatch(room, batchData) {
-  if (!batchData) return null
-
-  // Direct match by stored event ID
-  if (room.oddsapi_event_id && batchData[room.oddsapi_event_id]) {
-    return { eventId: room.oddsapi_event_id, ...batchData[room.oddsapi_event_id] }
-  }
-
-  // Fuzzy match by team names from room name
-  const nameParts = (room.name || '').split(' vs ')
-  if (nameParts.length < 2) return null
-
-  for (const [eventId, eventData] of Object.entries(batchData)) {
-    if (
-      (teamsMatch(eventData.homeTeam, nameParts[1]) && teamsMatch(eventData.awayTeam, nameParts[0])) ||
-      (teamsMatch(eventData.homeTeam, nameParts[0]) && teamsMatch(eventData.awayTeam, nameParts[1]))
-    ) {
-      return { eventId, ...eventData }
-    }
-  }
-
-  return null
-}
-
 /**
  * Track API usage per day in odds_cache.
  * Query: SELECT data FROM odds_cache WHERE key = 'api_usage_2026-03-27'
@@ -644,7 +474,7 @@ export async function trackApiUsage(supabase, callsMade, label = 'batch') {
 }
 
 // ---------------------------------------------------------------------------
-// TheOddsAPI odds fetch for a single room (LEGACY — prefer fetchAllOddsForSport)
+// TheOddsAPI odds fetch for a single room via /events/{eventId}/odds
 // ---------------------------------------------------------------------------
 
 export async function fetchOddsForRoom(room, apiKey, ctx, supabase) {

@@ -1,30 +1,27 @@
 /**
  * Netlify scheduled function (runs every 5 minutes via cron).
  *
- * Refreshes player prop odds using sport-level batch fetching.
- * ONE API call per sport covers ALL games — dramatically reducing daily usage.
+ * Refreshes player prop odds via per-event fetching.
+ * TheOddsAPI's sport-level /sports/{key}/odds endpoint only supports game markets
+ * (h2h, spreads, totals) — player props require the per-event endpoint.
  *
- * Refresh cadence: 20 minutes per sport (cache TTL).
- * Each 5-min cron run distributes from cache for free; every 4th run fetches fresh.
- *
- * Budget: ~240 calls/day (3 sports × 72 batch fetches + 24 event list calls)
- * Scales to ~400/day with 5 sports (NFL + UFC) — stays within 12k/month target.
+ * Budget control: MAX_ROOMS_PER_RUN limits API calls per invocation.
+ * Event list is cached 6h in odds_cache (shared across invocations).
+ * Ready rooms are only re-fetched at specific time windows (T-3h, T-1h, T-20min).
  *
  */
 
 import { createClient } from '@supabase/supabase-js'
-import { generateOddsBasedCard } from '../../src/game/oddsCardGenerator.js'
 import {
   fetchRoster,
-  fetchAllOddsForSport,
-  findRoomOddsInBatch,
+  fetchOddsForRoom,
   matchOddsToRoster,
   reconcileCards,
   trackApiUsage,
   MIN_UNIQUE_CONFLICT_KEYS,
 } from './lib/odds-utils.js'
 
-const BATCH_CACHE_TTL = 20 * 60 * 1000   // 20-minute batch refresh cadence
+const MAX_ROOMS_PER_RUN = 3  // Keep low to avoid Netlify function timeouts
 
 export async function handler() {
   const url        = process.env.SUPABASE_URL
@@ -54,120 +51,111 @@ export async function handler() {
     .from('rooms')
     .select('*')
     .eq('room_type', 'public')
-    .eq('status', 'lobby')
+    .in('status', ['lobby', 'live'])
 
   if (roomsErr) {
     console.error('refresh-odds: rooms query failed', roomsErr)
     return { statusCode: 500, body: JSON.stringify({ error: roomsErr.message }) }
   }
 
-  console.log(`refresh-odds: found ${rooms?.length ?? 0} lobby rooms`)
+  console.log(`refresh-odds: found ${rooms?.length ?? 0} rooms`)
+
+  // Prioritize: pending first, then soonest start time
+  const sortedRooms = [...(rooms ?? [])].sort((a, b) => {
+    if (a.odds_status === 'pending' && b.odds_status !== 'pending') return -1
+    if (b.odds_status === 'pending' && a.odds_status !== 'pending') return 1
+    const aStart = a.starts_at ? new Date(a.starts_at).getTime() : Infinity
+    const bStart = b.starts_at ? new Date(b.starts_at).getTime() : Infinity
+    return aStart - bStart
+  })
 
   let refreshed = 0
+  let processed = 0
 
-  // ── Sport-level batch pass ─────────────────────────────────────────────────
-  // Group unlocked lobby rooms by sport, then fetch odds for the whole sport
-  // in a single API call and distribute to all rooms from that batch.
+  for (const room of sortedRooms) {
+    if (processed >= MAX_ROOMS_PER_RUN) {
+      log.push(`batch limit (${MAX_ROOMS_PER_RUN}) reached — remaining deferred`)
+      break
+    }
 
-  const roomsBySport = new Map()
-  for (const room of (rooms ?? [])) {
-    if (room.cards_locked) continue
+    // Skip ready rooms outside of refresh windows
+    if (room.odds_status === 'ready') {
+      const msUntilStart  = room.starts_at ? new Date(room.starts_at) - now : Infinity
+      const msSinceUpdate = room.odds_updated_at ? now - new Date(room.odds_updated_at) : Infinity
+
+      let needsRefresh = false
+      if      (msUntilStart <= 20 * 60 * 1000  && msSinceUpdate > 15 * 60 * 1000)  needsRefresh = true  // T-20min
+      else if (msUntilStart <= 60 * 60 * 1000  && msSinceUpdate > 45 * 60 * 1000)  needsRefresh = true  // T-1h
+      else if (msUntilStart <= 3 * 60 * 60 * 1000 && msSinceUpdate > 2 * 60 * 60 * 1000) needsRefresh = true  // T-3h
+
+      if (!needsRefresh) continue
+    }
+
+    // For pending/insufficient: skip rooms more than 24h away
+    if (room.odds_status === 'pending' || room.odds_status === 'insufficient') {
+      const msUntilStart = room.starts_at ? new Date(room.starts_at) - now : Infinity
+      if (msUntilStart > 24 * 60 * 60 * 1000) continue
+    }
+
+    processed++
     const sport = room.sport || 'nba'
-    if (!roomsBySport.has(sport)) roomsBySport.set(sport, [])
-    roomsBySport.get(sport).push(room)
-  }
+    console.log(`refresh-odds: processing ${room.game_id} (${room.name}) [${sport}]`)
 
-  for (const [sport, sportRooms] of roomsBySport) {
-    let batchData, fromCache, ageMs
     try {
-      ;({ data: batchData, fromCache, ageMs } = await fetchAllOddsForSport(
-        sport, apiKey, ctx, supabase, BATCH_CACHE_TTL
-      ))
-    } catch (err) {
-      log.push(`${sport}: batch fetch ERROR — ${err.message}`)
-      console.error(`refresh-odds: batch fetch failed for ${sport}:`, err)
-      continue
-    }
-
-    const cacheStatus = fromCache
-      ? `cache (${Math.round(ageMs / 60_000)}min old)`
-      : 'fresh'
-
-    if (!batchData || Object.keys(batchData).length === 0) {
-      log.push(`${sport}: no odds data in batch [${cacheStatus}]`)
-      continue
-    }
-
-    log.push(`${sport}: ${Object.keys(batchData).length} events [${cacheStatus}]`)
-
-    for (const room of sportRooms) {
-      // Skip if recently updated from the same batch age (avoid redundant DB writes)
-      const lastUpdate    = room.odds_updated_at ? new Date(room.odds_updated_at) : null
-      const msSinceUpdate = lastUpdate ? now - lastUpdate : Infinity
-
-      // For ready rooms: only update if cache is newer than last update
-      if (room.odds_status === 'ready' && fromCache && ageMs != null && lastUpdate) {
-        const cacheTs = Date.now() - ageMs
-        if (lastUpdate.getTime() >= cacheTs) {
-          // Already updated from this cache generation — skip
-          continue
-        }
-      }
-
-      const match = findRoomOddsInBatch(room, batchData)
-      if (!match) {
-        if (room.odds_status === 'pending') {
-          log.push(`${room.game_id}: no props in batch — staying pending`)
-        }
+      const roster = await fetchRoster(room.game_id, sport)
+      if (roster.length === 0) {
+        log.push(`${room.game_id}: no roster — skipping`)
         continue
       }
 
-      // Store oddsapi_event_id for faster future lookups
-      if (!room.oddsapi_event_id && match.eventId) {
-        await supabase.from('rooms').update({ oddsapi_event_id: match.eventId }).eq('id', room.id)
-      }
+      const { props, reason, eventId } = await fetchOddsForRoom(room, apiKey, ctx, supabase)
 
-      try {
-        const roster = await fetchRoster(room.game_id, sport)
-        if (roster.length === 0) {
-          log.push(`${room.game_id}: no roster — skipping`)
-          continue
-        }
-
-        const matched    = matchOddsToRoster(match.props, roster)
-        const uniqueKeys = new Set(matched.map(p => p.conflict_key))
-
-        if (uniqueKeys.size < MIN_UNIQUE_CONFLICT_KEYS) {
-          await supabase.from('rooms').update({
-            odds_status:     'insufficient',
-            odds_updated_at: now.toISOString(),
-          }).eq('id', room.id)
-          log.push(`${room.game_id}: ${uniqueKeys.size} combos (need ${MIN_UNIQUE_CONFLICT_KEYS}) — insufficient`)
-          continue
-        }
-
-        const hadPreviousPool = (room.odds_pool ?? []).length > 0
-
+      if (props.length === 0) {
         await supabase.from('rooms').update({
-          odds_pool:       matched,
-          odds_status:     'ready',
+          odds_status:     'insufficient',
           odds_updated_at: now.toISOString(),
         }).eq('id', room.id)
-
-        if (hadPreviousPool && !room.cards_locked) {
-          const { count } = await supabase
-            .from('room_participants')
-            .select('*', { count: 'exact', head: true })
-            .eq('room_id', room.id)
-          await reconcileCards(supabase, room.id, matched, count ?? 5)
-        }
-
-        refreshed++
-        log.push(`${room.game_id}: ready — ${matched.length} lines [${cacheStatus}]${hadPreviousPool ? ' (reconciled)' : ''}`)
-      } catch (err) {
-        log.push(`${room.game_id}: ERROR — ${err.message}`)
-        console.error(`refresh-odds: failed for game ${room.game_id}:`, err)
+        log.push(`${room.game_id}: insufficient (${reason || 'no props'})`)
+        continue
       }
+
+      if (eventId && !room.oddsapi_event_id) {
+        await supabase.from('rooms').update({ oddsapi_event_id: eventId }).eq('id', room.id)
+      }
+
+      const matched    = matchOddsToRoster(props, roster)
+      const uniqueKeys = new Set(matched.map(p => p.conflict_key))
+
+      if (uniqueKeys.size < MIN_UNIQUE_CONFLICT_KEYS) {
+        await supabase.from('rooms').update({
+          odds_status:     'insufficient',
+          odds_updated_at: now.toISOString(),
+        }).eq('id', room.id)
+        log.push(`${room.game_id}: ${uniqueKeys.size} unique combos (need ${MIN_UNIQUE_CONFLICT_KEYS})`)
+        continue
+      }
+
+      const hadPreviousPool = (room.odds_pool ?? []).length > 0
+
+      await supabase.from('rooms').update({
+        odds_pool:       matched,
+        odds_status:     'ready',
+        odds_updated_at: now.toISOString(),
+      }).eq('id', room.id)
+
+      if (hadPreviousPool) {
+        const { count } = await supabase
+          .from('room_participants')
+          .select('*', { count: 'exact', head: true })
+          .eq('room_id', room.id)
+        await reconcileCards(supabase, room.id, matched, count ?? 5)
+      }
+
+      refreshed++
+      log.push(`${room.game_id}: ready — ${matched.length} lines, ${uniqueKeys.size} combos`)
+    } catch (err) {
+      log.push(`${room.game_id}: ERROR — ${err.message}`)
+      console.error(`refresh-odds: failed for ${room.game_id}:`, err)
     }
   }
 
@@ -178,9 +166,9 @@ export async function handler() {
     statusCode: 200,
     body: JSON.stringify({
       refreshed,
+      processed,
       apiCallsMade: ctx.apiCallsMade,
-      sportsProcessed: roomsBySport.size,
-      totalRooms: rooms?.length ?? 0,
+      total: rooms?.length ?? 0,
       log,
     }),
     headers: { 'Content-Type': 'application/json' },
