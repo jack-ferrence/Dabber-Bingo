@@ -9,6 +9,11 @@
  *   Fetch 2: One final refresh at T-1h to catch late scratches/line moves
  *
  * Budget: ~78 calls/day (~2,340/month) — 13% of 20k limit.
+ *
+ * Queue fairness:
+ *   - Rooms interleaved by sport so one sport can't starve others
+ *   - All skip checks happen BEFORE incrementing processed (skips are free)
+ *   - Roster failures set odds_updated_at so they respect the 15min cooldown
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -20,7 +25,33 @@ import {
   MIN_UNIQUE_CONFLICT_KEYS,
 } from './lib/odds-utils.js'
 
-const MAX_ROOMS_PER_RUN = 3  // Keep low to avoid Netlify function timeouts
+const MAX_ROOMS_PER_RUN = 6  // Safe with proper cooldowns; ~2 per sport per run
+
+/**
+ * Round-robin interleave: pick one item from each bucket in rotation.
+ * Preserves per-bucket order (first item of each bucket, then second, etc.)
+ */
+function interleaveByKey(arr, keyFn) {
+  const buckets = {}
+  for (const item of arr) {
+    const key = keyFn(item)
+    if (!buckets[key]) buckets[key] = []
+    buckets[key].push(item)
+  }
+  const keys = Object.keys(buckets)
+  const result = []
+  let added = true
+  while (added) {
+    added = false
+    for (const key of keys) {
+      if (buckets[key].length > 0) {
+        result.push(buckets[key].shift())
+        added = true
+      }
+    }
+  }
+  return result
+}
 
 export async function handler() {
   const url        = process.env.SUPABASE_URL
@@ -59,7 +90,7 @@ export async function handler() {
 
   console.log(`refresh-odds: found ${rooms?.length ?? 0} rooms`)
 
-  // Prioritize: pending first, then soonest start time
+  // Sort within each sport: pending first, then soonest start
   const sortedRooms = [...(rooms ?? [])].sort((a, b) => {
     if (a.odds_status === 'pending' && b.odds_status !== 'pending') return -1
     if (b.odds_status === 'pending' && a.odds_status !== 'pending') return 1
@@ -68,21 +99,21 @@ export async function handler() {
     return aStart - bStart
   })
 
+  // Interleave by sport so no single sport starves the queue
+  const interleavedRooms = interleaveByKey(sortedRooms, r => r.sport || 'nba')
+
   let refreshed = 0
   let processed = 0
 
-  for (const room of sortedRooms) {
-    if (processed >= MAX_ROOMS_PER_RUN) {
-      log.push(`batch limit (${MAX_ROOMS_PER_RUN}) reached — remaining deferred`)
-      break
-    }
+  for (const room of interleavedRooms) {
+    // ── Skip checks — BEFORE incrementing processed (skips are free) ──────────
 
     const msUntilStart  = room.starts_at ? new Date(room.starts_at) - now : Infinity
     const msSinceUpdate = room.odds_updated_at ? now - new Date(room.odds_updated_at) : Infinity
 
     if (room.odds_status === 'ready') {
       // Already have odds — only one more fetch at T-1h to catch late scratches
-      const inT1hWindow          = msUntilStart <= 65 * 60 * 1000 && msUntilStart > 0
+      const inT1hWindow             = msUntilStart <= 65 * 60 * 1000 && msUntilStart > 0
       const notYetRefreshedInWindow = msSinceUpdate > 55 * 60 * 1000
       if (!inT1hWindow || !notYetRefreshedInWindow) continue
     }
@@ -93,14 +124,22 @@ export async function handler() {
       if (msSinceUpdate < 15 * 60 * 1000) continue
     }
 
+    // ── Batch limit — checked after skips so free-skips don't block the queue ──
+    if (processed >= MAX_ROOMS_PER_RUN) {
+      log.push(`batch limit (${MAX_ROOMS_PER_RUN}) reached — remaining deferred`)
+      break
+    }
     processed++
+
     const sport = room.sport || 'nba'
     console.log(`refresh-odds: processing ${room.game_id} (${room.name}) [${sport}]`)
 
     try {
       const roster = await fetchRoster(room.game_id, sport)
       if (roster.length === 0) {
-        log.push(`${room.game_id}: no roster — skipping`)
+        // Set odds_updated_at so the 15-min cooldown applies — prevents starving the queue
+        await supabase.from('rooms').update({ odds_updated_at: now.toISOString() }).eq('id', room.id)
+        log.push(`${room.game_id}: no roster — cooldown set`)
         continue
       }
 
