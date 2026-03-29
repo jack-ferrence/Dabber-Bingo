@@ -545,26 +545,39 @@ function GameRoom({
                 ))}
               </div>
 
-              {/* Status message */}
+              {/* Status message — sport-aware */}
               <div style={{ textAlign: 'center' }}>
                 <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#8888aa', letterSpacing: '0.08em', margin: '0 0 6px' }}>
-                  {room?.odds_status === 'ready' ? 'GENERATING CARD...' : 'WAITING FOR PROPS'}
+                  {room?.odds_status === 'ready'
+                    ? 'GENERATING CARD...'
+                    : room?.sport === 'mlb'
+                      ? 'MLB LINEUPS PENDING'
+                      : 'WAITING FOR PROPS'}
                 </p>
-                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', margin: 0, lineHeight: 1.5 }}>
+                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', margin: 0, lineHeight: 1.5, maxWidth: 280 }}>
                   {room?.odds_status === 'ready'
                     ? 'Your card is being generated. Tap below to retry.'
-                    : "You're in! Your card will appear when player props are available."}
+                    : room?.sport === 'mlb'
+                      ? "MLB lineups are posted closer to game time. We'll build your card automatically once they're available!"
+                      : "You're in! Your card will appear when player props are available."}
                 </p>
               </div>
 
               {/* Joined confirmation */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 4 }}>
-                <span style={{ color: '#22c55e', fontSize: 12 }}>✓</span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, color: '#22c55e', letterSpacing: '0.06em' }}>JOINED</span>
-                {room?.participant_count > 0 && (
-                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', marginLeft: 4 }}>
-                    · {room.participant_count} player{room.participant_count === 1 ? '' : 's'}
-                  </span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 4 }}>
+                  <span style={{ color: '#22c55e', fontSize: 12 }}>✓</span>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, color: '#22c55e', letterSpacing: '0.06em' }}>JOINED</span>
+                  {room?.participant_count > 0 && (
+                    <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#555577', marginLeft: 4 }}>
+                      · {room.participant_count} player{room.participant_count === 1 ? '' : 's'}
+                    </span>
+                  )}
+                </div>
+                {room?.sport === 'mlb' && room?.odds_status !== 'ready' && (
+                  <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#3a3a55', margin: 0, textAlign: 'center' }}>
+                    Check back ~1 hour before first pitch
+                  </p>
                 )}
               </div>
 

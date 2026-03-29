@@ -8,7 +8,11 @@
  *   Fetch 1: Keep retrying (every 15 min) until odds are available → status=ready
  *   Fetch 2: One final refresh at T-1h to catch late scratches/line moves
  *
- * Budget: ~78 calls/day (~2,340/month) — 13% of 20k limit.
+ * MLB-specific: lineups aren't posted until ~1-2h before first pitch.
+ *   Skip MLB rooms until T-75min (free skip — no cooldown, no batch slot).
+ *   Live MLB rooms that missed pre-game odds use a 5-min cooldown (urgent).
+ *
+ * Budget: ~30 calls/day MLB + ~48 NBA/NCAA = ~78/day (~2,340/month) — 13% of 20k limit.
  *
  * Queue fairness:
  *   - Rooms interleaved by sport so one sport can't starve others
@@ -108,8 +112,12 @@ export async function handler() {
   for (const room of interleavedRooms) {
     // ── Skip checks — BEFORE incrementing processed (skips are free) ──────────
 
+    const sport         = room.sport || 'nba'
     const msUntilStart  = room.starts_at ? new Date(room.starts_at) - now : Infinity
     const msSinceUpdate = room.odds_updated_at ? now - new Date(room.odds_updated_at) : Infinity
+
+    // MLB: lineups aren't posted until ~1-2h before first pitch — don't waste API calls
+    if (sport === 'mlb' && room.odds_status !== 'ready' && msUntilStart > 75 * 60 * 1000) continue
 
     if (room.odds_status === 'ready') {
       // Already have odds — only one more fetch at T-1h to catch late scratches
@@ -119,9 +127,14 @@ export async function handler() {
     }
 
     if (room.odds_status === 'pending' || room.odds_status === 'insufficient') {
-      // No odds yet — retry every 15 min; skip if game is >24h away
-      if (msUntilStart > 24 * 60 * 60 * 1000) continue
-      if (msSinceUpdate < 15 * 60 * 1000) continue
+      if (room.status === 'live') {
+        // Live room with no odds — game is happening now, use faster 5-min cooldown
+        if (msSinceUpdate < 5 * 60 * 1000) continue
+      } else {
+        // Lobby: retry every 15 min; skip if game is >24h away
+        if (msUntilStart > 24 * 60 * 60 * 1000) continue
+        if (msSinceUpdate < 15 * 60 * 1000) continue
+      }
     }
 
     // ── Batch limit — checked after skips so free-skips don't block the queue ──
@@ -130,8 +143,6 @@ export async function handler() {
       break
     }
     processed++
-
-    const sport = room.sport || 'nba'
     console.log(`refresh-odds: processing ${room.game_id} (${room.name}) [${sport}]`)
 
     try {

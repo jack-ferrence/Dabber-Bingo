@@ -24,6 +24,17 @@ function GamePage() {
   const [gameStartedNotification, setGameStartedNotification] = useState(false)
   const prevStatusRef = useRef(null)
 
+  // Auto-retry when room goes live and we have no card (e.g. MLB lineup just became available)
+  useEffect(() => {
+    if (room?.status === 'live' && !card && !loadingCard && room?.odds_status !== 'ready') {
+      const timer = setTimeout(() => {
+        setRetryCount((c) => c + 1)
+      }, 30_000)
+      return () => clearTimeout(timer)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room?.status, card, loadingCard, room?.odds_status])
+
   // Re-fetch full room when odds become ready — realtime patch may not include odds_pool
   useEffect(() => {
     if (room?.odds_status === 'ready' && !card && !loadingCard) {
