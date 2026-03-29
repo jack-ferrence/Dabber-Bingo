@@ -35,7 +35,7 @@ const SPORT_BAND_CONFIG = {
     bandWidth: 120,
     maxOdds: 400,
     minOdds: -400,
-    wideningSteps: [0, 40, 80, 150],  // No Infinity fallback
+    wideningSteps: [0, 40, 80, 150, Infinity],  // Fall back to full capped pool
   },
 }
 
