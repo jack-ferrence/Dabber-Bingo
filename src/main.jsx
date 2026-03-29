@@ -1,9 +1,25 @@
-// Auto-reload on stale chunk errors (happens after deploys)
+// ── Stale chunk auto-recovery ─────────────────────────────────────────────
+// After deploys, old Vite chunk filenames no longer exist on the CDN.
+// Reload once silently — sessionStorage guard prevents infinite reload loops.
+const CHUNK_RELOAD_KEY = 'dobber-chunk-reload'
 window.addEventListener('error', (e) => {
-  if (e.message?.includes('Failed to fetch dynamically imported module') ||
-      e.message?.includes('Importing a module script failed')) {
-    window.location.reload()
+  const isChunk = (
+    e.message?.includes('Failed to fetch dynamically imported module') ||
+    e.message?.includes('Importing a module script failed') ||
+    e.message?.includes("'text/html' is not a valid JavaScript MIME type") ||
+    e.message?.includes('Loading chunk') ||
+    e.message?.includes('Loading CSS chunk')
+  )
+  if (!isChunk) return
+  const last = sessionStorage.getItem(CHUNK_RELOAD_KEY)
+  const now = Date.now()
+  if (last && now - Number(last) < 10_000) {
+    console.warn('Stale chunk: already reloaded recently, not retrying')
+    return
   }
+  sessionStorage.setItem(CHUNK_RELOAD_KEY, String(now))
+  console.warn('Stale chunk detected — reloading...')
+  window.location.reload()
 })
 
 import { StrictMode } from 'react'

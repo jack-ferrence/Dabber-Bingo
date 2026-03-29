@@ -10,9 +10,11 @@ import { findSwapCandidates } from '../../game/oddsCardGenerator.js'
 import { useCountdown } from '../../hooks/useCountdown.js'
 import { useProfile } from '../../hooks/useProfile.js'
 
-const Leaderboard = lazy(() => import('./Leaderboard.jsx'))
-const LiveChat = lazy(() => import('./LiveChat.jsx'))
-const CardViewerModal = lazy(() => import('./CardViewerModal.jsx'))
+import { lazyRetry } from '../../lib/lazyRetry.js'
+
+const Leaderboard = lazy(() => lazyRetry(() => import('./Leaderboard.jsx')))
+const LiveChat = lazy(() => lazyRetry(() => import('./LiveChat.jsx')))
+const CardViewerModal = lazy(() => lazyRetry(() => import('./CardViewerModal.jsx')))
 
 const PanelFallback = () => (
   <div className="flex items-center justify-center p-4">

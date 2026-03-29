@@ -1,4 +1,18 @@
+import { Component } from 'react'
 import { Sentry } from '../lib/sentry.js'
+
+const CHUNK_RELOAD_KEY = 'dobber-chunk-reload'
+
+function isChunkError(error) {
+  const msg = error?.message ?? ''
+  return (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes("'text/html' is not a valid JavaScript MIME type") ||
+    msg.includes('Loading chunk') ||
+    msg.includes('Loading CSS chunk')
+  )
+}
 
 function FallbackUI() {
   return (
@@ -50,16 +64,39 @@ function FallbackUI() {
   )
 }
 
-function ErrorBoundary({ children }) {
-  if (Sentry.ErrorBoundary) {
-    return (
-      <Sentry.ErrorBoundary fallback={<FallbackUI />}>
-        {children}
-      </Sentry.ErrorBoundary>
-    )
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
   }
 
-  return children
+  static getDerivedStateFromError(error) {
+    // Chunk errors: don't set hasError — we'll reload in componentDidCatch
+    if (isChunkError(error)) return {}
+    return { hasError: true }
+  }
+
+  componentDidCatch(error, info) {
+    if (isChunkError(error)) {
+      const last = sessionStorage.getItem(CHUNK_RELOAD_KEY)
+      const now = Date.now()
+      if (!last || now - Number(last) > 10_000) {
+        sessionStorage.setItem(CHUNK_RELOAD_KEY, String(now))
+        window.location.reload()
+        return
+      }
+      // Reloaded recently and still failing — show error UI rather than infinite loop
+      this.setState({ hasError: true })
+      return
+    }
+    // Non-chunk errors: capture in Sentry
+    Sentry.captureException?.(error, { extra: info })
+  }
+
+  render() {
+    if (this.state.hasError) return <FallbackUI />
+    return this.props.children
+  }
 }
 
 export default ErrorBoundary
