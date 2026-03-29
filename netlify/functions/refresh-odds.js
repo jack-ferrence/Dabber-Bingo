@@ -1,14 +1,14 @@
 /**
  * Netlify scheduled function (runs every 5 minutes via cron).
  *
- * Refreshes player prop odds via per-event fetching.
- * TheOddsAPI's sport-level /sports/{key}/odds endpoint only supports game markets
- * (h2h, spreads, totals) — player props require the per-event endpoint.
+ * Refreshes player prop odds via per-event fetching (/events/{eventId}/odds).
+ * TheOddsAPI's sport-level endpoint does NOT support player props.
  *
- * Budget control: MAX_ROOMS_PER_RUN limits API calls per invocation.
- * Event list is cached 6h in odds_cache (shared across invocations).
- * Ready rooms are only re-fetched at specific time windows (T-3h, T-1h, T-20min).
+ * Two-fetch strategy — max 2 API calls per game:
+ *   Fetch 1: Keep retrying (every 15 min) until odds are available → status=ready
+ *   Fetch 2: One final refresh at T-1h to catch late scratches/line moves
  *
+ * Budget: ~78 calls/day (~2,340/month) — 13% of 20k limit.
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -17,7 +17,6 @@ import {
   fetchOddsForRoom,
   matchOddsToRoster,
   reconcileCards,
-  trackApiUsage,
   MIN_UNIQUE_CONFLICT_KEYS,
 } from './lib/odds-utils.js'
 
@@ -78,23 +77,20 @@ export async function handler() {
       break
     }
 
-    // Skip ready rooms outside of refresh windows
+    const msUntilStart  = room.starts_at ? new Date(room.starts_at) - now : Infinity
+    const msSinceUpdate = room.odds_updated_at ? now - new Date(room.odds_updated_at) : Infinity
+
     if (room.odds_status === 'ready') {
-      const msUntilStart  = room.starts_at ? new Date(room.starts_at) - now : Infinity
-      const msSinceUpdate = room.odds_updated_at ? now - new Date(room.odds_updated_at) : Infinity
-
-      let needsRefresh = false
-      if      (msUntilStart <= 20 * 60 * 1000  && msSinceUpdate > 15 * 60 * 1000)  needsRefresh = true  // T-20min
-      else if (msUntilStart <= 60 * 60 * 1000  && msSinceUpdate > 45 * 60 * 1000)  needsRefresh = true  // T-1h
-      else if (msUntilStart <= 3 * 60 * 60 * 1000 && msSinceUpdate > 2 * 60 * 60 * 1000) needsRefresh = true  // T-3h
-
-      if (!needsRefresh) continue
+      // Already have odds — only one more fetch at T-1h to catch late scratches
+      const inT1hWindow          = msUntilStart <= 65 * 60 * 1000 && msUntilStart > 0
+      const notYetRefreshedInWindow = msSinceUpdate > 55 * 60 * 1000
+      if (!inT1hWindow || !notYetRefreshedInWindow) continue
     }
 
-    // For pending/insufficient: skip rooms more than 24h away
     if (room.odds_status === 'pending' || room.odds_status === 'insufficient') {
-      const msUntilStart = room.starts_at ? new Date(room.starts_at) - now : Infinity
+      // No odds yet — retry every 15 min; skip if game is >24h away
       if (msUntilStart > 24 * 60 * 60 * 1000) continue
+      if (msSinceUpdate < 15 * 60 * 1000) continue
     }
 
     processed++
@@ -158,8 +154,6 @@ export async function handler() {
       console.error(`refresh-odds: failed for ${room.game_id}:`, err)
     }
   }
-
-  await trackApiUsage(supabase, ctx.apiCallsMade, 'refresh-odds')
 
   console.log('refresh-odds:', log.join(' | '))
   return {
