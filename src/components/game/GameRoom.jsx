@@ -553,14 +553,14 @@ function GameRoom({
               </span>
             </div>
           ) : room?.odds_status === 'insufficient' ? (
-            // Not enough props — show informative state + soft retry
+            // Not enough props yet — friendly waiting state, not an error
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 28 }}>📊</span>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.25)' }}>
-                NOT ENOUGH PROPS YET
+              <span style={{ fontSize: 28 }}>⏳</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#8888aa', letterSpacing: '0.08em' }}>
+                PROPS COMING SOON
               </span>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.2)', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
-                Props for this game aren't available yet. Check back closer to tip-off.
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', textAlign: 'center', maxWidth: 280, lineHeight: 1.5 }}>
+                Player props for this game aren&apos;t available yet. They&apos;ll appear as game time approaches. Check back soon!
               </span>
               {onRetryCard && (
                 <button
@@ -575,26 +575,22 @@ function GameRoom({
               )}
             </div>
           ) : (
-            // Generic failure — error banner above already shows the reason;
-            // only show retry button when there's no hard error to act on.
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-              {!error && <span style={{ fontSize: 28 }}>🎯</span>}
-              {!error && (
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', maxWidth: 300 }}>
-                  Couldn&apos;t generate your card.
-                </span>
-              )}
-              {onRetryCard && !error && (
-                <button
-                  type="button"
-                  onClick={onRetryCard}
-                  style={{ background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', padding: '6px 16px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(255,107,53,0.3)', transition: 'opacity 100ms ease' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-                >
-                  Try again
-                </button>
-              )}
+            // No card available — props weren't posted or generation failed
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '40px 20px' }}>
+              <span style={{ fontSize: 28 }}>🎯</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#8888aa', letterSpacing: '0.08em' }}>
+                CARD NOT AVAILABLE
+              </span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', textAlign: 'center', maxWidth: 280, lineHeight: 1.5 }}>
+                Props weren&apos;t available for this game. Try joining another game from the lobby!
+              </span>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                style={{ marginTop: 8, background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '10px 20px', cursor: 'pointer' }}
+              >
+                BACK TO LOBBY
+              </button>
             </div>
           )}
         </div>

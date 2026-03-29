@@ -216,10 +216,7 @@ function GamePage() {
         : room.odds_status === 'ready' && roomOddsPool.length >= MIN_PROPS_FOR_CARD
 
       if (!oddsReady) {
-        if (room.status === 'live') {
-          setError('This game has no odds available. Try another game.')
-        }
-        // Lobby: GameRoom renders context-aware placeholder (pending/insufficient)
+        // GameRoom renders context-aware placeholder (pending/insufficient/fallback)
         // The useEffect re-runs when room.odds_status changes to 'ready'
         setLoadingCard(false)
         return
@@ -256,7 +253,7 @@ function GamePage() {
           return
         }
 
-        setError('Unable to generate a card with the available odds. Try again shortly.')
+        // Card generation failed — GameRoom fallback handles the UI
         setLoadingCard(false)
       } catch (cardErr) {
         if (debug) console.error('[GamePage] card generation threw', cardErr)

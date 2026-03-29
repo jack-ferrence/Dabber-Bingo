@@ -170,6 +170,12 @@ export async function handler() {
       const key = `${game.id}:${game.sport}`
       if (existingKeys.has(key)) continue
 
+      // Skip games where teams haven't been determined yet — no roster, no odds possible
+      if (game.roomName.includes('TBD')) {
+        log.push(`${game.id} (${game.sport}): skipped — TBD teams`)
+        continue
+      }
+
       const { error: insertErr } = await supabase.from('rooms').insert({
         name: game.roomName,
         game_id: game.id,
