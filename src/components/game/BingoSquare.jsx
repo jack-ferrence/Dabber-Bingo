@@ -89,15 +89,6 @@ const BingoSquare = memo(function BingoSquare({
   const teamAbbr = square?.team_abbr ?? ''
   const teamColor = getTeamColor(teamAbbr, sport)
 
-  const TIER_COLORS = {
-    1: '#22c55e', easy: '#22c55e',
-    2: '#3b82f6', medium: '#3b82f6',
-    3: '#f59e0b', hard: '#f59e0b',
-    longshot: '#ef4444',
-  }
-  const tierColor = square?.tier ? TIER_COLORS[square.tier] : null
-  const tierPct = square?.implied_prob != null ? Math.round(square.implied_prob * 100) : null
-
   // ── FREE square ──────────────────────────────────────────────────────────────
   if (isFree) {
     return (
@@ -155,14 +146,14 @@ const BingoSquare = memo(function BingoSquare({
           aspectRatio: '1 / 0.9',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
-          gap: 1,
-          background: 'linear-gradient(160deg, #2d1a0a 0%, #1e1008 100%)',
-          border: '1px solid rgba(255,107,53,0.45)',
-          borderTop: '1px solid rgba(255,130,70,0.3)',
+          gap: 3,
+          background: 'rgba(255,107,53,0.10)',
+          border: '1px solid rgba(255,107,53,0.3)',
+          borderLeft: '3px solid #ff6b35',
           borderRadius: 6,
-          padding: '4px 5px',
+          padding: '5px 5px 8px 7px',
           cursor: 'pointer',
           overflow: 'hidden',
           position: 'relative',
@@ -170,20 +161,15 @@ const BingoSquare = memo(function BingoSquare({
         }}
       >
         {playerLabel && (
-          <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#ff8855', letterSpacing: '0.02em', lineHeight: 1.1 }}>
+          <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#ff8855', letterSpacing: '0.02em', lineHeight: 1.1 }}>
             {playerLabel}
           </span>
         )}
-        <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, color: 'rgba(255,140,80,0.6)', lineHeight: 1.15, textAlign: 'center' }}>
+        <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'rgba(255,140,80,0.65)', lineHeight: 1.15, textAlign: 'left' }}>
           {statLabel}
         </span>
-        {teamAbbr && (
-          <span className="sq-team" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, fontWeight: 700, color: 'rgba(255,107,53,0.4)', letterSpacing: '0.08em', lineHeight: 1 }}>
-            {teamAbbr}
-          </span>
-        )}
         {!isFree && square?.threshold > 0 && (
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 5, background: 'rgba(255,255,255,0.04)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
             <div style={{ width: '100%', height: '100%', background: '#ff6b35', borderRadius: '0 0 5px 5px', transition: 'width 0.6s ease-out' }} />
           </div>
         )}
@@ -191,19 +177,12 @@ const BingoSquare = memo(function BingoSquare({
           <span style={{ position: 'absolute', right: 3, top: 2, fontFamily: 'var(--db-font-mono)', fontSize: 7, color: 'rgba(255,107,53,0.6)', fontWeight: 800 }}>✓</span>
         )}
         <DaubOverlay style={daubStyle} animated={justMarked} />
-        {tierColor && (
-          <span
-            title={tierPct != null ? `${square.tier} — ${tierPct}%` : square.tier}
-            style={{ position: 'absolute', left: 3, top: 3, width: 4, height: 4, borderRadius: '50%', background: tierColor, opacity: 0.8, flexShrink: 0 }}
-          />
-        )}
       </button>
     )
   }
 
   // ── Normal (unmarked) square ─────────────────────────────────────────────────
   const showSwapBtn = isLobby && hovered && !swapsExhausted
-  const accentColor = teamColor ?? 'rgba(255,255,255,0.1)'
 
   return (
     <button
@@ -221,16 +200,16 @@ const BingoSquare = memo(function BingoSquare({
         aspectRatio: '1 / 0.9',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        gap: 1,
+        gap: 3,
         background: hovered
           ? 'linear-gradient(160deg, #232338 0%, #1c1c2e 100%)'
           : 'linear-gradient(160deg, #1c1c2c 0%, #141420 100%)',
-        border: `1px solid ${hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.06)'}`,
-        borderBottom: `2px solid ${accentColor}`,
+        border: `1px solid ${hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
+        borderLeft: `3px solid ${teamColor ?? 'rgba(255,255,255,0.08)'}`,
         borderRadius: 6,
-        padding: '4px 5px',
+        padding: '5px 5px 8px 7px',
         cursor: 'pointer',
         transition: 'background 120ms ease, border-color 120ms ease, transform 80ms ease',
         position: 'relative',
@@ -239,35 +218,23 @@ const BingoSquare = memo(function BingoSquare({
         transform: hovered ? 'translateY(-1px)' : 'translateY(0)',
       }}
     >
-      {/* Subtle team-color top sheen */}
-      {teamColor && (
-        <span style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-          background: `linear-gradient(90deg, transparent, ${teamColor}55, transparent)`,
-          borderRadius: '6px 6px 0 0',
-          pointerEvents: 'none',
-        }} />
-      )}
-
       {playerLabel && (
-        <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#e0e0f0', letterSpacing: '0.02em', lineHeight: 1.1 }}>
+        <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#e8e8f4', letterSpacing: '0.02em', lineHeight: 1.1 }}>
           {playerLabel}
         </span>
       )}
-      <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, color: '#8888aa', lineHeight: 1.15, textAlign: 'center', letterSpacing: '0.02em' }}>
+      <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: '#ff6b35', lineHeight: 1.15, textAlign: 'left', letterSpacing: '0.02em' }}>
         {statLabel}
       </span>
-      {teamAbbr && (
-        <span className="sq-team" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, fontWeight: 700, color: teamColor ?? '#444466', letterSpacing: '0.08em', lineHeight: 1 }}>
-          {teamAbbr}
-        </span>
+      {currentValue > 0 && square?.threshold > 0 && (
+        <span style={{ position: 'absolute', bottom: 8, right: 5, fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.35)', lineHeight: 1 }}>{currentValue}/{square.threshold}</span>
       )}
       {!isFree && square?.threshold > 0 && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
           <div style={{
             width: `${Math.min(100, ((currentValue ?? 0) / square.threshold) * 100)}%`,
             height: '100%',
-            background: (currentValue ?? 0) >= square.threshold * 0.5 ? 'rgba(255,107,53,0.7)' : 'rgba(255,107,53,0.35)',
+            background: `linear-gradient(90deg, ${teamColor ? teamColor + '55' : 'rgba(255,107,53,0.4)'}, #ff6b35)`,
             borderRadius: '0 0 5px 5px',
             transition: 'width 0.6s ease-out',
           }} />
@@ -282,14 +249,6 @@ const BingoSquare = memo(function BingoSquare({
         >
           ♻
         </span>
-      )}
-
-      {/* Tier difficulty dot */}
-      {tierColor && (
-        <span
-          title={tierPct != null ? `${square.tier} — ${tierPct}%` : square.tier}
-          style={{ position: 'absolute', right: 3, top: 3, width: 4, height: 4, borderRadius: '50%', background: tierColor, opacity: 0.75, flexShrink: 0 }}
-        />
       )}
 
       {/* Mobile swap hint — lobby only */}

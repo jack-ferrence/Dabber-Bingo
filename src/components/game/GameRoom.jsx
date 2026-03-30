@@ -434,13 +434,13 @@ function GameRoom({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.25)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.45)' }}>
             {room.name?.split(' vs ')[0]} {room.away_score}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.12em' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.12em' }}>
             FINAL
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.25)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.45)' }}>
             {room.home_score} {room.name?.split(' vs ')[1]}
           </span>
         </div>
@@ -469,7 +469,7 @@ function GameRoom({
           <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.08em', color: '#ff6b35', margin: '0 0 1px' }}>
             LATE JOIN — CASUAL MODE
           </p>
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.3)', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.5)', margin: 0 }}>
             You&apos;ll earn Dobs for squares &amp; lines, but you won&apos;t appear on the leaderboard or qualify for prizes.
           </p>
         </div>
@@ -487,7 +487,7 @@ function GameRoom({
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#8888aa', letterSpacing: '0.08em' }}>
                 GAME FINISHED
               </span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#7777aa', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
                 This game has ended. You didn&apos;t have a card for this game.
               </span>
               <button
@@ -499,7 +499,7 @@ function GameRoom({
               </button>
             </div>
           ) : loadingCard ? (
-            <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Loading your card...</div>
+            <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Loading your card...</div>
           ) : card ? (
             <>
               <BingoBoard

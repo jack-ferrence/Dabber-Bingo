@@ -679,8 +679,8 @@ html, body {
   }
 
   /* Square text — mobile readable sizes */
-  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 800 !important; }
-  .bingo-grid button .sq-stat   { font-size: 9px !important; }
+  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 900 !important; }
+  .bingo-grid button .sq-stat   { font-size: 10px !important; }
   .bingo-grid button .sq-team   { font-size: 6px !important; }
 
   /* Mobile stats bottom sheet */
@@ -743,8 +743,8 @@ html, body {
     gap: 2.5px !important;
   }
 
-  .bingo-grid button .sq-player { font-size: 9px !important; font-weight: 800 !important; }
-  .bingo-grid button .sq-stat   { font-size: 8px !important; }
+  .bingo-grid button .sq-player { font-size: 9px !important; font-weight: 900 !important; }
+  .bingo-grid button .sq-stat   { font-size: 9px !important; }
 
   /* Long-press hint for swappable lobby squares */
   .sq-swap-hint {
@@ -757,6 +757,24 @@ html, body {
     pointer-events: none;
     font-family: var(--db-font-mono);
   }
+}
+
+/* ── Press / tap feedback on all interactive cards ── */
+.pressable:active,
+.game-card:active,
+.bingo-grid button:not(.sq-free-glow):not(:disabled):active {
+  transform: scale(0.96) !important;
+  transition: transform 80ms cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+/* ── Page slide-in from right (iOS push navigation) ── */
+@keyframes slide-in-right {
+  from { transform: translateX(6%); opacity: 0; }
+  to   { transform: translateX(0);  opacity: 1; }
+}
+
+.page-slide-in {
+  animation: slide-in-right 220ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 /* ═══ Use dvh for full-screen layouts where supported ═══ */
