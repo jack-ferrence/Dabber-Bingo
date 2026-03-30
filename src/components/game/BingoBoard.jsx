@@ -21,6 +21,7 @@ function BingoBoard({
   roomStatus,
   bingoDismissed = false,
   onBingoDismissed,
+  statValueMap = null,
 }) {
   const flat = Array.isArray(squares[0]) ? squares.flat() : squares
   const winSet = new Set(winningSquares)
@@ -117,6 +118,11 @@ function BingoBoard({
               nextSwapCost={swapCount === 0 ? 10 : 50}
               daubStyle={daubStyle}
               sport={sport}
+              currentValue={
+                square?.player_id && square?.stat_type && statValueMap
+                  ? (statValueMap[`${square.player_id}:${square.stat_type}`] ?? 0)
+                  : 0
+              }
             />
           ))}
         </div>

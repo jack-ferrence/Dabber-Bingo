@@ -109,6 +109,16 @@ function GameRoom({
     [flatSquares]
   )
 
+  const statValueMap = useMemo(() => {
+    const map = {}
+    for (const ev of statEvents ?? []) {
+      const key = `${ev.player_id}:${ev.stat_type}`
+      map[key] = Math.max(map[key] ?? 0, ev.value ?? 0)
+    }
+    return map
+  }, [statEvents]
+  )
+
   const handleSquareClick = useCallback((sq) => {
     if (sq?.stat_type === 'free') return
     setSelectedSquare((prev) =>
@@ -509,6 +519,7 @@ function GameRoom({
                 roomStatus={room?.status}
                 bingoDismissed={bingoDismissed}
                 onBingoDismissed={() => setBingoDismissed(true)}
+                statValueMap={statValueMap}
               />
 
               {/* Swap hint + error (lobby only) */}

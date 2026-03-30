@@ -107,7 +107,7 @@ function GameCardItems({ games, onOpenGame, finishedRanks, myRoomIds }) {
 // Mobile: vertical list with day dividers (mobile-only, hidden md:block)
 // ---------------------------------------------------------------------------
 
-function MobileGameList({ games, onOpenGame }) {
+function MobileGameList({ games, onOpenGame, myRoomIds }) {
   const byStartTime     = (a, b) => new Date(a.starts_at) - new Date(b.starts_at)
   const byStartTimeDesc = (a, b) => new Date(b.starts_at) - new Date(a.starts_at)
 
@@ -128,6 +128,7 @@ function MobileGameList({ games, onOpenGame }) {
       key={room.id}
       room={room}
       onOpenGame={onOpenGame}
+      isMyRoom={myRoomIds?.has(room.id) ?? false}
     />
   ))
 
@@ -336,7 +337,7 @@ export default function SportSection({
             ))}
           </div>
         ) : (
-          <MobileGameList games={games} onOpenGame={onOpenGame} />
+          <MobileGameList games={games} onOpenGame={onOpenGame} myRoomIds={myRoomIds} />
         )}
       </div>
     </section>

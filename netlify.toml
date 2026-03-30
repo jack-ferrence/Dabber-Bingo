@@ -30,9 +30,9 @@
 [functions."poll-stats"]
   schedule = "* * * * *"
 
-# Scheduled function: room cleanup daily at 08:00 UTC (midnight Pacific / 00:00 PT)
+# Scheduled function: room cleanup heartbeat — purges 30min after all games finish
 [functions."room-cleanup"]
-  schedule = "0 8 * * *"
+  schedule = "*/30 * * * *"
 
 # Scheduled function: create public rooms for today's NBA games (every 5 min)
 [functions."sync-games"]

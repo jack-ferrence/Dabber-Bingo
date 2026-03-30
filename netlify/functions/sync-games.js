@@ -155,6 +155,7 @@ export async function handler() {
       .from('rooms')
       .select('id, game_id, sport, name')
       .eq('room_type', 'public')
+      .is('created_by', null)
       .in('status', ['lobby', 'live'])
       .in('game_id', actionableIds)
 
@@ -236,6 +237,54 @@ export async function handler() {
             .update({ room_id: newRoom.id, updated_at: new Date().toISOString() })
             .eq('id', fgMatch.id)
           log.push(`linked featured game ${fgMatch.id} to room ${newRoom.id}`)
+        }
+      }
+
+      // Team-based fallback: advance-scheduled featured games (no game_id yet)
+      if (!fgMatch) {
+        const parts = game.roomName.split(' vs ')
+        const awayAbbr = parts[0] ?? ''
+        const homeAbbr = parts[1] ?? ''
+
+        const { data: teamMatch } = await supabase
+          .from('featured_games')
+          .select('id')
+          .eq('sport', game.sport)
+          .is('room_id', null)
+          .is('game_id', null)
+          .in('status', ['draft', 'active'])
+          .eq('away_team', awayAbbr)
+          .eq('home_team', homeAbbr)
+          .maybeSingle()
+
+        if (teamMatch) {
+          const { data: featuredRoom } = await supabase
+            .from('rooms')
+            .insert({
+              name: `⭐ ${awayAbbr} vs ${homeAbbr}`,
+              game_id: game.id,
+              sport: game.sport,
+              room_type: 'public',
+              status: 'lobby',
+              starts_at: game.startsAt,
+              created_by: null,
+            })
+            .select('id')
+            .single()
+
+          if (featuredRoom) {
+            await supabase
+              .from('featured_games')
+              .update({
+                game_id: game.id,
+                room_id: featuredRoom.id,
+                starts_at: game.startsAt,
+                status: 'active',
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', teamMatch.id)
+            log.push(`auto-linked featured ${teamMatch.id} → ${featuredRoom.id} (team match)`)
+          }
         }
       }
     }

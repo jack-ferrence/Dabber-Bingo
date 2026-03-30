@@ -9,83 +9,148 @@ if (process.env.SENTRY_DSN) {
 }
 
 /**
- * Netlify scheduled function — runs once daily at 08:00 UTC (midnight Pacific).
+ * Netlify scheduled function — heartbeat every 30 minutes.
  *
- * 1. Force-finish ALL rooms still in lobby/live — every game from today is over
- * 2. Marks any remaining stale live rooms as finished (belt-and-suspenders)
- * 3. Deletes chat_messages and room_participants for rooms finished >7 days ago
+ * Only acts when ALL of the following are true:
+ *   1. No rooms are in lobby or live status
+ *   2. The last finished room was updated 30+ minutes ago
  *
- * After step 1, sync-games creates fresh public rooms for the next day's games
- * on its next 5-minute cycle.
+ * When conditions are met:
+ *   - Deletes cards, room_participants, stat_events, and the rooms themselves
+ *   - Clears the odds_cache
+ *
+ * This lets finished rooms stay visible in the lobby until 30 minutes after
+ * the last game of the day, then wipes the slate clean for tomorrow.
  */
 exports.handler = async function () {
   const url = process.env.SUPABASE_URL
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!url || !serviceKey) {
-    const msg = 'room-cleanup: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY'
-    console.error(msg)
-    Sentry.captureMessage(msg, 'error')
-    return { statusCode: 500, body: JSON.stringify({ error: msg }) }
+    return { statusCode: 500, body: JSON.stringify({ error: 'Missing env vars' }) }
   }
 
   const supabase = createClient(url, serviceKey)
+  const log = []
 
-  try {
-    // ── Step 1: Force-finish all active rooms at midnight ──────────────────
-    const { data: forceFinished, error: forceErr } = await supabase
-      .from('rooms')
-      .update({ status: 'finished' })
-      .in('status', ['lobby', 'live'])
-      .lt('starts_at', new Date().toISOString())
-      .select('id')
+  // ── Step 1: Check if any games are still active ──
+  const { count: activeCount, error: activeErr } = await supabase
+    .from('rooms')
+    .select('*', { count: 'exact', head: true })
+    .in('status', ['lobby', 'live'])
 
-    if (forceErr) {
-      console.error('room-cleanup: midnight force-finish failed', forceErr)
-      Sentry.captureException(forceErr)
-    } else {
-      const count = forceFinished?.length ?? 0
-      console.log(`room-cleanup: midnight reset — force-finished ${count} room(s)`)
+  if (activeErr) {
+    console.error('room-cleanup: active count failed', activeErr)
+    Sentry.captureException(activeErr)
+    return { statusCode: 500, body: JSON.stringify({ error: activeErr.message }) }
+  }
 
-      // Award Dobs for each force-finished room (idempotent RPC — safe if already awarded)
-      for (const room of forceFinished ?? []) {
-        const { error: dobsErr } = await supabase.rpc('award_game_dabs', { p_room_id: room.id })
-        if (dobsErr) {
-          console.warn(`room-cleanup: award_game_dabs failed for room ${room.id}`, dobsErr.message)
-        }
-      }
-    }
-
-    // ── Step 2: Stale room cleanup (belt-and-suspenders) ───────────────────
-    const { data: staleCount, error: staleErr } = await supabase.rpc('cleanup_stale_rooms')
-    if (staleErr) {
-      console.error('room-cleanup: cleanup_stale_rooms failed', staleErr)
-      Sentry.captureException(staleErr)
-    } else {
-      console.log(`room-cleanup: marked ${staleCount} stale rooms as finished`)
-    }
-
-    // ── Step 3: Purge old room data ────────────────────────────────────────
-    const { data: purgeResult, error: purgeErr } = await supabase.rpc('cleanup_old_room_data')
-    if (purgeErr) {
-      console.error('room-cleanup: cleanup_old_room_data failed', purgeErr)
-      Sentry.captureException(purgeErr)
-    } else {
-      console.log('room-cleanup: purged old data', purgeResult)
-    }
-
+  if (activeCount > 0) {
+    log.push(`${activeCount} active room(s) — skipping cleanup`)
+    console.log('room-cleanup:', log.join(' | '))
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        force_finished: forceFinished?.length ?? 0,
-        stale_rooms_finished: staleCount ?? 0,
-        purge: purgeResult ?? {},
-      }),
+      body: JSON.stringify({ cleaned: false, reason: 'active_games', activeCount, log }),
       headers: { 'Content-Type': 'application/json' },
     }
-  } catch (err) {
-    console.error('room-cleanup: error', err)
-    Sentry.captureException(err)
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) }
+  }
+
+  // ── Step 2: Find when the last game finished ──
+  const { data: lastFinished, error: lastErr } = await supabase
+    .from('rooms')
+    .select('updated_at')
+    .eq('status', 'finished')
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (lastErr) {
+    console.error('room-cleanup: last finished query failed', lastErr)
+    Sentry.captureException(lastErr)
+    return { statusCode: 500, body: JSON.stringify({ error: lastErr.message }) }
+  }
+
+  if (!lastFinished) {
+    log.push('no finished rooms found — nothing to clean')
+    console.log('room-cleanup:', log.join(' | '))
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ cleaned: false, reason: 'no_finished_rooms', log }),
+      headers: { 'Content-Type': 'application/json' },
+    }
+  }
+
+  const msSinceLastGame = Date.now() - new Date(lastFinished.updated_at).getTime()
+  const minsSince = Math.round(msSinceLastGame / 60000)
+
+  if (msSinceLastGame < 30 * 60 * 1000) {
+    log.push(`last game finished ${minsSince}m ago — waiting for 30m cooldown`)
+    console.log('room-cleanup:', log.join(' | '))
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ cleaned: false, reason: 'cooldown', minsSinceLastGame: minsSince, log }),
+      headers: { 'Content-Type': 'application/json' },
+    }
+  }
+
+  // ── Step 3: All games done, 30min passed — purge finished rooms ──
+  log.push(`last game finished ${minsSince}m ago — cleaning up`)
+
+  const { data: finishedRooms } = await supabase
+    .from('rooms')
+    .select('id, game_id')
+    .eq('status', 'finished')
+
+  const finishedIds = (finishedRooms ?? []).map(r => r.id)
+
+  if (finishedIds.length > 0) {
+    // Delete cards
+    const { error: cardsErr } = await supabase
+      .from('cards')
+      .delete()
+      .in('room_id', finishedIds)
+    if (cardsErr) log.push(`cards delete error: ${cardsErr.message}`)
+    else log.push(`deleted cards for ${finishedIds.length} rooms`)
+
+    // Delete room participants
+    const { error: partErr } = await supabase
+      .from('room_participants')
+      .delete()
+      .in('room_id', finishedIds)
+    if (partErr) log.push(`participants delete error: ${partErr.message}`)
+    else log.push('deleted room_participants')
+
+    // Delete stat events for these games
+    const uniqueGameIds = [...new Set((finishedRooms ?? []).map(r => r.game_id).filter(Boolean))]
+    if (uniqueGameIds.length > 0) {
+      const { error: statsErr } = await supabase
+        .from('stat_events')
+        .delete()
+        .in('game_id', uniqueGameIds)
+      if (statsErr) log.push(`stat_events delete error: ${statsErr.message}`)
+      else log.push(`deleted stat_events for ${uniqueGameIds.length} games`)
+    }
+
+    // Delete the finished rooms themselves
+    const { error: roomsErr } = await supabase
+      .from('rooms')
+      .delete()
+      .in('id', finishedIds)
+    if (roomsErr) log.push(`rooms delete error: ${roomsErr.message}`)
+    else log.push(`deleted ${finishedIds.length} finished rooms`)
+
+    // Clear odds cache
+    const { error: cacheErr } = await supabase
+      .from('odds_cache')
+      .delete()
+      .neq('key', 'placeholder')
+    if (!cacheErr) log.push('cleared odds_cache')
+  }
+
+  console.log('room-cleanup:', log.join(' | '))
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ cleaned: true, roomsPurged: finishedIds.length, log }),
+    headers: { 'Content-Type': 'application/json' },
   }
 }

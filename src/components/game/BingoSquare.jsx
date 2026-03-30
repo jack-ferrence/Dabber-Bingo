@@ -22,6 +22,7 @@ const BingoSquare = memo(function BingoSquare({
   nextSwapCost = 10,
   daubStyle = 'classic',
   sport = 'nba',
+  currentValue = 0,
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
@@ -97,9 +98,6 @@ const BingoSquare = memo(function BingoSquare({
   const tierColor = square?.tier ? TIER_COLORS[square.tier] : null
   const tierPct = square?.implied_prob != null ? Math.round(square.implied_prob * 100) : null
 
-  const odds = square?.american_odds
-  const oddsLabel = odds != null ? `${odds > 0 ? '+' : ''}${odds}` : null
-
   // ── FREE square ──────────────────────────────────────────────────────────────
   if (isFree) {
     return (
@@ -172,22 +170,22 @@ const BingoSquare = memo(function BingoSquare({
         }}
       >
         {playerLabel && (
-          <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-ui)', fontSize: 8, fontWeight: 600, color: 'rgba(255,140,80,0.75)', letterSpacing: '0.01em' }}>
+          <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#ff8855', letterSpacing: '0.02em', lineHeight: 1.1 }}>
             {playerLabel}
           </span>
         )}
+        <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, color: 'rgba(255,140,80,0.6)', lineHeight: 1.15, textAlign: 'center' }}>
+          {statLabel}
+        </span>
         {teamAbbr && (
-          <span className="sq-team" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, fontWeight: 700, color: 'rgba(255,107,53,0.45)', letterSpacing: '0.08em', lineHeight: 1 }}>
+          <span className="sq-team" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, fontWeight: 700, color: 'rgba(255,107,53,0.4)', letterSpacing: '0.08em', lineHeight: 1 }}>
             {teamAbbr}
           </span>
         )}
-        <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 900, color: '#ff8855', lineHeight: 1.15, textAlign: 'center', letterSpacing: '-0.01em' }}>
-          {statLabel}
-        </span>
-        {oddsLabel && (
-          <span className="sq-odds" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, color: 'rgba(255,107,53,0.4)', lineHeight: 1 }}>
-            {oddsLabel}
-          </span>
+        {!isFree && square?.threshold > 0 && (
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '100%', background: '#ff6b35', borderRadius: '0 0 5px 5px', transition: 'width 0.6s ease-out' }} />
+          </div>
         )}
         {daubStyle === 'classic' && (
           <span style={{ position: 'absolute', right: 3, top: 2, fontFamily: 'var(--db-font-mono)', fontSize: 7, color: 'rgba(255,107,53,0.6)', fontWeight: 800 }}>✓</span>
@@ -252,22 +250,28 @@ const BingoSquare = memo(function BingoSquare({
       )}
 
       {playerLabel && (
-        <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-ui)', fontSize: 8, fontWeight: 600, color: '#9090b0', letterSpacing: '0.01em', lineHeight: 1.2 }}>
+        <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#e0e0f0', letterSpacing: '0.02em', lineHeight: 1.1 }}>
           {playerLabel}
         </span>
       )}
+      <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700, color: '#8888aa', lineHeight: 1.15, textAlign: 'center', letterSpacing: '0.02em' }}>
+        {statLabel}
+      </span>
       {teamAbbr && (
         <span className="sq-team" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, fontWeight: 700, color: teamColor ?? '#444466', letterSpacing: '0.08em', lineHeight: 1 }}>
           {teamAbbr}
         </span>
       )}
-      <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 900, color: '#e8e8f8', lineHeight: 1.15, textAlign: 'center', letterSpacing: '-0.01em' }}>
-        {statLabel}
-      </span>
-      {oddsLabel && (
-        <span className="sq-odds" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 7, fontWeight: 500, color: '#3a3a5a', lineHeight: 1 }}>
-          {oddsLabel}
-        </span>
+      {!isFree && square?.threshold > 0 && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+          <div style={{
+            width: `${Math.min(100, ((currentValue ?? 0) / square.threshold) * 100)}%`,
+            height: '100%',
+            background: (currentValue ?? 0) >= square.threshold * 0.5 ? 'rgba(255,107,53,0.7)' : 'rgba(255,107,53,0.35)',
+            borderRadius: '0 0 5px 5px',
+            transition: 'width 0.6s ease-out',
+          }} />
+        </div>
       )}
 
       {/* Injury replacement indicator */}

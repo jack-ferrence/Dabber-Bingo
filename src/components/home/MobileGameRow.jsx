@@ -6,7 +6,7 @@ function getTeamColor(abbr, sport) {
   return NBA_TEAM_COLORS[abbr] ?? NBA_TEAM_COLORS.DEFAULT
 }
 
-export default function MobileGameRow({ room, onOpenGame }) {
+export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
   const nameParts = (room.name ?? '').split(' vs ')
   const away = nameParts[0]?.trim() || '---'
   const home = nameParts[1]?.trim() || '---'
@@ -26,7 +26,7 @@ export default function MobileGameRow({ room, onOpenGame }) {
         borderRadius: 8,
         background: `linear-gradient(to right, ${hexToRgba(awayColor, 0.06)}, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.03) 70%, ${hexToRgba(homeColor, 0.06)})`,
         border: '1px solid rgba(255,255,255,0.06)',
-        borderLeft: isLive ? '3px solid #ff2d2d' : isFinished ? '3px solid rgba(255,255,255,0.1)' : `3px solid ${homeColor}`,
+        borderLeft: isMyRoom ? '3px solid #22c55e' : isLive ? '3px solid #ff2d2d' : isFinished ? '3px solid rgba(255,255,255,0.1)' : `3px solid ${homeColor}`,
         cursor: 'pointer',
         transition: 'background 120ms ease',
       }}
@@ -72,9 +72,15 @@ export default function MobileGameRow({ room, onOpenGame }) {
                   ? new Date(room.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
                   : 'Upcoming'}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.2)', marginLeft: 6 }}>
-                {room.participant_count ?? 0} joined
-              </span>
+              {isMyRoom ? (
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: '#22c55e', marginLeft: 6, letterSpacing: '0.06em' }}>
+                  ✓ YOU'RE IN
+                </span>
+              ) : (
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.2)', marginLeft: 6 }}>
+                  {room.participant_count ?? 0} joined
+                </span>
+              )}
             </div>
           )}
         </div>

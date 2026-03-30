@@ -72,7 +72,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
   const isLobby = room.status === 'lobby'
   const isFinished = room.status === 'finished'
 
-  const accentColor = isLive ? '#ff2d2d' : '#ff6b35'
+  const accentColor = isMyRoom ? '#22c55e' : isLive ? '#ff2d2d' : '#ff6b35'
   const showAccent = isLive || isLobby || isMyRoom
 
   return (
@@ -109,28 +109,48 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="rgba(255,255,255,0.25)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
-              {room.participant_count ?? 0}
-            </span>{' '}
-            {(room.participant_count ?? 0) === 1 ? 'player' : 'players'}
-          </span>
+          {isMyRoom ? (
+            <span
+              style={{
+                background: 'rgba(34,197,94,0.10)',
+                border: '1px solid rgba(34,197,94,0.25)',
+                color: '#22c55e',
+                fontFamily: 'var(--db-font-display)',
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                padding: '3px 8px',
+                borderRadius: 5,
+              }}
+            >
+              ✓ YOU'RE IN
+            </span>
+          ) : (
+            <>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
+                  {room.participant_count ?? 0}
+                </span>{' '}
+                {(room.participant_count ?? 0) === 1 ? 'player' : 'players'}
+              </span>
+            </>
+          )}
         </div>
 
         {!isFinished && (

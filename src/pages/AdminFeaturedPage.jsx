@@ -128,8 +128,71 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
     game_id: game?.game_id || '',
   })
   const [saving, setSaving] = useState(false)
+  const [fetchingEspn, setFetchingEspn] = useState(false)
+  const [espnInput, setEspnInput] = useState(game?.game_id ? `ESPN ID: ${game.game_id}` : '')
 
   const set = (key, val) => setForm((prev) => ({ ...prev, [key]: val }))
+
+  const parseAndFetch = async (input) => {
+    if (!input) return
+    setFetchingEspn(true)
+
+    const gameId = input.match(/(\d{8,12})/)?.[1]
+    if (!gameId) {
+      alert('Could not find a game ID in that URL.')
+      setFetchingEspn(false)
+      return
+    }
+
+    const sportHints = []
+    if (/\/nba\//i.test(input)) sportHints.push('nba')
+    if (/\/mlb\//i.test(input) || /\/baseball\//i.test(input)) sportHints.push('mlb')
+    if (/\/mens-college-basketball\//i.test(input) || /\/ncaa/i.test(input)) sportHints.push('ncaa')
+
+    const allSports = [
+      { sport: 'nba',  url: `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${gameId}` },
+      { sport: 'ncaa', url: `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event=${gameId}` },
+      { sport: 'mlb',  url: `https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?event=${gameId}` },
+    ]
+    const endpoints = [
+      ...allSports.filter(e => sportHints.includes(e.sport)),
+      ...allSports.filter(e => !sportHints.includes(e.sport)),
+    ]
+
+    for (const { sport, url } of endpoints) {
+      try {
+        const res = await fetch(url)
+        if (!res.ok) continue
+        const data = await res.json()
+        const competition = data.header?.competitions?.[0]
+        if (!competition) continue
+        const competitors = competition?.competitors ?? []
+        const home = competitors.find(c => c.homeAway === 'home')
+        const away = competitors.find(c => c.homeAway === 'away')
+        if (!home || !away) continue
+
+        const homeAbbr = home.team?.abbreviation ?? ''
+        const awayAbbr = away.team?.abbreviation ?? ''
+        const homeName = home.team?.displayName ?? homeAbbr
+        const awayName = away.team?.displayName ?? awayAbbr
+
+        set('game_id', gameId)
+        set('sport', sport)
+        set('home_team', homeAbbr)
+        set('away_team', awayAbbr)
+        set('event_name', `${awayName} vs ${homeName}`)
+        set('title', `${awayAbbr} vs ${homeAbbr}`)
+        if (competition.date) set('starts_at', new Date(competition.date).toISOString().slice(0, 16))
+
+        setEspnInput(`✓ ${awayAbbr} vs ${homeAbbr} (${sport.toUpperCase()})`)
+        setFetchingEspn(false)
+        return
+      } catch (e) { continue }
+    }
+
+    alert('Could not find that game on ESPN. Check the URL.')
+    setFetchingEspn(false)
+  }
 
   const handleSubmit = async () => {
     if (!form.title || !form.prize_name || !form.starts_at || !form.sport) {
@@ -219,8 +282,36 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
         </Field>
       </div>
 
-      <Field label="ESPN Game ID" hint="From ESPN URL or sync-games logs. Used to link room.">
-        <input style={inputStyle} value={form.game_id} onChange={(e) => set('game_id', e.target.value)} placeholder="401656789" />
+      <Field label="ESPN Game Link" hint="Paste the ESPN game URL — everything auto-fills">
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            type="text"
+            value={espnInput}
+            onChange={(e) => setEspnInput(e.target.value)}
+            onPaste={(e) => {
+              setTimeout(() => {
+                const val = e.target.value.trim()
+                if (val && val.length > 5) parseAndFetch(val)
+              }, 100)
+            }}
+            placeholder="https://www.espn.com/nba/game/_/gameId/..."
+            style={inputStyle}
+          />
+          <button
+            type="button"
+            onClick={() => parseAndFetch(espnInput)}
+            disabled={!espnInput || fetchingEspn}
+            style={{
+              padding: '8px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
+              background: espnInput ? '#ff6b35' : '#2a2a44',
+              color: espnInput ? '#0c0c14' : '#555577',
+              fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800,
+              whiteSpace: 'nowrap', opacity: fetchingEspn ? 0.5 : 1,
+            }}
+          >
+            {fetchingEspn ? 'FETCHING...' : 'FETCH'}
+          </button>
+        </div>
       </Field>
 
       <Field label="Game Start Time *">
