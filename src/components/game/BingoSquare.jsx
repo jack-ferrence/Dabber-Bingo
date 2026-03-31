@@ -27,6 +27,7 @@ const BingoSquare = memo(function BingoSquare({
   const isFree = index === 12
   const marked = square?.marked === true
   const displayText = square?.display_text ?? ''
+  const threshold = square?.threshold ?? 0
   const prevMarkedRef = useRef(marked)
   const [justMarked, setJustMarked] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -66,7 +67,6 @@ const BingoSquare = memo(function BingoSquare({
 
   useEffect(() => {
     if (marked && !prevMarkedRef.current) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setJustMarked(true)
       const t = setTimeout(() => setJustMarked(false), 500)
       prevMarkedRef.current = marked
@@ -88,6 +88,12 @@ const BingoSquare = memo(function BingoSquare({
 
   const teamAbbr = square?.team_abbr ?? ''
   const teamColor = getTeamColor(teamAbbr, sport)
+  const accentColor = teamColor ?? 'rgba(255,255,255,0.15)'
+
+  // Progress bar logic — only show during live games
+  const isLive = !isLobby && !isFree && threshold > 0
+  const progressPct = threshold > 0 ? Math.min(100, ((currentValue ?? 0) / threshold) * 100) : 0
+  const isClose = progressPct >= 70
 
   // ── FREE square ──────────────────────────────────────────────────────────────
   if (isFree) {
@@ -96,12 +102,12 @@ const BingoSquare = memo(function BingoSquare({
         type="button"
         className={`select-none sq-free-glow ${isWinning ? 'sq-winning' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
-          aspectRatio: '1 / 0.9',
+          aspectRatio: '1',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 1,
+          gap: 2,
           background: 'linear-gradient(160deg, #ff7a45 0%, #e05520 100%)',
           border: '1px solid rgba(255,142,85,0.5)',
           borderRadius: 6,
@@ -109,8 +115,7 @@ const BingoSquare = memo(function BingoSquare({
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 8px rgba(255,107,53,0.3)',
         }}
       >
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>★</span>
-        <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.14em', color: 'rgba(255,255,255,0.9)', lineHeight: 1 }}>FREE</span>
+        <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, color: '#fff', lineHeight: 1, letterSpacing: '0.08em', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>FREE</span>
       </button>
     )
   }
@@ -120,7 +125,7 @@ const BingoSquare = memo(function BingoSquare({
     return (
       <div
         style={{
-          aspectRatio: '1 / 0.9',
+          aspectRatio: '1',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -135,53 +140,7 @@ const BingoSquare = memo(function BingoSquare({
     )
   }
 
-  // ── Marked square ────────────────────────────────────────────────────────────
-  if (marked) {
-    return (
-      <button
-        type="button"
-        onClick={() => onClick?.(square, index)}
-        className={`select-none sq-marked-glow ${justMarked ? 'sq-mark-in sq-shine' : ''} ${isWinning ? 'sq-winning' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
-        style={{
-          aspectRatio: '1 / 0.9',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          gap: 3,
-          background: 'rgba(255,107,53,0.10)',
-          border: '1px solid rgba(255,107,53,0.3)',
-          borderLeft: '3px solid #ff6b35',
-          borderRadius: 6,
-          padding: '5px 5px 8px 7px',
-          cursor: 'pointer',
-          overflow: 'hidden',
-          position: 'relative',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
-        }}
-      >
-        {playerLabel && (
-          <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#ff8855', letterSpacing: '0.02em', lineHeight: 1.1 }}>
-            {playerLabel}
-          </span>
-        )}
-        <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'rgba(255,140,80,0.65)', lineHeight: 1.15, textAlign: 'left' }}>
-          {statLabel}
-        </span>
-        {!isFree && square?.threshold > 0 && (
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 5, background: 'rgba(255,255,255,0.04)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
-            <div style={{ width: '100%', height: '100%', background: '#ff6b35', borderRadius: '0 0 5px 5px', transition: 'width 0.6s ease-out' }} />
-          </div>
-        )}
-        {daubStyle === 'classic' && (
-          <span style={{ position: 'absolute', right: 3, top: 2, fontFamily: 'var(--db-font-mono)', fontSize: 7, color: 'rgba(255,107,53,0.6)', fontWeight: 800 }}>✓</span>
-        )}
-        <DaubOverlay style={daubStyle} animated={justMarked} />
-      </button>
-    )
-  }
-
-  // ── Normal (unmarked) square ─────────────────────────────────────────────────
+  // ── Unified square (marked + unmarked) ───────────────────────────────────────
   const showSwapBtn = isLobby && hovered && !swapsExhausted
 
   return (
@@ -195,19 +154,23 @@ const BingoSquare = memo(function BingoSquare({
       onTouchEnd={handleTouchEnd}
       onTouchCancel={cancelLongPress}
       onContextMenu={(e) => { if (isLobby) e.preventDefault() }}
-      className="select-none"
+      className={`select-none sq-cell ${marked ? `sq-marked-glow ${justMarked ? 'sq-mark-in sq-shine' : ''}` : ''} ${isWinning ? 'sq-winning' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
       style={{
-        aspectRatio: '1 / 0.9',
+        aspectRatio: '1',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
         justifyContent: 'center',
         gap: 3,
-        background: hovered
-          ? 'linear-gradient(160deg, #232338 0%, #1c1c2e 100%)'
-          : 'linear-gradient(160deg, #1c1c2c 0%, #141420 100%)',
-        border: `1px solid ${hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
-        borderLeft: `3px solid ${teamColor ?? 'rgba(255,255,255,0.08)'}`,
+        background: marked
+          ? 'rgba(255,107,53,0.10)'
+          : hovered
+            ? 'linear-gradient(160deg, #232338 0%, #1c1c2e 100%)'
+            : 'linear-gradient(160deg, #1a1a2e 0%, #151524 100%)',
+        border: marked
+          ? '1px solid rgba(255,107,53,0.3)'
+          : `1px solid ${hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
+        borderLeft: marked ? '3px solid #ff6b35' : `3px solid ${accentColor}`,
         borderRadius: 6,
         padding: '5px 5px 8px 7px',
         cursor: 'pointer',
@@ -215,30 +178,61 @@ const BingoSquare = memo(function BingoSquare({
         position: 'relative',
         overflow: 'hidden',
         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
-        transform: hovered ? 'translateY(-1px)' : 'translateY(0)',
+        transform: (!marked && hovered) ? 'translateY(-1px)' : 'translateY(0)',
       }}
     >
       {playerLabel && (
-        <span className="sq-player" style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#e8e8f4', letterSpacing: '0.02em', lineHeight: 1.1 }}>
+        <span className="sq-player" style={{
+          width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          textAlign: 'left', fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800,
+          color: marked ? '#ff8855' : '#e8e8f4', letterSpacing: '0.02em', lineHeight: 1.1,
+        }}>
           {playerLabel}
         </span>
       )}
-      <span className="sq-stat" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: '#ff6b35', lineHeight: 1.15, textAlign: 'left', letterSpacing: '0.02em' }}>
+      {teamAbbr && (
+        <span className="sq-team" style={{
+          fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 700,
+          color: teamColor ?? 'rgba(255,255,255,0.3)', lineHeight: 1, letterSpacing: '0.04em',
+        }}>
+          {teamAbbr}
+        </span>
+      )}
+      <span className="sq-stat" style={{
+        fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600,
+        color: marked ? 'rgba(255,140,80,0.65)' : '#ff6b35',
+        lineHeight: 1.15, textAlign: 'left', letterSpacing: '0.02em',
+      }}>
         {statLabel}
       </span>
-      {currentValue > 0 && square?.threshold > 0 && (
-        <span style={{ position: 'absolute', bottom: 8, right: 5, fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.35)', lineHeight: 1 }}>{currentValue}/{square.threshold}</span>
-      )}
-      {!isFree && square?.threshold > 0 && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+
+      {/* Progress bar — live games only */}
+      {isLive && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
           <div style={{
-            width: `${Math.min(100, ((currentValue ?? 0) / square.threshold) * 100)}%`,
+            width: marked ? '100%' : `${progressPct}%`,
             height: '100%',
-            background: `linear-gradient(90deg, ${teamColor ? teamColor + '55' : 'rgba(255,107,53,0.4)'}, #ff6b35)`,
+            background: marked
+              ? '#ff6b35'
+              : isClose
+                ? 'linear-gradient(90deg, rgba(255,107,53,0.5), rgba(255,107,53,0.9))'
+                : `linear-gradient(90deg, ${accentColor}44, ${accentColor}88)`,
             borderRadius: '0 0 5px 5px',
             transition: 'width 0.6s ease-out',
           }} />
         </div>
+      )}
+
+      {/* Live stat value counter */}
+      {isLive && !marked && currentValue > 0 && threshold > 0 && (
+        <span style={{ position: 'absolute', bottom: 8, right: 5, fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.35)', lineHeight: 1 }}>
+          {currentValue}/{threshold}
+        </span>
+      )}
+
+      {/* Check mark on marked */}
+      {marked && daubStyle === 'classic' && (
+        <span style={{ position: 'absolute', right: 3, top: 2, fontFamily: 'var(--db-font-mono)', fontSize: 7, color: 'rgba(255,107,53,0.6)', fontWeight: 800 }}>✓</span>
       )}
 
       {/* Injury replacement indicator */}
@@ -292,6 +286,8 @@ const BingoSquare = memo(function BingoSquare({
           ↻
         </button>
       )}
+
+      {marked && <DaubOverlay style={daubStyle} animated={justMarked} />}
     </button>
   )
 })

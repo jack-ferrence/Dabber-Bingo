@@ -678,10 +678,7 @@ html, body {
     gap: 4px !important;
   }
 
-  /* Square text — mobile readable sizes */
-  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 900 !important; }
-  .bingo-grid button .sq-stat   { font-size: 10px !important; }
-  .bingo-grid button .sq-team   { font-size: 6px !important; }
+  /* Square text — handled by media queries below */
 
   /* Mobile stats bottom sheet */
   .mobile-stats-sheet .animate-slide-in-left {
@@ -742,9 +739,6 @@ html, body {
   .bingo-grid {
     gap: 2.5px !important;
   }
-
-  .bingo-grid button .sq-player { font-size: 9px !important; font-weight: 900 !important; }
-  .bingo-grid button .sq-stat   { font-size: 9px !important; }
 
   /* Long-press hint for swappable lobby squares */
   .sq-swap-hint {
@@ -912,4 +906,52 @@ button[aria-label="Dismiss"]:hover {
 
 .page-enter {
   animation: page-enter 220ms ease-out forwards;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SQUARE & GAME ROW MICRO-ANIMATIONS
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Square mark: spring pop on daub ── */
+@keyframes sq-mark-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.92); }
+  70%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.sq-cell.sq-mark-in {
+  animation: sq-mark-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Game row press feedback ── */
+@keyframes game-row-press {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* ── Mobile row fade-in on list render ── */
+@keyframes row-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Square font sizes: mobile-first, desktop boost ── */
+@media (max-width: 767px) {
+  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 900 !important; }
+  .bingo-grid button .sq-stat   { font-size: 10px !important; }
+  .bingo-grid button .sq-team   { font-size: 6px !important; }
+}
+
+@media (max-width: 380px) {
+  .bingo-grid button .sq-player { font-size: 9px !important; font-weight: 900 !important; }
+  .bingo-grid button .sq-stat   { font-size: 9px !important; }
+  .bingo-grid button .sq-team   { font-size: 5px !important; }
+}
+
+@media (min-width: 1024px) {
+  .bingo-grid button .sq-player { font-size: 14px !important; }
+  .bingo-grid button .sq-stat   { font-size: 12px !important; }
+  .bingo-grid button .sq-team   { font-size: 9px !important; }
 }

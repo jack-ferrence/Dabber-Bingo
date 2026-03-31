@@ -346,7 +346,7 @@ export default function LobbyPage() {
               })() : null
 
               const LABEL = { live: 'LIVE NOW', finished: 'RECENTLY FINISHED', today: 'COMING UP', tomorrow: 'TOMORROW' }
-              const LABEL_COLOR = { live: '#ff4444', finished: 'rgba(255,255,255,0.18)', today: 'rgba(255,255,255,0.25)', tomorrow: 'rgba(255,255,255,0.18)' }
+              const LABEL_COLOR = { live: '#ff4444', finished: 'rgba(255,255,255,0.3)', today: 'rgba(255,255,255,0.35)', tomorrow: 'rgba(255,255,255,0.3)' }
 
               if (group !== prevGroup) {
                 acc.push(

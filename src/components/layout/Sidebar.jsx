@@ -183,7 +183,7 @@ function SidebarContent({ onClose }) {
           </button>
         )}
 
-        <p className="text-[10px]" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.1)' }}>Dobber v0.1</p>
+        <p className="text-[10px]" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>Dobber v0.1</p>
       </div>
     </div>
   )

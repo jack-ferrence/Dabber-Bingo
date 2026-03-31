@@ -90,6 +90,19 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
         pointerEvents: 'none',
       }} />
 
+      {/* Joined badge — lobby or live, not finished */}
+      {isPlaying && !isFinished && (
+        <div style={{ position: 'absolute', top: 10, left: 14, zIndex: 2 }}>
+          <span style={{
+            fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 600,
+            color: '#22c55e', background: 'rgba(34,197,94,0.1)',
+            border: '1px solid rgba(34,197,94,0.22)', borderRadius: 10, padding: '2px 8px',
+          }}>
+            ✓ IN
+          </span>
+        </div>
+      )}
+
       {/* Placement medal for finished games */}
       {isFinished && rank > 0 && (
         <div style={{ position: 'absolute', top: 10, left: 14, zIndex: 1, display: 'flex', alignItems: 'center', gap: 3 }}>
