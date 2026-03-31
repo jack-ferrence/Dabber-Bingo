@@ -27,7 +27,7 @@ const BingoSquare = memo(function BingoSquare({
   const isFree = index === 12
   const marked = square?.marked === true
   const displayText = square?.display_text ?? ''
-  const threshold = Number(square?.threshold) || 0
+  let threshold = Number(square?.threshold) || 0
   const prevMarkedRef = useRef(marked)
   const [justMarked, setJustMarked] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -84,6 +84,12 @@ const BingoSquare = memo(function BingoSquare({
       playerLabel = match[1]
       statLabel = match[2]
     }
+  }
+
+  // Fallback: parse threshold from stat label if square.threshold is missing
+  if (threshold === 0 && statLabel) {
+    const numMatch = statLabel.match(/([\d.]+)\+?\s/)
+    if (numMatch) threshold = Number(numMatch[1]) || 0
   }
 
   const teamAbbr = square?.team_abbr ?? ''
@@ -208,16 +214,16 @@ const BingoSquare = memo(function BingoSquare({
 
       {/* Progress bar — live games only */}
       {isLive && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 6, background: 'rgba(255,255,255,0.12)', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
           <div style={{
             width: marked ? '100%' : `${progressPct}%`,
             height: '100%',
             background: marked
               ? '#ff6b35'
               : isClose
-                ? 'linear-gradient(90deg, rgba(255,107,53,0.5), rgba(255,107,53,0.9))'
-                : `linear-gradient(90deg, ${accentColor}44, ${accentColor}88)`,
-            borderRadius: '0 0 5px 5px',
+                ? 'linear-gradient(90deg, rgba(255,107,53,0.6), rgba(255,107,53,1.0))'
+                : `linear-gradient(90deg, ${accentColor}77, ${accentColor}cc)`,
+            borderRadius: '0 0 6px 6px',
             transition: 'width 0.6s ease-out',
           }} />
         </div>

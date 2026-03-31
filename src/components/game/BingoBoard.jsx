@@ -69,7 +69,7 @@ function BingoBoard({
   const skinClass = boardSkin && boardSkin !== 'default' ? `board-skin-${boardSkin}` : ''
 
   return (
-    <div className="relative w-full" style={{ maxWidth: 'min(520px, 100%)' }}>
+    <div className="relative w-full" style={{ maxWidth: 'min(440px, 100%)', margin: '0 auto' }}>
       {/* Board frame */}
       <div
         className={`machine-glow ${skinClass}`}

@@ -583,6 +583,8 @@ html, body {
   /* ── Board fills viewport on mobile ── */
   .game-room-board .relative {
     max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
   }
 
   /* ── Tap highlight removal ── */
@@ -662,7 +664,9 @@ html, body {
   .game-room-board {
     overflow: visible !important;
     justify-content: flex-start !important;
-    padding: 6px 4px !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    width: 100% !important;
   }
 
   .game-room-header {

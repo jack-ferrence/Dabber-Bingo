@@ -440,7 +440,7 @@ function GameRoom({
       <div className="game-room-main flex flex-1 overflow-hidden">
 
         {/* LEFT: Bingo Board */}
-        <div className={`game-room-board flex shrink-0 flex-col items-center justify-center overflow-y-auto p-2 md:p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[45%]' : 'w-full lg:w-[65%]'}`}>
+        <div className={`game-room-board flex shrink-0 flex-col items-center justify-center p-2 md:p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[50%]' : 'w-full lg:w-[65%]'}`} style={{ overflowX: 'visible', overflowY: 'auto' }}>
           {room?.status === 'finished' && !card && !loadingCard ? (
             // Finished game — user didn't have a card
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '40px 0' }}>
@@ -625,56 +625,6 @@ function GameRoom({
           )}
         </div>
 
-        {/* Mobile bottom action bar — sticky */}
-        <div className="flex md:hidden items-center justify-between gap-2" style={{
-          position: 'sticky', bottom: 0, left: 0, right: 0, zIndex: 15,
-          padding: '10px 12px', paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
-          background: 'rgba(10,10,18,0.95)', backdropFilter: 'blur(12px)',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-        }}>
-          {/* Left: card progress */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 800, color: '#ff6b35' }}>
-              {markedCount}<span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>/25</span>
-            </span>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
-              {(bingoResult.winningLines?.length ?? 0)} line{(bingoResult.winningLines?.length ?? 0) !== 1 ? 's' : ''}
-            </span>
-          </div>
-
-          {/* Right: action buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button
-              type="button"
-              onClick={() => setMobileLeaderboardSheet(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
-                fontFamily: 'var(--db-font-display)', fontSize: 12, letterSpacing: '0.06em',
-                color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10M6 20v-4M18 20v-8" /></svg>
-              STANDINGS
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileChatSheet(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
-                fontFamily: 'var(--db-font-display)', fontSize: 12, letterSpacing: '0.06em',
-                color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
-              CHAT
-            </button>
-          </div>
-        </div>
-
         {/* CENTER: Player Stats Panel (desktop) */}
         <div
           className={`hidden border-l border-border-subtle transition-all duration-200 ${selectedSquare ? 'lg:flex lg:w-[20%]' : 'lg:w-0'} overflow-hidden`}
@@ -718,6 +668,57 @@ function GameRoom({
               />
             </Suspense>
           </div>
+        </div>
+      </div>
+
+      {/* ── Mobile bottom action bar ── */}
+      <div className="flex md:hidden items-center justify-between gap-2" style={{
+        flexShrink: 0,
+        padding: '10px 12px',
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
+        background: 'rgba(10,10,18,0.95)', backdropFilter: 'blur(12px)',
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        {/* Left: card progress */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 800, color: '#ff6b35' }}>
+            {markedCount}<span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>/25</span>
+          </span>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+            {(bingoResult.winningLines?.length ?? 0)} line{(bingoResult.winningLines?.length ?? 0) !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {/* Right: action buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => setMobileLeaderboardSheet(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
+              fontFamily: 'var(--db-font-display)', fontSize: 12, letterSpacing: '0.06em',
+              color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10M6 20v-4M18 20v-8" /></svg>
+            STANDINGS
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileChatSheet(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
+              fontFamily: 'var(--db-font-display)', fontSize: 12, letterSpacing: '0.06em',
+              color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+            CHAT
+          </button>
         </div>
       </div>
 
