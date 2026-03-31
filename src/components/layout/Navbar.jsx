@@ -141,7 +141,7 @@ export default function Navbar({ onMenuClick }) {
                 >
                   {displayName}
                 </span>
-                <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10 }}>▾</span>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10 }}>▾</span>
               </button>
 
               {dropdownOpen && (

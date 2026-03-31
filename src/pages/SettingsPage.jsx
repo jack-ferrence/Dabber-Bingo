@@ -28,7 +28,7 @@ function SectionLabel({ children }) {
   return (
     <p style={{
       fontFamily: 'var(--db-font-display)', fontSize: 11,
-      letterSpacing: '0.1em', color: 'rgba(255,255,255,0.25)',
+      letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)',
       marginBottom: 12, marginTop: 0,
     }}>
       {children}
@@ -324,7 +324,7 @@ function ProfileTab() {
             <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff5555', marginTop: 8, marginBottom: 0 }}>{phoneError}</p>
           )}
         </div>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.2)', margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.5 }}>
           Both required to enter featured games with prizes. Each phone number can only be linked to one account.
         </p>
       </div>
@@ -360,7 +360,7 @@ function ProfileTab() {
         {showTxns && (
           <div style={{ marginTop: 12 }}>
             {txns.length === 0 ? (
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.25)' }}>No transactions yet.</p>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>No transactions yet.</p>
             ) : txns.map((t, i) => (
               <div
                 key={i}
@@ -369,7 +369,7 @@ function ProfileTab() {
                   padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
                 }}
               >
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.25)', minWidth: 80 }}>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', minWidth: 80 }}>
                   {formatDate(t.created_at)}
                 </span>
                 <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.5)', flex: 1, textAlign: 'center' }}>
@@ -418,7 +418,7 @@ function ProfileTab() {
               <button
                 type="button"
                 onClick={() => setShowDelete(true)}
-                style={{ background: 'none', border: 'none', fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.2)', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
+                style={{ background: 'none', border: 'none', fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = '#ff5555' }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
               >
@@ -573,16 +573,16 @@ function CustomizeTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       {/* Live Preview */}
       <div style={{ background: 'linear-gradient(160deg, #141420 0%, #0f0f1a 100%)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 16 }}>
-        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 12, marginTop: 0 }}>
+        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', marginBottom: 12, marginTop: 0 }}>
           LIVE PREVIEW
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 6, marginBottom: 12 }}>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.25)', minWidth: 16 }}>1</span>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', minWidth: 16 }}>1</span>
           {badgeInfo && <span style={{ fontSize: 14 }}>{badgeInfo.emoji}</span>}
           <span style={{ fontFamily: getFontFamily(previewFont), fontSize: 13, fontWeight: 700, color: previewColor ?? '#e8e8f4', flex: 1 }}>
             {displayName}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.25)', fontVariantNumeric: 'tabular-nums' }}>0/12 0/25</span>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums' }}>0/12 0/25</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SkinPreview skinClass={previewSkin} />
@@ -590,7 +590,7 @@ function CustomizeTab() {
       </div>
 
       {loadingItems ? (
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Loading...</p>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Loading...</p>
       ) : (
         <>
           {/* Name Color */}
@@ -957,7 +957,7 @@ function PreferencesTab() {
       {/* Notifications (future) */}
       <div style={{ opacity: 0.4 }}>
         <SectionLabel>Notifications</SectionLabel>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.25)', marginBottom: 12, marginTop: 0, lineHeight: 1.5 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginBottom: 12, marginTop: 0, lineHeight: 1.5 }}>
           Push notifications coming soon. We'll alert you when games start and when you hit bingo lines.
         </p>
         {['Game start alerts', 'Bingo line alerts', 'Daily game reminders'].map((label) => (

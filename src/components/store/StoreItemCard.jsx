@@ -28,7 +28,7 @@ function BadgePreview({ emoji, label }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 72, gap: 4 }}>
       <span style={{ fontSize: 32, lineHeight: 1 }}>{emoji}</span>
-      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em' }}>{label}</span>
     </div>
   )
 }
@@ -123,7 +123,7 @@ function EmotePreview({ itemId }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 72, gap: 4 }}>
       <span style={{ fontSize: 32, lineHeight: 1 }}>{emote?.emoji ?? '😊'}</span>
-      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>{emote?.code ?? ''}</span>
+      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>{emote?.code ?? ''}</span>
     </div>
   )
 }

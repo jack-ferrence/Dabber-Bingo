@@ -154,7 +154,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
             </p>
           </div>
           <button type="button" onClick={onClose}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 16, cursor: 'pointer', padding: '2px 6px', borderRadius: 4, transition: 'color 120ms ease' }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 16, cursor: 'pointer', padding: '2px 6px', borderRadius: 4, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
           >✕</button>

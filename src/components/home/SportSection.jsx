@@ -61,7 +61,7 @@ function DaySeparator({ label, sub }) {
         style={{
           fontFamily: 'var(--db-font-display)',
           fontSize: 11,
-          color: 'rgba(255,255,255,0.25)',
+          color: 'rgba(255,255,255,0.4)',
           letterSpacing: '0.1em',
           whiteSpace: 'nowrap',
         }}
@@ -74,7 +74,7 @@ function DaySeparator({ label, sub }) {
             fontFamily: 'var(--db-font-ui)',
             fontSize: 10,
             fontWeight: 400,
-            color: 'rgba(255,255,255,0.15)',
+            color: 'rgba(255,255,255,0.35)',
             marginTop: 3,
             whiteSpace: 'nowrap',
           }}
@@ -118,7 +118,7 @@ function MobileGameList({ games, onOpenGame, myRoomIds }) {
   const finished     = games.filter((g) => g.status === 'finished').sort(byStartTimeDesc)
 
   const Divider = ({ label }) => (
-    <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', padding: '6px 0 2px' }}>
+    <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', padding: '6px 0 2px' }}>
       {label}
     </div>
   )
@@ -134,7 +134,7 @@ function MobileGameList({ games, onOpenGame, myRoomIds }) {
 
   if (games.length === 0) {
     return (
-      <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.25)', padding: '12px 0' }}>
+      <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', padding: '12px 0' }}>
         No games available. Check back later!
       </div>
     )
@@ -287,7 +287,7 @@ export default function SportSection({
                 fontFamily: 'var(--db-font-ui)',
                 fontSize: 11,
                 fontWeight: 600,
-                color: 'rgba(255,255,255,0.25)',
+                color: 'rgba(255,255,255,0.4)',
                 background: 'rgba(255,255,255,0.06)',
                 padding: '2px 8px',
                 borderRadius: 10,
@@ -312,12 +312,12 @@ export default function SportSection({
             className="rounded-xl px-6 py-8 text-center"
             style={{ border: '1px dashed rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}
           >
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.2)' }}>No games available. Check back later!</p>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>No games available. Check back later!</p>
           </div>
         ) : !hasUpcoming && games.length > 0 ? (
           <>
             <div className="mb-3 px-1">
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.25)' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>
                 No upcoming games right now — showing recent results.
               </p>
             </div>

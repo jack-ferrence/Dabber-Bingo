@@ -131,7 +131,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
             )}
           </>
         ) : isFinished ? (
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, padding: '2px 7px' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, padding: '2px 7px' }}>
             FINAL
           </span>
         ) : null}
@@ -144,12 +144,12 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
       >
         <div className="flex flex-col items-center gap-1">
           <span className="team-abbr" style={{ color: awayColor, opacity: 0.8 }}>{away}</span>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase' }}>Away</span>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Away</span>
         </div>
         <span className="vs-text" style={{ marginBottom: 16 }}>VS</span>
         <div className="flex flex-col items-center gap-1">
           <span className="team-abbr" style={{ color: homeColor }}>{home}</span>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase' }}>Home</span>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Home</span>
         </div>
       </div>
 
@@ -164,13 +164,13 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
               <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: '#ff4444' }}>
                 ● In progress
               </span>
-              <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>
+              <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
                 {game.participant_count ?? 0} playing
               </div>
             </>
           ) : isFinished ? (
             <>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.2)' }}>FINAL</span>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.4)' }}>FINAL</span>
               {game.away_score != null && game.home_score != null && (
                 <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.3)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>
                   {game.away_score} – {game.home_score}
@@ -187,7 +187,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>
                 {formatTipoff(game.starts_at)}
               </span>
-              <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>
+              <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
                 {game.participant_count ?? 0} joined
               </div>
             </>
@@ -200,7 +200,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 4px rgba(34,197,94,0.5)', marginRight: 4 }} />
           )}
           {isFinished ? (
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.25)' }}>View →</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>View →</span>
           ) : (
             <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 700, color: '#ff6b35' }}>{isLive && isPlaying ? 'Continue →' : 'Play →'}</span>
           )}

@@ -110,7 +110,7 @@ function RegisterPage() {
         <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, maxWidth: 280 }}>
           Free account. One bingo card per live game. Compete for prizes every night.
         </p>
-        <p style={{ marginTop: 32, fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>
+        <p style={{ marginTop: 32, fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
           Already have an account?{' '}
           <Link to="/login" style={{ color: '#ff6b35', textDecoration: 'none', fontWeight: 600 }}>
             Log in →
@@ -143,7 +143,7 @@ function RegisterPage() {
               <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#ff6b35', margin: '0 0 28px', fontWeight: 600 }}>
                 {email}
               </p>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.2)', margin: '0 0 28px' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: '0 0 28px' }}>
                 Click the link to verify, then log in. Check spam if you don't see it.
               </p>
               <Link

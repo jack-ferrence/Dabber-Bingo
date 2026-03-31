@@ -15,7 +15,7 @@ export const theme = {
     bright:    '#f0f0ff',
     primary:   '#e0e0f0',
     secondary: '#8888aa',
-    muted:     '#555577',
+    muted:     '#8888aa',
     ghost:     '#3a3a55',
   },
   accent: {

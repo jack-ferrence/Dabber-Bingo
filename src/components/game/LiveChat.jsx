@@ -53,7 +53,7 @@ const ChatMessage = memo(function ChatMessage({ msg, isNew, profile }) {
       <span style={{ fontFamily, fontWeight: 700, color: nameColor }}>
         {msg.username}
       </span>
-      <span style={{ color: 'rgba(255,255,255,0.2)' }}>: </span>
+      <span style={{ color: 'rgba(255,255,255,0.4)' }}>: </span>
       <span style={{ color: 'rgba(255,255,255,0.5)' }}>{renderMessageText(msg.message)}</span>
     </div>
   )

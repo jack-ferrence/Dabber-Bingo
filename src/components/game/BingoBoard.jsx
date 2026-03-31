@@ -69,7 +69,7 @@ function BingoBoard({
   const skinClass = boardSkin && boardSkin !== 'default' ? `board-skin-${boardSkin}` : ''
 
   return (
-    <div className="relative w-full" style={{ maxWidth: 'min(480px, 100%)' }}>
+    <div className="relative w-full" style={{ maxWidth: 'min(520px, 100%)' }}>
       {/* Board frame */}
       <div
         className={`machine-glow ${skinClass}`}
@@ -205,7 +205,7 @@ function BingoBoard({
           >
             {roomStatus === 'finished' ? 'VIEW CARD' : 'KEEP PLAYING'}
           </button>
-          <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.02em' }}>
+          <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.02em' }}>
             tap anywhere to dismiss
           </p>
         </div>

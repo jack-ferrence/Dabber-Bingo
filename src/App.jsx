@@ -76,7 +76,7 @@ function App() {
         <Route
           path="*"
           element={
-            <div className="p-8 text-center" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.25)' }}>
+            <div className="p-8 text-center" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
               Page not found
             </div>
           }

@@ -167,7 +167,7 @@ function GameBrowserPage() {
       ) : games.length === 0 ? (
         <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 text-center">
           <p className="text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>No NBA games scheduled today.</p>
-          <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.25)' }}>Check back on a game day.</p>
+          <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>Check back on a game day.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 card-stagger-wrap">

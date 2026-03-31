@@ -5,7 +5,7 @@ import { getFontFamily, getBadge } from '../../lib/fontMap'
 
 const RANK_COLORS = ['text-accent-green', 'text-text-secondary', 'text-text-muted']
 const MAX_VISIBLE = 10
-const ROW_HEIGHT = 32
+const ROW_HEIGHT = 40
 
 function sortRows(a, b) {
   if (b.lines_completed !== a.lines_completed) return b.lines_completed - a.lines_completed
@@ -39,54 +39,55 @@ const LeaderboardRow = memo(function LeaderboardRow({
   hasRankChange,
   onNameClick,
 }) {
-  const rankColor = rank <= 3 ? RANK_COLORS[rank - 1] : 'text-text-muted'
   const badge = equippedBadge ? getBadge(equippedBadge) : null
+  const rankDisplay = rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank
 
   return (
     <div
-      className={`
-        flex items-center gap-2 rounded-md px-2
-        transition-all duration-300 ease-out
-        ${isMe ? 'border-l-2 border-accent-green bg-bg-hover' : 'border-l-2 border-transparent'}
-        ${isFlashing ? 'leaderboard-flash' : ''}
-      `}
-      style={{ height: ROW_HEIGHT }}
+      className={`flex items-center gap-3 rounded-lg px-3 transition-all duration-300 ease-out ${isFlashing ? 'leaderboard-flash' : ''}`}
+      style={{
+        height: 40,
+        background: isMe ? 'rgba(34,197,94,0.08)' : 'transparent',
+        borderLeft: isMe ? '3px solid #22c55e' : '3px solid transparent',
+      }}
     >
-      <span
-        className={`w-5 shrink-0 text-right font-display text-[11px] font-bold tabular-nums ${rankColor} ${hasRankChange ? 'rank-change' : ''}`}
-      >
-        {rank}
-      </span>
+      {/* Rank */}
+      <span style={{
+        width: 24, textAlign: 'center', flexShrink: 0,
+        fontFamily: rank <= 3 ? 'inherit' : 'var(--db-font-display)',
+        fontSize: rank <= 3 ? 16 : 13,
+        color: rank <= 3 ? undefined : 'rgba(255,255,255,0.4)',
+      }}>{rankDisplay}</span>
 
+      {/* Name */}
       <button
         type="button"
         onClick={() => onNameClick?.(userId)}
-        className={`min-w-0 flex-1 truncate text-xs font-medium text-left ${nameColor === 'rainbow' ? 'name-rainbow' : ''}`}
         style={{
-          background: 'none',
-          border: 'none',
-          padding: 0,
+          flex: 1, minWidth: 0, textAlign: 'left', background: 'none', border: 'none', padding: 0,
           cursor: isMe ? 'default' : 'pointer',
-          color: nameColor && nameColor !== 'rainbow' ? nameColor : undefined,
           fontFamily: getFontFamily(nameFont),
+          fontSize: 13, fontWeight: 600,
+          color: nameColor && nameColor !== 'rainbow' ? nameColor : isMe ? '#22c55e' : 'rgba(255,255,255,0.75)',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => { if (!isMe) e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.textDecorationColor = 'rgba(255,255,255,0.25)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}
       >
-        {badge && <span style={{ marginRight: 3, fontSize: 11 }}>{badge.emoji}</span>}
-        {username.length > 12 ? username.slice(0, 12) + '…' : username}
-        {isMe && (
-          <span className="ml-1 text-[9px] text-accent-green">(you)</span>
-        )}
+        {badge && <span style={{ marginRight: 4, fontSize: 13 }}>{badge.emoji}</span>}
+        {username.length > 14 ? username.slice(0, 14) + '…' : username}
+        {isMe && <span style={{ marginLeft: 4, fontSize: 10, color: '#22c55e', opacity: 0.7 }}>(you)</span>}
       </button>
 
-      <span className="shrink-0 font-display text-[10px] tabular-nums text-text-secondary">
-        {linesCompleted}/12
-      </span>
-
-      <span className="shrink-0 text-[10px] tabular-nums text-text-muted">
-        {squaresMarked}/25
-      </span>
+      {/* Stats */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <span style={{
+          fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700,
+          color: linesCompleted > 0 ? '#ff6b35' : 'rgba(255,255,255,0.3)',
+        }}>{linesCompleted}<span style={{ fontSize: 9, opacity: 0.5 }}>/12</span></span>
+        <span style={{
+          fontFamily: 'var(--db-font-mono)', fontSize: 11,
+          color: 'rgba(255,255,255,0.4)',
+        }}>{squaresMarked}/25</span>
+      </div>
     </div>
   )
 })
@@ -243,17 +244,17 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined, 
   return (
     <Panel title="Leaderboard">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[10px] font-medium text-text-muted">
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
           {totalPlayers} player{totalPlayers === 1 ? '' : 's'}
         </span>
         {currentUserRank && (
-          <span className="text-[10px] font-medium text-accent-gold">
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#FFD700' }}>
             You: #{currentUserRank}
           </span>
         )}
       </div>
 
-      <div className="max-h-64 overflow-y-auto scrollbar-thin">
+      <div className="max-h-80 overflow-y-auto scrollbar-thin">
         <div className="relative">
           {visibleRows.map((row) => {
             if (row._separator) {

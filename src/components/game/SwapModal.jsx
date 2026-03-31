@@ -148,7 +148,7 @@ function SwapModal({
           <button
             type="button"
             onClick={handleClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.2)', fontSize: 16, padding: '2px 6px', lineHeight: 1, borderRadius: 4, transition: 'color 120ms ease' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: 16, padding: '2px 6px', lineHeight: 1, borderRadius: 4, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
             aria-label="Cancel"
@@ -159,7 +159,7 @@ function SwapModal({
 
         {/* Current square */}
         <div>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.25)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>
             CURRENT
           </span>
           <div
@@ -178,7 +178,7 @@ function SwapModal({
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
                 {oddsLabel(currentOdds)}
                 {currentSquare?.implied_prob != null && (
-                  <span style={{ marginLeft: 6, fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>
+                  <span style={{ marginLeft: 6, fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>
                     ~{Math.round(currentSquare.implied_prob * 100)}%
                   </span>
                 )}
@@ -193,7 +193,7 @@ function SwapModal({
         {/* Candidates or confirm step */}
         {confirming && selected ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.25)' }}>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>
               REPLACE WITH
             </span>
             <div
@@ -274,12 +274,12 @@ function SwapModal({
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.25)' }}>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>
               PICK A REPLACEMENT
             </span>
 
             {candidates.length === 0 ? (
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.25)', textAlign: 'center', padding: '12px 0' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '12px 0' }}>
                 No similar props available
               </p>
             ) : (
@@ -323,7 +323,7 @@ function SwapModal({
 
         {/* Footer */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.2)' }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>
             Cost: {cost} ◈ · Swap {swapNumLabel}
           </span>
           <button

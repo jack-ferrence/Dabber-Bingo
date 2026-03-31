@@ -11,7 +11,7 @@ const SPORTS = [
 ]
 
 const STATUS_COLORS = {
-  draft: '#555577',
+  draft: '#8888aa',
   active: '#00cc88',
   live: '#ff2d2d',
   finished: '#8888aa',
@@ -304,7 +304,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
             style={{
               padding: '8px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
               background: espnInput ? '#ff6b35' : '#2a2a44',
-              color: espnInput ? '#0c0c14' : '#555577',
+              color: espnInput ? '#0c0c14' : '#8888aa',
               fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800,
               whiteSpace: 'nowrap', opacity: fetchingEspn ? 0.5 : 1,
             }}
@@ -388,7 +388,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
 
 // ── Game Card (list item) ───────────────────────────────────────────────────
 function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId }) {
-  const statusColor = STATUS_COLORS[game.status] || '#555577'
+  const statusColor = STATUS_COLORS[game.status] || '#8888aa'
 
   return (
     <div style={{
@@ -410,7 +410,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
           }}>
             {game.status}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa' }}>
             {game.sport.toUpperCase()}
           </span>
           {game.free_entry && (
@@ -431,16 +431,16 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
         )}
 
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 6 }}>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa' }}>
             🏆 {game.prize_name} {game.prize_value && `(${game.prize_value})`}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa' }}>
             💰 {game.free_entry ? 'FREE' : `${game.entry_fee} Dobs`}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa' }}>
             👥 {game.entries_count} entries
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#555577' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa' }}>
             📅 {new Date(game.starts_at).toLocaleDateString()} {new Date(game.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
           </span>
           {game.room_id && (
@@ -474,7 +474,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
           {game.status === 'active' && (
             <>
               <button type="button" onClick={() => onStatusChange(game.id, 'draft')}
-                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #555577', background: 'transparent', color: '#555577', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 700 }}>
+                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #555577', background: 'transparent', color: '#8888aa', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 700 }}>
                 UNPUBLISH
               </button>
               <button type="button" onClick={() => onStatusChange(game.id, 'cancelled')}
@@ -581,7 +581,7 @@ export default function AdminFeaturedPage() {
   if (loading) {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#555577' }}>Checking admin access...</span>
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#8888aa' }}>Checking admin access...</span>
       </div>
     )
   }
@@ -638,7 +638,7 @@ export default function AdminFeaturedPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {filteredGames.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center' }}>
-                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#555577' }}>
+                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#8888aa' }}>
                   No featured games {filter !== 'all' ? `with status "${filter}"` : 'yet'}. Create one!
                 </p>
               </div>

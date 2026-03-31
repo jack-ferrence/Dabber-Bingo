@@ -85,7 +85,7 @@ function SidebarContent({ onClose }) {
               className="rounded-lg px-4 py-5 text-center"
               style={{ border: '1px dashed rgba(255,255,255,0.07)' }}
             >
-              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.25)' }}>
+              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
                 No active games.{' '}
                 <Link
                   to="/login"
@@ -104,7 +104,7 @@ function SidebarContent({ onClose }) {
               className="rounded-lg px-4 py-5 text-center"
               style={{ border: '1px dashed rgba(255,255,255,0.07)' }}
             >
-              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.25)' }}>
+              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
                 No active games. Join one →
               </p>
             </div>
@@ -230,7 +230,7 @@ export default function Sidebar({ open, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                style={{ color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, transition: 'color 120ms ease' }}
+                style={{ color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, transition: 'color 120ms ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)' }}
                 aria-label="Close menu"

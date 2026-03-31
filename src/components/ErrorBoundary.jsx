@@ -56,7 +56,7 @@ function FallbackUI() {
         >
           Refresh page
         </button>
-        <p style={{ marginTop: 16, fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'rgba(255,255,255,0.1)' }}>
+        <p style={{ marginTop: 16, fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
           Dobber v0.1
         </p>
       </div>

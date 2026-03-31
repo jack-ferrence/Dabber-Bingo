@@ -185,7 +185,7 @@ export default function LobbyPage() {
               className="lobby-title"
               style={{
                 fontFamily: 'var(--db-font-display)',
-                fontSize: 'clamp(24px, 3vw, 36px)',
+                fontSize: 'clamp(28px, 4vw, 42px)',
                 letterSpacing: '0.06em',
                 lineHeight: 1,
                 color: '#e8e8f4',
@@ -193,7 +193,7 @@ export default function LobbyPage() {
             >
               GAMES
             </h1>
-            <p className="hidden md:block mt-1" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>
+            <p className="hidden md:block mt-1" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>
               Live bingo powered by real stats
             </p>
           </div>
@@ -202,7 +202,7 @@ export default function LobbyPage() {
               className="inline-flex items-center gap-1.5"
               style={{
                 fontFamily: 'var(--db-font-display)',
-                fontSize: 12,
+                fontSize: 14,
                 letterSpacing: '0.08em',
                 color: '#ff4444',
                 background: 'rgba(255,45,45,0.08)',
@@ -241,8 +241,8 @@ export default function LobbyPage() {
                 padding: '8px 18px', borderRadius: 20, border: isActive ? 'none' : '1px solid rgba(255,255,255,0.08)',
                 background: isActive ? 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)' : 'rgba(255,255,255,0.04)',
                 color: isActive ? '#fff' : 'rgba(255,255,255,0.55)',
-                fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
-                letterSpacing: '0.03em', cursor: 'pointer', flexShrink: 0,
+                fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 400, letterSpacing: '0.06em',
+                cursor: 'pointer', flexShrink: 0,
                 transition: 'background 0.15s ease, color 0.15s ease',
                 boxShadow: isActive ? '0 2px 10px rgba(255,107,53,0.3)' : 'none',
               }}
@@ -346,12 +346,12 @@ export default function LobbyPage() {
               })() : null
 
               const LABEL = { live: 'LIVE NOW', finished: 'RECENTLY FINISHED', today: 'COMING UP', tomorrow: 'TOMORROW' }
-              const LABEL_COLOR = { live: '#ff4444', finished: 'rgba(255,255,255,0.3)', today: 'rgba(255,255,255,0.35)', tomorrow: 'rgba(255,255,255,0.3)' }
+              const LABEL_COLOR = { live: '#ff4444', finished: 'rgba(255,255,255,0.3)', today: 'rgba(255,255,255,0.45)', tomorrow: 'rgba(255,255,255,0.3)' }
 
               if (group !== prevGroup) {
                 acc.push(
                   <div key={`label-${room.id}`} style={{
-                    fontFamily: 'var(--db-font-display)', fontSize: 10,
+                    fontFamily: 'var(--db-font-display)', fontSize: 13,
                     color: LABEL_COLOR[group], letterSpacing: '0.1em',
                     padding: i === 0 ? '0 0 4px' : '10px 0 4px',
                     display: 'flex', alignItems: 'center', gap: 6,

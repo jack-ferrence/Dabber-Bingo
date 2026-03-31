@@ -163,9 +163,9 @@ export default function StorePage() {
         <CategoryTabs tabs={TABS} activeTab={tab} onTabChange={setTab} />
 
         {loading ? (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Loading store...</p>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Loading store...</p>
         ) : filtered.length === 0 ? (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>No items available.</p>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>No items available.</p>
         ) : (
           <div
             style={{

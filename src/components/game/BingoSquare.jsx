@@ -27,7 +27,7 @@ const BingoSquare = memo(function BingoSquare({
   const isFree = index === 12
   const marked = square?.marked === true
   const displayText = square?.display_text ?? ''
-  const threshold = square?.threshold ?? 0
+  const threshold = Number(square?.threshold) || 0
   const prevMarkedRef = useRef(marked)
   const [justMarked, setJustMarked] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -208,7 +208,7 @@ const BingoSquare = memo(function BingoSquare({
 
       {/* Progress bar — live games only */}
       {isLive && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: '0 0 5px 5px', overflow: 'hidden' }}>
           <div style={{
             width: marked ? '100%' : `${progressPct}%`,
             height: '100%',

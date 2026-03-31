@@ -662,7 +662,7 @@ html, body {
   .game-room-board {
     overflow: visible !important;
     justify-content: flex-start !important;
-    padding: 8px !important;
+    padding: 6px 4px !important;
   }
 
   .game-room-header {
@@ -954,4 +954,14 @@ button[aria-label="Dismiss"]:hover {
   .bingo-grid button .sq-player { font-size: 14px !important; }
   .bingo-grid button .sq-stat   { font-size: 12px !important; }
   .bingo-grid button .sq-team   { font-size: 9px !important; }
+}
+
+/* Board fills available height better on mobile */
+@media (max-width: 767px) {
+  .bingo-grid {
+    gap: 3px !important;
+  }
+  .bingo-grid button {
+    border-radius: 6px !important;
+  }
 }

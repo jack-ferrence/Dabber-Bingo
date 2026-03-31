@@ -120,7 +120,7 @@ export default function CardViewerModal({
           <button
             type="button"
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '2px 6px', flexShrink: 0, borderRadius: 4, transition: 'color 120ms ease' }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '2px 6px', flexShrink: 0, borderRadius: 4, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
             aria-label="Close"
@@ -130,11 +130,11 @@ export default function CardViewerModal({
         {/* Body */}
         {loading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160 }}>
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Loading card...</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Loading card...</span>
           </div>
         ) : !squares?.length ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160 }}>
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Card not available</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Card not available</span>
           </div>
         ) : (
           <>
@@ -146,7 +146,7 @@ export default function CardViewerModal({
             </div>
 
             {/* Footer stats */}
-            <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>
+            <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>
               {squaresMarked}/25 marked · {linesCompleted} line{linesCompleted === 1 ? '' : 's'}
             </p>
           </>
