@@ -2,10 +2,10 @@ import { memo, useEffect, useRef, useState } from 'react'
 import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS } from '../../constants/teamColors.js'
 
 function getTeamColor(abbr, sport) {
-  if (!abbr) return '#ff6b35'
-  if (sport === 'mlb') return MLB_TEAM_COLORS[abbr] ?? '#ff6b35'
-  if (sport === 'ncaa') return NCAA_TEAM_COLORS[abbr] ?? '#ff6b35'
-  return NBA_TEAM_COLORS[abbr] ?? '#ff6b35'
+  if (!abbr) return '#3a3a5c'
+  if (sport === 'mlb') return MLB_TEAM_COLORS[abbr] ?? '#3a3a5c'
+  if (sport === 'ncaa') return NCAA_TEAM_COLORS[abbr] ?? '#3a3a5c'
+  return NBA_TEAM_COLORS[abbr] ?? '#3a3a5c'
 }
 
 const BingoSquare = memo(function BingoSquare({
@@ -144,17 +144,16 @@ const BingoSquare = memo(function BingoSquare({
         borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
         display: 'flex', flexDirection: 'column',
         alignItems: 'flex-start', justifyContent: 'center',
-        padding: '6px 7px 10px 8px',
+        padding: '6px 7px 10px',
         textAlign: 'left',
-        background: marked ? 'rgba(255,107,53,0.06)' : '#1a1a2e',
+        background: marked
+          ? 'rgba(255,107,53,0.08)'
+          : `linear-gradient(135deg, ${teamColor}15 0%, #1a1a2e 100%)`,
         border: marked
           ? '1.5px solid rgba(255,107,53,0.5)'
           : isWinning
             ? '1.5px solid rgba(255,107,53,0.3)'
             : '1px solid rgba(255,255,255,0.05)',
-        borderLeft: marked
-          ? '3px solid #ff6b35'
-          : `3px solid ${teamColor}`,
         boxShadow: marked ? '0 0 12px rgba(255,107,53,0.1)' : 'none',
         transition: 'background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 80ms ease',
         transform: justMarked ? 'scale(1.03)' : 'scale(1)',
@@ -195,10 +194,10 @@ const BingoSquare = memo(function BingoSquare({
       )}
 
       {/* Lobby: thin team color accent at bottom */}
-      {isLobby && (
+      {!marked && threshold === 0 && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          height: 3, background: teamColor, opacity: 0.5,
+          height: 3, background: teamColor, opacity: 0.6,
         }} />
       )}
 
