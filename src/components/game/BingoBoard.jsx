@@ -131,27 +131,6 @@ function BingoBoard({
         <div style={{ marginTop: 8, height: 1, background: 'rgba(255,255,255,0.04)' }} />
       </div>
 
-      {/* Winning line SVG overlay — visible after bingo is dismissed */}
-      {winningLines.length > 0 && bingoDismissed && (
-        <svg
-          style={{ position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', borderRadius: 12 }}
-          viewBox="0 0 500 500"
-          preserveAspectRatio="none"
-        >
-          {winningLines.map((line, li) => {
-            const startIdx = line[0]
-            const endIdx = line[line.length - 1]
-            const x1 = (startIdx % 5) * 100 + 50
-            const y1 = Math.floor(startIdx / 5) * 100 + 50
-            const x2 = (endIdx % 5) * 100 + 50
-            const y2 = Math.floor(endIdx / 5) * 100 + 50
-            return (
-              <line key={li} x1={x1} y1={y1} x2={x2} y2={y2}
-                stroke="#ff6b35" strokeWidth="6" strokeLinecap="round" opacity="0.5" />
-            )
-          })}
-        </svg>
-      )}
 
       {/* Full-board BINGO overlay */}
       {hasBingo && !bingoDismissed && (

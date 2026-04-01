@@ -222,8 +222,17 @@ body {
   75%      { box-shadow: 0 0 0 3px var(--color-accent-gold), 0 0 28px rgba(255, 107, 53, 0.7); }
 }
 
+/* ── Bingo line completion — pulse glow on winning squares ── */
+@keyframes line-glow-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+  50%  { box-shadow: 0 0 16px 4px rgba(255, 107, 53, 0.4); border-color: #ff6b35; }
+  100% { box-shadow: 0 0 8px 2px rgba(255, 107, 53, 0.15); }
+}
+
 .sq-line-flash {
-  animation: line-flash 500ms ease-out;
+  animation: line-glow-pulse 800ms ease-out forwards !important;
+  border-color: #ff6b35 !important;
+  z-index: 2;
 }
 
 /* ── Bingo toast banner ── */
@@ -793,23 +802,6 @@ html, body {
   transition: transform 60ms ease, box-shadow 60ms ease !important;
 }
 
-/* ── Line-flash: bloom pulse on winning square fill ── */
-@keyframes sparkle-bloom {
-  0%   { opacity: 0; transform: scale(0.6); }
-  45%  { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.4); }
-}
-
-.sq-line-flash::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(ellipse at center, rgba(255, 107, 53, 0.35) 0%, transparent 70%);
-  animation: sparkle-bloom 450ms ease-out forwards;
-  pointer-events: none;
-  z-index: 1;
-}
 
 /* ── Modal overlay: fade in over 150ms ── */
 @keyframes overlay-fade-in {
@@ -974,6 +966,16 @@ button[aria-label="Dismiss"]:hover {
 [data-card-press]:active {
   transform: scale(0.97) !important;
   transition: transform 80ms cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+/* ── Splash screen ── */
+@keyframes splash-logo-in {
+  0%   { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes splash-text-in {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Simplified square mark animation */

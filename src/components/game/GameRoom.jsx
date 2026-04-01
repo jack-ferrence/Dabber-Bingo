@@ -117,15 +117,35 @@ function GameRoom({
     [flatSquares]
   )
 
+  // ── Initial stat events fetch (fills progress bars on first render) ──
+  const [initialStatEvents, setInitialStatEvents] = useState([])
+
+  useEffect(() => {
+    if (!room?.game_id || room?.status === 'lobby') return
+    const fetchInitialStats = async () => {
+      const { data } = await supabase
+        .from('stat_events')
+        .select('player_id, stat_type, value')
+        .eq('game_id', room.game_id)
+      if (data) setInitialStatEvents(data)
+    }
+    fetchInitialStats()
+  }, [room?.game_id, room?.status])
+
   const statValueMap = useMemo(() => {
     const map = {}
+    // Seed with initial fetch (all existing stats)
+    for (const ev of initialStatEvents) {
+      const key = `${ev.player_id}:${ev.stat_type}`
+      map[key] = Math.max(map[key] ?? 0, Number(ev.value) ?? 0)
+    }
+    // Overlay with realtime updates (newer values win)
     for (const ev of statEvents ?? []) {
       const key = `${ev.player_id}:${ev.stat_type}`
-      map[key] = Math.max(map[key] ?? 0, ev.value ?? 0)
+      map[key] = Math.max(map[key] ?? 0, Number(ev.value) ?? 0)
     }
     return map
-  }, [statEvents]
-  )
+  }, [initialStatEvents, statEvents])
 
   const handleSquareClick = useCallback((sq) => {
     if (sq?.stat_type === 'free') return

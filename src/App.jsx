@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react'
 import { Routes, Route, Link, Navigate, useMatch } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import { useProfile } from './hooks/useProfile.js'
+import SplashScreen from './components/ui/SplashScreen.jsx'
 import LobbyPage from './pages/LobbyPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -15,6 +17,19 @@ function App() {
   const { user, loading } = useAuth()
   const { username: profileUsername } = useProfile()
   const isGameRoute = useMatch('/room/:roomId')
+
+  const [splashDone, setSplashDone] = useState(() => {
+    return sessionStorage.getItem('dobber-splash-shown') === '1'
+  })
+
+  const handleSplashFinished = useCallback(() => {
+    sessionStorage.setItem('dobber-splash-shown', '1')
+    setSplashDone(true)
+  }, [])
+
+  if (!splashDone) {
+    return <SplashScreen onFinished={handleSplashFinished} />
+  }
 
   // Game room: full-screen, no sidebar or sport tabs
   if (isGameRoute) {
