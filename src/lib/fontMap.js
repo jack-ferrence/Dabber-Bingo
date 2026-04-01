@@ -32,7 +32,8 @@ export const BADGE_MAP = {
   badge_goat2: { emoji: '🐐', label: 'GOAT' },
   badge_ice:   { emoji: '🧊', label: 'ICE' },
   badge_alien: { emoji: '👽', label: 'ALIEN' },
-  badge_clown: { emoji: '🤡', label: 'CLOWN' },
+  badge_clown:     { emoji: '🤡', label: 'CLOWN' },
+  badge_supporter: { emoji: '🎱', label: 'SUPPORTER' },
 }
 
 export function getBadge(itemId) {

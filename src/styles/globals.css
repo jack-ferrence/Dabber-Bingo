@@ -1034,3 +1034,9 @@ button[aria-label="Dismiss"]:hover {
   .bingo-grid button .sq-player { font-size: 10px !important; }
   .bingo-grid button .sq-stat   { font-size: 8px !important; }
 }
+
+/* ── Winning square glow (completed bingo line) ── */
+.sq-winning-square {
+  border-color: #ff6b35 !important;
+  box-shadow: 0 0 8px rgba(255,107,53,0.25), inset 0 0 12px rgba(255,107,53,0.08) !important;
+}

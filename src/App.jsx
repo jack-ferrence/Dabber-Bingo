@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage.jsx'
 import ProtectedRoute from './pages/ProtectedRoute.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 import AdminFeaturedPage from './pages/AdminFeaturedPage.jsx'
+import ContributePage from './pages/ContributePage.jsx'
 
 function App() {
   const { user, loading } = useAuth()
@@ -85,6 +86,7 @@ function App() {
           <Route path="/store" element={<StorePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/admin/featured" element={<AdminFeaturedPage />} />
+          <Route path="/contribute" element={<ContributePage />} />
         </Route>
         <Route
           path="*"

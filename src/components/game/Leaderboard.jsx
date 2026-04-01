@@ -3,6 +3,22 @@ import { supabase } from '../../lib/supabase'
 import Panel from '../ui/Panel.jsx'
 import { getFontFamily, getBadge } from '../../lib/fontMap'
 
+const BINGO_LINES = [
+  [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+  [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
+  [0,6,12,18,24],[4,8,12,16,20],
+]
+
+function countFromSquares(squares) {
+  if (!Array.isArray(squares)) return null
+  const flat = squares.flat()
+  if (flat.length !== 25) return null
+  const markedSet = new Set(flat.map((s, i) => (s?.marked === true || i === 12) ? i : -1).filter((i) => i >= 0))
+  const squaresMarked = flat.filter((s, i) => s?.marked === true && i !== 12).length
+  const linesCompleted = BINGO_LINES.filter((line) => line.every((i) => markedSet.has(i))).length
+  return { squaresMarked, linesCompleted }
+}
+
 const RANK_COLORS = ['text-accent-green', 'text-text-secondary', 'text-text-muted']
 const MAX_VISIBLE = 10
 const ROW_HEIGHT = 40
@@ -118,7 +134,7 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined, 
     const [{ data: cardsData }, { data: profilesData }] = await Promise.all([
       supabase
         .from('cards')
-        .select('user_id, lines_completed, squares_marked, late_join')
+        .select('user_id, lines_completed, squares_marked, squares, late_join')
         .eq('room_id', roomId)
         .eq('late_join', false)
         .in('user_id', userIds),
@@ -138,10 +154,11 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined, 
 
     const built = userIds.map((uid) => {
       const card = (cardsData ?? []).find((c) => c.user_id === uid)
+      const fromSquares = card ? countFromSquares(card.squares) : null
       return {
         user_id: uid,
-        lines_completed: card?.lines_completed ?? 0,
-        squares_marked: card?.squares_marked ?? 0,
+        lines_completed: fromSquares?.linesCompleted ?? card?.lines_completed ?? 0,
+        squares_marked: fromSquares?.squaresMarked ?? card?.squares_marked ?? 0,
         joined_at: joinMap[uid] ?? '',
       }
     })
@@ -185,10 +202,11 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined, 
           }, 2000)
         }
 
+        const fromSquares = countFromSquares(updated.squares)
         const newRow = {
           user_id: updated.user_id,
-          lines_completed: updated.lines_completed ?? oldRow?.lines_completed ?? 0,
-          squares_marked: updated.squares_marked ?? oldRow?.squares_marked ?? 0,
+          lines_completed: fromSquares?.linesCompleted ?? updated.lines_completed ?? oldRow?.lines_completed ?? 0,
+          squares_marked: fromSquares?.squaresMarked ?? updated.squares_marked ?? oldRow?.squares_marked ?? 0,
           joined_at: oldRow?.joined_at ?? '',
         }
 

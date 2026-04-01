@@ -1064,6 +1064,27 @@ export default function SettingsPage() {
           {tab === 'customize'   && <CustomizeTab />}
           {tab === 'preferences' && <PreferencesTab />}
         </div>
+
+        {/* Contribute footer */}
+        <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+          <Link
+            to="/contribute"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 22px', borderRadius: 8, textDecoration: 'none',
+              background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.2)',
+              fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.06em', color: '#ff6b35',
+              transition: 'background 120ms, border-color 120ms',
+            }}
+          >
+            <span style={{ fontSize: 14 }}>🎱</span>
+            SUPPORT DOBBER
+          </Link>
+          <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.2)', margin: '8px 0 0' }}>
+            Keep free-to-play sports bingo alive
+          </p>
+        </div>
       </div>
     </div>
   )
