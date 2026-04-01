@@ -26,7 +26,7 @@ function getClock(room) {
   return period > 0 ? `Q${period} ${clock}` : clock
 }
 
-export default function DashboardCard({ room, onOpenGame, isJoined = false, size = 'large', rank = 0 }) {
+export default function DashboardCard({ room, onOpenGame, isJoined = false, size = 'large', rank = 0, squaresMarked = null }) {
   const { away, home } = parseTeams(room.name)
   const awayColor = getTeamColor(away, room.sport)
   const homeColor = getTeamColor(home, room.sport)
@@ -90,7 +90,6 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
             )}
           </div>
 
-          {/* Joined badge */}
           {isJoined && !isFinished && (
             <span style={{
               fontSize: 10, color: '#22c55e', fontWeight: 700, letterSpacing: '0.04em',
@@ -98,13 +97,12 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
             }}>✓ JOINED</span>
           )}
 
-          {/* Finished rank */}
           {isFinished && rank > 0 && (
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 800,
               color: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'rgba(255,255,255,0.3)',
             }}>
-              {rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : `#${rank}`}
+              {rank <= 3 ? ['\u{1F947}','\u{1F948}','\u{1F949}'][rank-1] : `#${rank}`}
             </span>
           )}
         </div>
@@ -125,7 +123,6 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
             }}>{home}</span>
           </div>
 
-          {/* Score */}
           {hasScore && (
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: scoreFontSize,
@@ -137,35 +134,34 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           )}
         </div>
 
-        {/* Bottom row: progress bar (joined) or CTA (not joined) or sport label */}
+        {/* Bottom row */}
         <div>
-          {isJoined && !isFinished && room.my_squares_marked != null && (
+          {isJoined && !isFinished && squaresMarked != null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ width: `${Math.min(100, ((room.my_squares_marked ?? 0) / 25) * 100)}%`, height: '100%', background: '#ff6b35', borderRadius: 3 }} />
+                <div style={{ width: `${Math.min(100, (squaresMarked / 25) * 100)}%`, height: '100%', background: '#ff6b35', borderRadius: 3 }} />
               </div>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.55)', fontWeight: 700 }}>
-                {room.my_squares_marked ?? 0}/25
+                {squaresMarked}/25
               </span>
             </div>
           )}
 
-          {!isJoined && !isFinished && (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35', fontWeight: 600 }}>
-              {isLive ? 'Join late →' : 'Join game →'}
-            </span>
-          )}
-
-          {!isJoined && !isFinished && (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2, display: 'block' }}>
+          {isJoined && !isFinished && squaresMarked == null && (
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
               {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
             </span>
           )}
 
-          {isJoined && !isFinished && room.my_squares_marked == null && (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
-              {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
-            </span>
+          {!isJoined && !isFinished && (
+            <>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35', fontWeight: 600 }}>
+                {isLive ? 'Join late →' : 'Join game →'}
+              </span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2, display: 'block' }}>
+                {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
+              </span>
+            </>
           )}
 
           {isFinished && (

@@ -33,49 +33,52 @@ export default function LobbyPage() {
     navigate(`/room/${roomId}`)
   }
 
-  // Derive joined room IDs from myRooms
+  // Derive joined room IDs
   const myRoomIds = useMemo(() => new Set(myRooms.map((r) => r.id)), [myRooms])
 
-  // Card info map: roomId → { my_squares_marked, my_lines_completed }
+  // Card info map: roomId → { squares_marked, lines_completed }
   const cardInfoByRoom = useMemo(() => {
     const m = {}
     for (const r of myRooms) {
-      m[r.id] = { my_squares_marked: r.squares_marked, my_lines_completed: r.lines_completed }
+      m[r.id] = { squares_marked: r.squares_marked ?? null, lines_completed: r.lines_completed ?? 0 }
     }
     return m
   }, [myRooms])
 
-  // Fetch finished game ranks for joined games
+  // Fetch finished ranks
   useEffect(() => {
     if (!user) return
-    const finishedRooms = allRooms.filter((r) => r.status === 'finished' && myRoomIds.has(r.id))
-    if (finishedRooms.length === 0) return
-    const fetchRanks = async () => {
+    const finishedJoined = allRooms.filter((r) => r.status === 'finished' && myRoomIds.has(r.id))
+    if (finishedJoined.length === 0) return
+    const go = async () => {
       const ranks = {}
-      for (const room of finishedRooms) {
-        const { data: cards } = await supabase
-          .from('cards')
-          .select('user_id, lines_completed, squares_marked, late_join')
-          .eq('room_id', room.id)
-          .order('lines_completed', { ascending: false })
-          .order('squares_marked', { ascending: false })
-        if (cards) {
-          const eligible = cards.filter((c) => !c.late_join)
-          const rank = eligible.findIndex((c) => c.user_id === user.id) + 1
-          if (rank > 0) ranks[room.id] = rank
-        }
+      for (const room of finishedJoined) {
+        try {
+          const { data: cards } = await supabase
+            .from('cards')
+            .select('user_id, lines_completed, squares_marked, late_join')
+            .eq('room_id', room.id)
+            .order('lines_completed', { ascending: false })
+            .order('squares_marked', { ascending: false })
+          if (cards) {
+            const eligible = cards.filter((c) => !c.late_join)
+            const rank = eligible.findIndex((c) => c.user_id === user.id) + 1
+            if (rank > 0) ranks[room.id] = rank
+          }
+        } catch { /* ignore */ }
       }
       setFinishedRanks(ranks)
     }
-    fetchRanks()
+    go()
   }, [allRooms, user, myRoomIds])
 
+  // Filter by sport
   const filtered = useMemo(() => {
     if (activeSport === 'all') return allRooms
     return allRooms.filter((r) => (r.sport ?? 'nba') === activeSport)
   }, [allRooms, activeSport])
 
-  // Group games into dashboard sections
+  // Group into sections
   const sections = useMemo(() => {
     const myGames = []
     const liveNotJoined = []
@@ -97,6 +100,7 @@ export default function LobbyPage() {
       }
     }
 
+    // Sort
     myGames.sort((a, b) => (b.status === 'live' ? 1 : 0) - (a.status === 'live' ? 1 : 0) || new Date(a.starts_at) - new Date(b.starts_at))
     liveNotJoined.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
     todayLobby.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
@@ -108,22 +112,45 @@ export default function LobbyPage() {
 
   const liveCount = allRooms.filter((r) => r.status === 'live').length
 
+  // ── Section renderer ──
+  function CardRow({ games, size, isJoinedSection = false }) {
+    return (
+      <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+        {games.map((room) => (
+          <DashboardCard
+            key={room.id}
+            room={room}
+            onOpenGame={handleOpenGame}
+            isJoined={isJoinedSection || myRoomIds.has(room.id)}
+            size={size}
+            rank={finishedRanks[room.id] ?? 0}
+            squaresMarked={cardInfoByRoom[room.id]?.squares_marked ?? null}
+          />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div style={{ paddingBottom: 20 }}>
-      {/* Header */}
+      {/* ── Header ── */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 36, letterSpacing: '0.03em', color: '#e8e8f4', lineHeight: 1 }}>GAMES</span>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 36, letterSpacing: '0.03em', color: '#e8e8f4', lineHeight: 1 }}>
+            GAMES
+          </span>
           {liveCount > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,45,45,0.1)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 6, padding: '4px 10px' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff2d2d', animation: 'pulse-live 1.4s ease-in-out infinite' }} />
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: '#ff4444' }}>{liveCount} LIVE</span>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: '#ff4444' }}>
+                {liveCount} LIVE
+              </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Sport tabs — text with underline */}
+      {/* ── Sport tabs ── */}
       <div style={{ display: 'flex', gap: 0, padding: '8px 20px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         {SPORTS.map((s) => {
           const isActive = activeSport === s.key
@@ -136,13 +163,13 @@ export default function LobbyPage() {
               onClick={() => setActiveSport(s.key)}
               style={{
                 padding: '6px 0 10px', marginRight: 24,
-                borderBottom: isActive ? '2px solid #ff6b35' : '2px solid transparent',
+                background: 'none', cursor: 'pointer',
+                borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+                borderBottom: `2px solid ${isActive ? '#ff6b35' : 'transparent'}`,
                 color: isActive ? '#e8e8f4' : 'rgba(255,255,255,0.35)',
-                fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: isActive ? 600 : 500,
-                letterSpacing: '0.02em', background: 'none', border: 'none',
-                borderBottomStyle: 'solid', borderBottomWidth: 2,
-                borderBottomColor: isActive ? '#ff6b35' : 'transparent',
-                cursor: 'pointer', transition: 'color 120ms ease',
+                fontFamily: 'var(--db-font-mono)', fontSize: 13,
+                fontWeight: isActive ? 600 : 500, letterSpacing: '0.02em',
+                transition: 'color 120ms ease',
               }}
             >
               {s.label}{count > 0 ? ` ${count}` : ''}
@@ -151,121 +178,90 @@ export default function LobbyPage() {
         })}
       </div>
 
+      {/* ── Featured banner ── */}
       <FeaturedBanner />
 
-      {/* Top Players */}
+      {/* ── Top players ── */}
       <div style={{ padding: '12px 20px 0' }}>
         <TopPlayers />
       </div>
 
+      {/* Error */}
       {error && (
         <div style={{ margin: '12px 20px', padding: '10px 14px', background: 'rgba(255,45,45,0.08)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 8, fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#ff4444' }}>
           {error}
         </div>
       )}
 
-      {/* Loading skeletons */}
+      {/* Loading */}
       {loading && (
-        <div style={{ padding: '20px 20px 0' }}>
-          <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+        <div style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', gap: 12, overflowX: 'auto' }}>
             {[1,2,3].map((i) => (
-              <div key={i} style={{ flexShrink: 0, width: 260, height: 140, borderRadius: 14, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }} />
+              <div key={i} style={{ flexShrink: 0, width: 260, height: 140, borderRadius: 14, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)', animation: 'pulse 1.8s ease-in-out infinite' }} />
             ))}
           </div>
         </div>
       )}
 
-      {/* ── SECTION: Your Games ── */}
+      {/* ═══ SECTION: Your Games ═══ */}
       {!loading && sections.myGames.length > 0 && (
-        <div style={{ padding: '20px 0 0' }}>
+        <div style={{ paddingTop: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>Your games</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Your games</span>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '2px 8px', borderRadius: 4 }}>
                 {sections.myGames.length} active
               </span>
             </div>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
-            {sections.myGames.map((room) => (
-              <DashboardCard
-                key={room.id}
-                room={{ ...room, ...cardInfoByRoom[room.id] }}
-                onOpenGame={handleOpenGame}
-                isJoined={true}
-                size="large"
-              />
-            ))}
-          </div>
+          <CardRow games={sections.myGames} size="large" isJoinedSection={true} />
         </div>
       )}
 
-      {/* ── SECTION: Live Now ── */}
+      {/* ═══ SECTION: Live Now ═══ */}
       {!loading && sections.liveNotJoined.length > 0 && (
-        <div style={{ padding: '16px 0 0' }}>
+        <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff2d2d', animation: 'pulse-live 1.4s ease-in-out infinite' }} />
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>Live now</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Live now</span>
             </div>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sections.liveNotJoined.length} games</span>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
-            {sections.liveNotJoined.map((room) => (
-              <DashboardCard key={room.id} room={room} onOpenGame={handleOpenGame} isJoined={false} size="medium" />
-            ))}
-          </div>
+          <CardRow games={sections.liveNotJoined} size="medium" />
         </div>
       )}
 
-      {/* ── SECTION: Tonight ── */}
+      {/* ═══ SECTION: Tonight / Today ═══ */}
       {!loading && sections.todayLobby.length > 0 && (
-        <div style={{ padding: '16px 0 0' }}>
+        <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>Tonight</span>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Tonight</span>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sections.todayLobby.length} games</span>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
-            {sections.todayLobby.map((room) => (
-              <DashboardCard key={room.id} room={room} onOpenGame={handleOpenGame} isJoined={myRoomIds.has(room.id)} size="small" />
-            ))}
-          </div>
+          <CardRow games={sections.todayLobby} size="small" />
         </div>
       )}
 
-      {/* ── SECTION: Tomorrow ── */}
+      {/* ═══ SECTION: Tomorrow ═══ */}
       {!loading && sections.tomorrowLobby.length > 0 && (
-        <div style={{ padding: '16px 0 0' }}>
+        <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>Tomorrow</span>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Tomorrow</span>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sections.tomorrowLobby.length} games</span>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
-            {sections.tomorrowLobby.map((room) => (
-              <DashboardCard key={room.id} room={room} onOpenGame={handleOpenGame} isJoined={false} size="small" />
-            ))}
-          </div>
+          <CardRow games={sections.tomorrowLobby} size="small" />
         </div>
       )}
 
-      {/* ── SECTION: Recently Finished ── */}
+      {/* ═══ SECTION: Finished ═══ */}
       {!loading && sections.finished.length > 0 && (
-        <div style={{ padding: '16px 0 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.02em' }}>Recently finished</span>
+        <div style={{ paddingTop: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '0 20px', marginBottom: 12 }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)' }}>Recently finished</span>
           </div>
-          <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
-            {sections.finished.map((room) => (
-              <DashboardCard
-                key={room.id}
-                room={room}
-                onOpenGame={handleOpenGame}
-                isJoined={myRoomIds.has(room.id)}
-                size="tiny"
-                rank={finishedRanks[room.id] ?? 0}
-              />
-            ))}
-          </div>
+          <CardRow games={sections.finished} size="tiny" />
         </div>
       )}
 
