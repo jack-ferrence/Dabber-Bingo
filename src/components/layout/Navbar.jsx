@@ -32,7 +32,7 @@ export default function Navbar({ onMenuClick }) {
           to="/"
           style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}
         >
-          <DobberLogo size={24} />
+          <DobberLogo size={28} />
           <span
             className="navbar-wordmark"
             style={{

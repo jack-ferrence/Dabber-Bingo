@@ -1,9 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect x="0" y="0" width="32" height="32" rx="7" fill="#ff6b35"/>
-  <circle cx="7.5" cy="6.9" r="2.2" fill="#0c0c14"/>
-  <circle cx="10.7" cy="10.7" r="2.5" fill="#0c0c14"/>
-  <circle cx="16" cy="16" r="5.4" fill="#0c0c14"/>
-  <circle cx="16" cy="16" r="3.9" fill="#ff6b35"/>
-  <circle cx="21.3" cy="21.3" r="2.5" fill="#0c0c14"/>
-  <circle cx="24.5" cy="25.1" r="2.2" fill="#0c0c14"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="ball" x1="0.3" y1="0.1" x2="0.7" y2="0.9">
+      <stop offset="0%" stop-color="#f2efe9"/>
+      <stop offset="100%" stop-color="#c8c5bf"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff8a55"/>
+      <stop offset="100%" stop-color="#e05525"/>
+    </linearGradient>
+    <clipPath id="rr"><rect width="1024" height="1024" rx="228"/></clipPath>
+  </defs>
+  <g clip-path="url(#rr)">
+    <rect width="1024" height="1024" fill="#ff6b35"/>
+    <circle cx="560" cy="560" r="330" fill="#0c0c14" opacity="0.18"/>
+    <circle cx="500" cy="500" r="330" fill="url(#ball)"/>
+    <circle cx="500" cy="500" r="195" fill="none" stroke="url(#ring)" stroke-width="30"/>
+    <text x="500" y="500" text-anchor="middle" font-family="'Bebas Neue',Impact,sans-serif" font-size="248" font-weight="700" fill="#1a1a2e" dominant-baseline="central">D</text>
+  </g>
 </svg>

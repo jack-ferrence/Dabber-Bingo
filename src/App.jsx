@@ -3,6 +3,7 @@ import { Routes, Route, Link, Navigate, useMatch } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import SplashScreen from './components/ui/SplashScreen.jsx'
+import DobberLogo from './components/ui/DobberLogo.jsx'
 import LobbyPage from './pages/LobbyPage.jsx'
 import GamePage from './pages/GamePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -19,16 +20,16 @@ function App() {
   const isGameRoute = useMatch('/room/:roomId')
 
   const [splashDone, setSplashDone] = useState(() => {
-    return sessionStorage.getItem('dobber-splash-shown') === '1'
+    return sessionStorage.getItem('dobber-splash') === '1'
   })
 
-  const handleSplashFinished = useCallback(() => {
-    sessionStorage.setItem('dobber-splash-shown', '1')
+  const handleSplashDone = useCallback(() => {
+    sessionStorage.setItem('dobber-splash', '1')
     setSplashDone(true)
   }, [])
 
   if (!splashDone) {
-    return <SplashScreen onFinished={handleSplashFinished} />
+    return <SplashScreen onFinished={handleSplashDone} />
   }
 
   // Game room: full-screen, no sidebar or sport tabs
@@ -48,18 +49,15 @@ function App() {
           className="flex h-12 shrink-0 items-center justify-between px-3"
           style={{ background: 'rgba(10,10,18,0.97)', borderBottom: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}
         >
-          <Link
-            to="/"
-            style={{
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+            <DobberLogo size={22} />
+            <span style={{
               fontFamily: 'var(--db-font-display)',
-              fontSize: 'clamp(16px, 4vw, 24px)',
+              fontSize: 'clamp(14px, 3vw, 20px)',
               letterSpacing: '0.15em',
-              color: '#ff6b35',
-              textDecoration: 'none',
+              color: '#e8e8f4',
               lineHeight: 1,
-            }}
-          >
-            DOBBER
+            }}>DOBBER</span>
           </Link>
           {user && (
             <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>

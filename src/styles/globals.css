@@ -968,14 +968,47 @@ button[aria-label="Dismiss"]:hover {
   transition: transform 80ms cubic-bezier(0.2, 0, 0, 1) !important;
 }
 
-/* ── Splash screen ── */
-@keyframes splash-logo-in {
-  0%   { opacity: 0; transform: scale(0.5) rotate(-10deg); }
-  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+/* ══════════════════════════════════════════════════════════
+   SPLASH SCREEN — bingo ball roll-in on orange bg
+   ══════════════════════════════════════════════════════════ */
+
+@keyframes splash-roll-in {
+  0%   { transform: translateX(-400px) rotate(-1080deg); opacity: 0; }
+  15%  { opacity: 1; }
+  65%  { transform: translateX(15px) rotate(10deg); }
+  80%  { transform: translateX(-6px) rotate(-4deg); }
+  92%  { transform: translateX(2px) rotate(1deg); }
+  100% { transform: translateX(0) rotate(0deg); }
 }
-@keyframes splash-text-in {
-  0%   { opacity: 0; transform: translateY(8px); }
-  100% { opacity: 1; transform: translateY(0); }
+
+@keyframes splash-shadow-settle {
+  0%   { opacity: 0; transform: scaleX(0.2) translateX(-200px); }
+  65%  { opacity: 0.12; transform: scaleX(1.15) translateX(0); }
+  100% { opacity: 0.08; transform: scaleX(1) translateX(0); }
+}
+
+@keyframes splash-text-pop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes splash-tagline-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 0.5; }
+}
+
+.splash-ball {
+  animation: splash-roll-in 1.8s cubic-bezier(0.22, 0.61, 0.35, 1) 0.4s both;
+}
+.splash-shadow {
+  animation: splash-shadow-settle 1.6s ease-out 0.6s both;
+}
+.splash-wordmark {
+  animation: splash-text-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 2.0s both;
+}
+.splash-tagline {
+  animation: splash-tagline-fade 0.4s ease-out 2.4s both;
 }
 
 /* Simplified square mark animation */
