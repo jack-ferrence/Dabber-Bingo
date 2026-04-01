@@ -120,7 +120,6 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
     prize_name: game?.prize_name || '',
     prize_value: game?.prize_value || '',
     prize_image_url: game?.prize_image_url || '',
-    banner_image_url: game?.banner_image_url || '',
     entry_fee: game?.entry_fee ?? 100,
     max_entries: game?.max_entries || '',
     free_entry: game?.free_entry || false,
@@ -212,7 +211,6 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
       prize_name: form.prize_name.trim(),
       prize_value: form.prize_value.trim() || null,
       prize_image_url: form.prize_image_url || null,
-      banner_image_url: form.banner_image_url || null,
       entry_fee: parseInt(form.entry_fee, 10) || 100,
       max_entries: form.max_entries ? parseInt(form.max_entries, 10) : null,
       free_entry: form.free_entry,
@@ -332,7 +330,6 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
         </Field>
 
         <ImageUploader label="Prize Image" value={form.prize_image_url} onChange={(url) => set('prize_image_url', url)} />
-        <ImageUploader label="Banner / Hero Image" value={form.banner_image_url} onChange={(url) => set('banner_image_url', url)} />
       </div>
 
       <div style={{ borderTop: '1px solid #2a2a44', marginTop: 20, paddingTop: 20 }}>

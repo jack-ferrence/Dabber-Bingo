@@ -3,30 +3,31 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { useCountdown } from '../../hooks/useCountdown'
+import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS, hexToRgba } from '../../constants/teamColors.js'
 import VerifyIdentityModal from '../featured/VerifyIdentityModal.jsx'
+
+function getTeamColor(abbr, sport) {
+  if (sport === 'mlb') return MLB_TEAM_COLORS[abbr] ?? '#475569'
+  if (sport === 'ncaa') return NCAA_TEAM_COLORS[abbr] ?? '#475569'
+  return NBA_TEAM_COLORS[abbr] ?? '#475569'
+}
+
+function parseTeams(name) {
+  const parts = (name ?? '').split(' vs ')
+  return { away: parts[0]?.trim() || '???', home: parts[1]?.trim() || '???' }
+}
 
 function FeaturedCountdown({ date }) {
   const { days, hours, minutes, seconds, isExpired } = useCountdown(date)
-
   if (isExpired) {
-    return (
-      <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: '#ff6b35' }}>
-        LIVE NOW
-      </span>
-    )
+    return <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#ff6b35' }}>LIVE NOW</span>
   }
-
   const parts = []
   if (days > 0) parts.push(`${days}d`)
   if (hours > 0 || days > 0) parts.push(`${hours}h`)
   parts.push(`${minutes}m`)
   if (days === 0) parts.push(`${String(seconds).padStart(2, '0')}s`)
-
-  return (
-    <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#e8e8f4', letterSpacing: '0.04em', fontVariantNumeric: 'tabular-nums' }}>
-      {parts.join(' ')}
-    </span>
-  )
+  return <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 16, fontWeight: 700, color: '#e8e8f4', fontVariantNumeric: 'tabular-nums' }}>{parts.join('  ')}</span>
 }
 
 export default function FeaturedBanner() {
@@ -37,252 +38,221 @@ export default function FeaturedBanner() {
   const [joining, setJoining] = useState(false)
   const [entryResult, setEntryResult] = useState(null)
   const [showVerifyModal, setShowVerifyModal] = useState(false)
+  const [entryCount, setEntryCount] = useState(0)
 
   useEffect(() => {
-    supabase
-      .from('featured_games')
-      .select('*')
-      .in('status', ['active', 'live'])
-      .order('starts_at', { ascending: true })
-      .limit(1)
-      .then(({ data }) => {
-        if (data?.[0]) setFeatured(data[0])
-      })
+    supabase.from('featured_games').select('*').in('status', ['active', 'live']).order('starts_at', { ascending: true }).limit(1)
+      .then(({ data }) => { if (data?.[0]) setFeatured(data[0]) })
   }, [])
 
   useEffect(() => {
+    if (!featured) return
+    supabase.from('featured_entries').select('id', { count: 'exact', head: true }).eq('featured_game_id', featured.id)
+      .then(({ count }) => { if (count != null) setEntryCount(count) })
+  }, [featured])
+
+  useEffect(() => {
     if (!featured || !user) return
-    supabase
-      .from('featured_entries')
-      .select('id')
-      .eq('featured_game_id', featured.id)
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setHasEntered(true)
-      })
+    supabase.from('featured_entries').select('id').eq('featured_game_id', featured.id).eq('user_id', user.id).maybeSingle()
+      .then(({ data }) => { if (data) setHasEntered(true) })
   }, [featured, user])
 
   const handleJoin = async (e) => {
-    e.stopPropagation()
+    e?.stopPropagation?.()
     if (!user || !featured || joining) return
-
-    // Check eligibility first
-    const { data: eligibility, error: eligErr } = await supabase.rpc('check_featured_eligibility')
-
-    if (eligErr || !eligibility?.eligible) {
-      setShowVerifyModal(true)
-      return
-    }
-
-    setJoining(true)
-    setEntryResult(null)
-
+    const { data: elig, error: eligErr } = await supabase.rpc('check_featured_eligibility')
+    if (eligErr || !elig?.eligible) { setShowVerifyModal(true); return }
+    setJoining(true); setEntryResult(null)
     try {
-      const { data, error } = await supabase.rpc('join_featured_game', {
-        p_featured_game_id: featured.id,
-      })
+      const { data, error } = await supabase.rpc('join_featured_game', { p_featured_game_id: featured.id })
       if (error) throw error
-
       if (data?.success) {
-        setHasEntered(true)
-        setEntryResult({
-          ok: true,
-          msg: data.reason === 'already_entered'
-            ? 'Already entered!'
-            : `Entered!${data.charged > 0 ? ` −${data.charged} Dobs` : ' Free entry'}`,
-        })
+        setHasEntered(true); setEntryCount((c) => c + 1)
+        setEntryResult({ ok: true, msg: "You're in!" })
+        if (data.room_id) setTimeout(() => navigate(`/room/${data.room_id}`), 1200)
       } else {
-        if (data?.reason === 'email_not_verified' || data?.reason === 'phone_not_verified') {
-          setShowVerifyModal(true)
-        } else {
-          setEntryResult({
-            ok: false,
-            msg: data?.reason === 'insufficient_dobs'
-              ? `Not enough Dobs (need ${data.cost}, have ${data.balance})`
-              : data?.reason || 'Could not join',
-          })
-        }
+        setEntryResult({ ok: false, msg: data?.message || data?.reason || 'Could not enter' })
+        if (data?.reason === 'already_entered') setHasEntered(true)
       }
-    } catch (err) {
-      setEntryResult({ ok: false, msg: err.message })
-    } finally {
-      setJoining(false)
-    }
+    } catch (err) { setEntryResult({ ok: false, msg: err.message }) }
+    setJoining(false)
   }
 
-  const handleVerified = () => {
-    setShowVerifyModal(false)
-    handleJoin({ stopPropagation: () => {} })
-  }
-
-  const handleBannerClick = () => {
-    if (hasEntered && featured?.room_id) {
-      navigate(`/room/${featured.room_id}`)
-    }
-  }
+  const handleVerified = () => { setShowVerifyModal(false); handleJoin() }
 
   if (!featured) return null
 
+  // ── Auto-generate from game data ──
+  const { away, home } = parseTeams(featured.event_name || featured.title)
+  const sport = featured.sport ?? 'nba'
+  const awayColor = getTeamColor(away, sport)
+  const homeColor = getTeamColor(home, sport)
+  const hasPrizeImg = !!featured.prize_image_url
+
   return (
-    <div
-      onClick={handleBannerClick}
-      style={{
-        position: 'relative',
-        borderRadius: 12,
-        overflow: 'hidden',
-        marginBottom: 20,
-        cursor: hasEntered && featured.room_id ? 'pointer' : 'default',
-        border: '1px solid rgba(255,107,53,0.3)',
-        background: featured.banner_image_url
-          ? `linear-gradient(135deg, rgba(12,12,20,0.85) 0%, rgba(12,12,20,0.6) 100%), url(${featured.banner_image_url}) center/cover`
-          : 'linear-gradient(135deg, rgba(255,107,53,0.08) 0%, rgba(255,255,255,0.02) 50%, rgba(8,8,16,1) 100%)',
-        minHeight: 160,
-      }}
-    >
-      {/* Orange glow accent */}
-      <div style={{
-        position: 'absolute', top: -40, right: -40, width: 200, height: 200,
-        background: 'radial-gradient(circle, rgba(255,107,53,0.15) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
-
-      <div style={{ position: 'relative', padding: '20px 20px 16px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-        {featured.prize_image_url && (
+    <div style={{ padding: '16px 20px 0' }}>
+      <div
+        onClick={() => { if (hasEntered && featured.room_id) navigate(`/room/${featured.room_id}`) }}
+        style={{
+          borderRadius: 14, overflow: 'hidden', position: 'relative',
+          cursor: hasEntered && featured.room_id ? 'pointer' : 'default',
+        }}
+      >
+        {/* ══════════════════════════════════════════════════════
+            AUTO-GENERATED BANNER — team colors + prize image
+            ══════════════════════════════════════════════════════ */}
+        <div style={{
+          background: `linear-gradient(135deg, ${hexToRgba(awayColor, 0.5)} 0%, #0c0c14 45%, #0c0c14 55%, ${hexToRgba(homeColor, 0.5)} 100%)`,
+          padding: '20px 18px 16px',
+          position: 'relative',
+          overflow: 'hidden',
+          minHeight: 180,
+        }}>
+          {/* Subtle team color glows */}
           <div style={{
-            width: 80, height: 80, borderRadius: 8, overflow: 'hidden', flexShrink: 0,
-            border: '2px solid rgba(255,107,53,0.3)', background: '#0c0c14',
-          }}>
-            <img src={featured.prize_image_url} alt={featured.prize_name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            position: 'absolute', top: -40, left: -40, width: 200, height: 200,
+            background: `radial-gradient(circle, ${hexToRgba(awayColor, 0.25)} 0%, transparent 70%)`,
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            position: 'absolute', bottom: -40, right: -40, width: 200, height: 200,
+            background: `radial-gradient(circle, ${hexToRgba(homeColor, 0.25)} 0%, transparent 70%)`,
+            pointerEvents: 'none',
+          }} />
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 12, alignItems: 'center' }}>
+            {/* Left side: matchup + details */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <span style={{
+                  fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em',
+                  color: '#ff6b35', background: 'rgba(255,107,53,0.15)', padding: '3px 10px', borderRadius: 4,
+                }}>⭐ FEATURED</span>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>
+                  {sport.toUpperCase()}
+                </span>
+              </div>
+
+              {/* Team matchup — auto-generated */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#fff', letterSpacing: '0.02em', lineHeight: 1 }}>{away}</span>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>vs</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#fff', letterSpacing: '0.02em', lineHeight: 1 }}>{home}</span>
+              </div>
+
+              {/* Subtitle / prize tagline */}
+              {featured.subtitle && (
+                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#ff6b35', fontWeight: 600, margin: '0 0 12px' }}>
+                  {featured.subtitle}
+                </p>
+              )}
+
+              {/* Prize name — big and bold */}
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>WIN</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, color: '#e8e8f4', letterSpacing: '0.02em' }}>
+                  {featured.prize_name}
+                </span>
+                {featured.prize_value && (
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginLeft: 8 }}>
+                    ({featured.prize_value})
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Right side: Prize image (transparent PNG) */}
+            {hasPrizeImg && (
+              <div style={{ flexShrink: 0, width: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img
+                  src={featured.prize_image_url}
+                  alt={featured.prize_name}
+                  style={{
+                    maxWidth: '100%', maxHeight: 140, objectFit: 'contain',
+                    filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.5))',
+                  }}
+                />
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{
-              fontFamily: 'var(--db-font-display)', fontSize: 10,
-              letterSpacing: '0.1em', color: '#ff6b35',
-              background: 'rgba(255,107,53,0.12)', padding: '3px 10px', borderRadius: 20,
-            }}>
-              ⭐ FEATURED
-            </span>
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em' }}>
-              {featured.sport.toUpperCase()}
-            </span>
-          </div>
-
-          <h2 style={{
-            fontFamily: 'var(--db-font-display)', fontSize: 'clamp(18px, 4vw, 26px)',
-            color: '#e0e0f0', lineHeight: 1.1, margin: '0 0 4px',
-            letterSpacing: '0.02em',
-          }}>
-            {featured.title}
-          </h2>
-
-          {featured.subtitle && (
-            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#ff6b35', fontWeight: 700, margin: '0 0 8px' }}>
-              {featured.subtitle}
-            </p>
-          )}
-
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
+        {/* ══════════════════════════════════════════════════════
+            INFO + JOIN BUTTON — below the banner graphic
+            ══════════════════════════════════════════════════════ */}
+        <div style={{
+          background: '#12121e',
+          borderTop: '1px solid rgba(255,255,255,0.04)',
+          padding: '14px 18px 16px',
+        }}>
+          {/* Stats row */}
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 14 }}>
             <div>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', display: 'block' }}>
-                STARTS IN
-              </span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>STARTS IN</span>
               <FeaturedCountdown date={featured.starts_at} />
             </div>
             <div>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', display: 'block' }}>
-                PRIZE
-              </span>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 600, color: '#e8e8f4' }}>
-                {featured.prize_name}
-              </span>
-            </div>
-            <div>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', display: 'block' }}>
-                ENTRY
-              </span>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 600, color: '#e8e8f4' }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>ENTRY</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#e8e8f4' }}>
                 {featured.free_entry ? 'FREE' : `${featured.entry_fee} Dobs`}
               </span>
             </div>
             <div>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', display: 'block' }}>
-                PLAYERS
-              </span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: '#e8e8f4', fontVariantNumeric: 'tabular-nums' }}>
-                {featured.entries_count}
-              </span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>PLAYERS</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#e8e8f4' }}>{entryCount}</span>
             </div>
           </div>
 
+          {/* Entry result */}
           {entryResult && (
-            <p style={{
-              fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, marginBottom: 8,
-              color: entryResult.ok ? '#22c55e' : '#ff5555',
+            <div style={{
+              padding: '8px 12px', borderRadius: 6, marginBottom: 10,
+              background: entryResult.ok ? 'rgba(34,197,94,0.08)' : 'rgba(255,45,45,0.08)',
+              border: `1px solid ${entryResult.ok ? 'rgba(34,197,94,0.2)' : 'rgba(255,45,45,0.2)'}`,
             }}>
-              {entryResult.msg}
-            </p>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: entryResult.ok ? '#22c55e' : '#ff4444' }}>{entryResult.msg}</span>
+            </div>
           )}
 
+          {/* Join button */}
           {hasEntered ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#22c55e' }}>
-                ✓ Entered
-              </span>
-              {featured.room_id && (
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.35)' }}>
-                  Tap to play →
-                </span>
-              )}
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handleJoin}
-              disabled={joining}
+            <button type="button"
+              onClick={(e) => { e.stopPropagation(); if (featured.room_id) navigate(`/room/${featured.room_id}`) }}
               style={{
-                padding: '10px 28px', borderRadius: 8, border: 'none', cursor: joining ? 'wait' : 'pointer',
-                background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff',
-                fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.08em',
-                opacity: joining ? 0.5 : 1,
-                transition: 'opacity 0.15s ease',
-                boxShadow: '0 4px 16px rgba(255,107,53,0.4)',
+                width: '100%', padding: '14px', borderRadius: 8,
+                border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.08)',
+                fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#22c55e', cursor: 'pointer',
               }}
-            >
-              {joining ? 'JOINING…' : featured.free_entry ? 'ENTER FREE' : `ENTER · ${featured.entry_fee} DOBS`}
-            </button>
+            >✓ ENTERED{featured.room_id ? ' — TAP TO PLAY' : ''}</button>
+          ) : (
+            <button type="button" onClick={handleJoin} disabled={joining}
+              style={{
+                width: '100%', padding: '14px', borderRadius: 8, border: 'none',
+                background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                fontFamily: 'var(--db-font-display)', fontSize: 15, letterSpacing: '0.08em', color: '#fff',
+                cursor: joining ? 'wait' : 'pointer', opacity: joining ? 0.5 : 1,
+                boxShadow: '0 4px 16px rgba(255,107,53,0.3)',
+              }}
+            >{joining ? 'JOINING…' : featured.free_entry ? 'ENTER FREE' : `ENTER · ${featured.entry_fee} DOBS`}</button>
           )}
         </div>
+
+        {/* Winner overlay */}
+        {featured.status === 'finished' && featured.winner_username && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 5, background: 'rgba(12,12,20,0.9)', borderRadius: 14,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.1em', color: '#ff6b35', marginBottom: 6 }}>🏆 WINNER</span>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#e8e8f4' }}>{featured.winner_username}</span>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>Won {featured.prize_name}!</span>
+          </div>
+        )}
       </div>
 
       {showVerifyModal && (
-        <VerifyIdentityModal
-          onClose={() => setShowVerifyModal(false)}
-          onVerified={handleVerified}
-        />
-      )}
-
-      {/* Winner overlay for finished games */}
-      {featured.status === 'finished' && featured.winner_username && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'rgba(12,12,20,0.85)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.1em', color: '#ff6b35', marginBottom: 6 }}>
-            🏆 WINNER
-          </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#e8e8f4', letterSpacing: '0.04em' }}>
-            {featured.winner_username}
-          </span>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>
-            Won {featured.prize_name}!
-          </span>
-        </div>
+        <VerifyIdentityModal onClose={() => setShowVerifyModal(false)} onVerified={handleVerified} />
       )}
     </div>
   )
