@@ -213,16 +213,16 @@ const BingoSquare = memo(function BingoSquare({
       </span>
 
       {/* Progress bar — live games only */}
-      {isLive && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 6, background: 'rgba(255,255,255,0.12)', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
+      {(isLive || marked) && threshold > 0 && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 8, background: 'rgba(255,255,255,0.15)', borderRadius: '0 0 6px 6px', overflow: 'hidden' }}>
           <div style={{
             width: marked ? '100%' : `${progressPct}%`,
             height: '100%',
             background: marked
               ? '#ff6b35'
               : isClose
-                ? 'linear-gradient(90deg, rgba(255,107,53,0.6), rgba(255,107,53,1.0))'
-                : `linear-gradient(90deg, ${accentColor}77, ${accentColor}cc)`,
+                ? '#ff6b35'
+                : `linear-gradient(90deg, ${accentColor}aa, ${accentColor})`,
             borderRadius: '0 0 6px 6px',
             transition: 'width 0.6s ease-out',
           }} />
@@ -231,7 +231,7 @@ const BingoSquare = memo(function BingoSquare({
 
       {/* Live stat value counter */}
       {isLive && !marked && currentValue > 0 && threshold > 0 && (
-        <span style={{ position: 'absolute', bottom: 8, right: 5, fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.35)', lineHeight: 1 }}>
+        <span style={{ position: 'absolute', bottom: 10, right: 5, fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', lineHeight: 1 }}>
           {currentValue}/{threshold}
         </span>
       )}

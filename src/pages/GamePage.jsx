@@ -241,13 +241,31 @@ function GamePage() {
       // ── Step 3: Generate card from server-managed odds pool ───────────────────
       // Live rooms: the pool was locked in when the game went live — skip odds_status check
       // Lobby rooms: wait for odds_status === 'ready' before generating
+
+      // If live room has no odds, try re-fetching once before giving up
+      if (room.status === 'live' && roomOddsPool.length < MIN_PROPS_FOR_CARD && retryCount === 0) {
+        const { data: freshRoom } = await supabase
+          .from('rooms')
+          .select('odds_pool, odds_status')
+          .eq('id', roomId)
+          .maybeSingle()
+        if (freshRoom?.odds_pool?.length >= MIN_PROPS_FOR_CARD) {
+          setOddsPool(freshRoom.odds_pool)
+          setRetryCount(1)
+          return // Will re-run the effect with the new odds pool
+        }
+      }
+
       const oddsReady = room.status === 'live'
         ? roomOddsPool.length >= MIN_PROPS_FOR_CARD
         : room.odds_status === 'ready' && roomOddsPool.length >= MIN_PROPS_FOR_CARD
 
       if (!oddsReady) {
-        // GameRoom renders context-aware placeholder (pending/insufficient/fallback)
-        // The useEffect re-runs when room.odds_status changes to 'ready'
+        // For live games with no odds pool, show an error instead of the
+        // "waiting for lineups" screen — the lineups aren't coming.
+        if (room.status === 'live') {
+          setError('This game started before odds were loaded. No card available — try another game.')
+        }
         setLoadingCard(false)
         return
       }

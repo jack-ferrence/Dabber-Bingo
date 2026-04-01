@@ -595,9 +595,11 @@ function GameRoom({
                   </h2>
 
                   <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa', lineHeight: 1.7, margin: '0 0 18px' }}>
-                    {room?.sport === 'mlb'
-                      ? "Your card will be generated once MLB lineups are posted — usually about an hour before first pitch."
-                      : "Your card will be generated as soon as player props are available. Check back closer to game time!"}
+                    {room?.status === 'live'
+                      ? 'Waiting for game data to load...'
+                      : room?.sport === 'mlb'
+                        ? 'Your card will be generated once MLB lineups are posted — usually about an hour before first pitch.'
+                        : 'Waiting for odds to load. This usually takes a few minutes.'}
                   </p>
 
                   {/* Game time + player count */}
@@ -637,6 +639,27 @@ function GameRoom({
                       }}
                     >
                       Odds are available — tap to generate card
+                    </button>
+                  )}
+
+                  {room?.status === 'live' && onRetryCard && (
+                    <button
+                      type="button"
+                      onClick={onRetryCard}
+                      style={{
+                        marginTop: 12,
+                        background: 'rgba(255,107,53,0.1)',
+                        border: '1px solid rgba(255,107,53,0.25)',
+                        borderRadius: 6,
+                        padding: '8px 20px',
+                        fontFamily: 'var(--db-font-mono)',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: '#ff6b35',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Retry
                     </button>
                   )}
                 </div>
