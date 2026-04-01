@@ -1,7 +1,7 @@
 export const FONT_MAP = {
   default: "'JetBrains Mono', monospace",
   mono:    "'JetBrains Mono', monospace",
-  display: "'Bebas Neue', Impact, sans-serif",
+  display: "'Outfit', sans-serif",
   serif:   "Georgia, 'Times New Roman', serif",
   rounded: "'Nunito', 'Varela Round', sans-serif",
 }

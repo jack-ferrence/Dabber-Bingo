@@ -145,8 +145,9 @@ function BingoBoard({
             <div
               style={{
                 fontFamily: 'var(--db-font-display)',
-                fontSize: 72,
-                letterSpacing: '0.1em',
+                fontSize: 60,
+                fontWeight: 900,
+                letterSpacing: '0.04em',
                 color: '#ff6b35',
                 lineHeight: 0.95,
                 animation: 'db-bingo 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -158,7 +159,8 @@ function BingoBoard({
             <div style={{
               fontFamily: 'var(--db-font-display)',
               fontSize: 16,
-              letterSpacing: '0.3em',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
               color: 'rgba(255,255,255,0.35)',
               marginTop: 4,
             }}>
@@ -172,7 +174,8 @@ function BingoBoard({
               marginTop: 28,
               fontFamily: 'var(--db-font-display)',
               fontSize: 16,
-              letterSpacing: '0.14em',
+              fontWeight: 700,
+              letterSpacing: '0.06em',
               padding: '11px 32px',
               borderRadius: 6,
               background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',

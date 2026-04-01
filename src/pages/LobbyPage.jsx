@@ -136,13 +136,13 @@ export default function LobbyPage() {
       {/* ── Header ── */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 36, letterSpacing: '0.03em', color: '#e8e8f4', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 30, fontWeight: 900, letterSpacing: '0.02em', color: '#e8e8f4', lineHeight: 1 }}>
             GAMES
           </span>
           {liveCount > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,45,45,0.1)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 6, padding: '4px 10px' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff2d2d', animation: 'pulse-live 1.4s ease-in-out infinite' }} />
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: '#ff4444' }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', color: '#ff4444' }}>
                 {liveCount} LIVE
               </span>
             </div>

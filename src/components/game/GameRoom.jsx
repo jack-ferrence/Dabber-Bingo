@@ -2,6 +2,7 @@ import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef } fro
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import BingoBoard from './BingoBoard.jsx'
+import ShareCard from './ShareCard.jsx'
 import SwapModal from './SwapModal.jsx'
 import PlayerStatsPanel from './PlayerStatsPanel.jsx'
 import Badge from '../ui/Badge.jsx'
@@ -307,7 +308,7 @@ function GameRoom({
           </button>
 
 
-          <h1 className="truncate" style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.06em', color: '#e8e8f4', lineHeight: 1 }}>
+          <h1 className="truncate" style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 800, letterSpacing: '0.03em', color: '#e8e8f4', lineHeight: 1 }}>
             {room?.name || 'Game Room'}
           </h1>
           <Badge variant={statusVariant} pulse={room?.status === 'live'}>
@@ -384,16 +385,16 @@ function GameRoom({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: awayColor }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 800, letterSpacing: '0.02em', color: awayColor }}>
                 {awayAbbr}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, letterSpacing: '0.02em', color: '#e8e8f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', color: '#e8e8f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                 {room.away_score ?? 0}
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 64 }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 12, color: '#ff6b35', letterSpacing: '0.1em' }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.06em' }}>
                 {room.game_status_detail || (room.game_period ? `Q${room.game_period}` : 'PRE')}
               </span>
               {room.game_clock && (
@@ -404,10 +405,10 @@ function GameRoom({
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, letterSpacing: '0.02em', color: '#e8e8f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', color: '#e8e8f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                 {room.home_score ?? 0}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: homeColor }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 800, letterSpacing: '0.02em', color: homeColor }}>
                 {homeAbbr}
               </span>
             </div>
@@ -429,19 +430,19 @@ function GameRoom({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.35)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.02em', color: 'rgba(255,255,255,0.35)' }}>
             {room.name?.split(' vs ')[0]?.trim()}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
             {room.away_score}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 12, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.06em' }}>
             FINAL
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
             {room.home_score}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.35)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.02em', color: 'rgba(255,255,255,0.35)' }}>
             {room.name?.split(' vs ')[1]?.trim()}
           </span>
         </div>
@@ -610,7 +611,7 @@ function GameRoom({
                     <span style={{ fontSize: 24, color: '#22c55e' }}>✓</span>
                   </div>
 
-                  <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, letterSpacing: '0.08em', color: '#e0e0f0', margin: '0 0 10px', lineHeight: 1 }}>
+                  <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, fontWeight: 900, letterSpacing: '0.04em', color: '#e0e0f0', margin: '0 0 10px', lineHeight: 1 }}>
                     YOU&apos;RE IN
                   </h2>
 
@@ -742,7 +743,7 @@ function GameRoom({
         borderTop: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, color: '#ff6b35', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 22, fontWeight: 800, color: '#ff6b35', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
             {markedCount}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>/25</span>
           </span>
           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
@@ -945,7 +946,7 @@ function GameRoom({
               <div style={{ fontSize: 44, lineHeight: 1, marginBottom: 12 }}>
                 {dobsSummary.isLateJoin ? '🎯' : dobsSummary.myRank === 1 ? '🥇' : dobsSummary.myRank === 2 ? '🥈' : dobsSummary.myRank === 3 ? '🥉' : '🎯'}
               </div>
-              <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 40, letterSpacing: '0.06em', color: '#e8e8f4', margin: 0, lineHeight: 0.9 }}>
+              <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 34, fontWeight: 900, letterSpacing: '0.03em', color: '#e8e8f4', margin: 0, lineHeight: 0.95 }}>
                 GAME OVER
               </h2>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>
@@ -981,6 +982,19 @@ function GameRoom({
               </div>
             </div>
 
+            {/* Share card */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+              <ShareCard
+                flatSquares={flatSquares}
+                markedCount={markedCount}
+                linesCount={bingoResult.winningLines?.length ?? 0}
+                rank={dobsSummary.myRank}
+                totalPlayers={dobsSummary.totalPlayers}
+                roomName={room?.name}
+                sport={room?.sport}
+              />
+            </div>
+
             {/* Buttons */}
             <div style={{ display: 'flex', gap: 10 }}>
               <button
@@ -995,7 +1009,7 @@ function GameRoom({
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                style={{ flex: 1, fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 8, background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 120ms ease' }}
+                style={{ flex: 1, fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.04em', padding: '11px 0', borderRadius: 8, background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 120ms ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9' }}
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
               >

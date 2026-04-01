@@ -59,8 +59,8 @@
   --db-win-glow:         rgba(255, 107, 53, 0.30);
 
   /* ── Typography ── */
-  --db-font-display:     'Bebas Neue', 'Impact', sans-serif;
-  --db-font-heading:     'Bebas Neue', 'Impact', sans-serif;
+  --db-font-display:     'Outfit', sans-serif;
+  --db-font-heading:     'Outfit', sans-serif;
   --db-font-body:        'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
   --db-font-ui:          'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
   --db-font-mono:        'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
@@ -182,11 +182,11 @@
 .db-border-primary { border-color: var(--db-primary); }
 .db-border-subtle  { border-color: var(--db-border-subtle); }
 
-/* Display heading — Bebas Neue, for page/section titles */
+/* Display heading — Outfit Black, for page/section titles */
 .db-heading {
   font-family: var(--db-font-display);
-  font-weight: 400;
-  letter-spacing: 0.08em;
+  font-weight: 900;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--db-text-bright);
 }

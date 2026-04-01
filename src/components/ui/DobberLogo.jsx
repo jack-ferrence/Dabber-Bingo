@@ -7,8 +7,9 @@ export default function DobberLogo({ size = 24 }) {
           <stop offset="100%" stopColor="#c8c5bf"/>
         </linearGradient>
         <linearGradient id="db-ring" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ff8a55"/>
-          <stop offset="100%" stopColor="#e05525"/>
+          <stop offset="0%" stopColor="#ffaa44"/>
+          <stop offset="50%" stopColor="#ff6b35"/>
+          <stop offset="100%" stopColor="#b8400e"/>
         </linearGradient>
         <clipPath id="db-rr"><rect width="512" height="512" rx="114"/></clipPath>
       </defs>
@@ -17,7 +18,7 @@ export default function DobberLogo({ size = 24 }) {
         <circle cx="280" cy="280" r="165" fill="#0c0c14" opacity="0.18"/>
         <circle cx="250" cy="250" r="165" fill="url(#db-ball)"/>
         <circle cx="250" cy="250" r="97" fill="none" stroke="url(#db-ring)" strokeWidth="15"/>
-        <text x="250" y="250" textAnchor="middle" fontFamily="'Bebas Neue',Impact,sans-serif" fontSize="124" fontWeight="700" fill="#1a1a2e" dominantBaseline="central">D</text>
+        <text x="250" y="250" textAnchor="middle" fontFamily="'Outfit',sans-serif" fontSize="124" fontWeight="900" fill="#1a1a2e" dominantBaseline="central">D</text>
       </g>
     </svg>
   )

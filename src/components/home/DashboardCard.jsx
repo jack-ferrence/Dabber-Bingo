@@ -36,7 +36,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
 
   const widths = { large: 280, medium: 260, small: 240, tiny: 200 }
   const cardWidth = widths[size] ?? 260
-  const teamFontSize = size === 'large' ? 36 : size === 'medium' ? 32 : size === 'small' ? 28 : 24
+  const teamFontSize = size === 'large' ? 28 : size === 'medium' ? 25 : size === 'small' ? 22 : 18
   const scoreFontSize = size === 'large' ? 24 : size === 'medium' ? 20 : 18
   const gradientOpacity = isFinished ? 0.2 : size === 'small' || size === 'tiny' ? 0.35 : 0.5
 
@@ -111,15 +111,15 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
         <div style={{ marginBottom: size === 'tiny' ? 4 : 8 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: size === 'tiny' ? 6 : 10 }}>
             <span style={{
-              fontFamily: 'var(--db-font-display)', fontSize: teamFontSize,
+              fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
               color: isFinished ? 'rgba(255,255,255,0.4)' : '#fff',
-              letterSpacing: '0.02em', lineHeight: 1,
+              letterSpacing: '0.01em', lineHeight: 1,
             }}>{away}</span>
             <span style={{ fontSize: size === 'tiny' ? 9 : 11, color: 'rgba(255,255,255,0.3)' }}>vs</span>
             <span style={{
-              fontFamily: 'var(--db-font-display)', fontSize: teamFontSize,
+              fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
               color: isFinished ? 'rgba(255,255,255,0.4)' : '#fff',
-              letterSpacing: '0.02em', lineHeight: 1,
+              letterSpacing: '0.01em', lineHeight: 1,
             }}>{home}</span>
           </div>
 

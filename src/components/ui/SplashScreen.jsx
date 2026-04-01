@@ -30,14 +30,15 @@ export default function SplashScreen({ onFinished }) {
               <stop offset="100%" stopColor="#c8c5bf"/>
             </linearGradient>
             <linearGradient id="sr" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#ff8a55"/>
-              <stop offset="100%" stopColor="#e05525"/>
+              <stop offset="0%" stopColor="#ffaa44"/>
+              <stop offset="50%" stopColor="#ff6b35"/>
+              <stop offset="100%" stopColor="#b8400e"/>
             </linearGradient>
           </defs>
           <circle cx="275" cy="275" r="220" fill="rgba(12,12,20,0.12)"/>
           <circle cx="256" cy="256" r="220" fill="url(#sb)"/>
           <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sr)" strokeWidth="22"/>
-          <text x="256" y="256" textAnchor="middle" fontFamily="'Bebas Neue',Impact,sans-serif" fontSize="165" fontWeight="700" fill="#1a1a2e" dominantBaseline="central">D</text>
+          <text x="256" y="256" textAnchor="middle" fontFamily="'Outfit',sans-serif" fontSize="165" fontWeight="900" fill="#1a1a2e" dominantBaseline="central">D</text>
         </svg>
       </div>
 
@@ -49,9 +50,9 @@ export default function SplashScreen({ onFinished }) {
 
       {/* Wordmark */}
       <span className="splash-wordmark" style={{
-        fontFamily: "'Bebas Neue', Impact, sans-serif",
-        fontSize: 42, color: '#fff', marginTop: 24,
-        letterSpacing: '0.18em',
+        fontFamily: "'Outfit', sans-serif",
+        fontSize: 38, fontWeight: 900, color: '#fff', marginTop: 24,
+        letterSpacing: '0.08em',
       }}>DOBBER</span>
 
       {/* Tagline */}

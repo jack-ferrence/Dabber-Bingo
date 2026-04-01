@@ -136,9 +136,9 @@ export default function FeaturedBanner() {
 
               {/* Team matchup — auto-generated */}
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#fff', letterSpacing: '0.02em', lineHeight: 1 }}>{away}</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '0.01em', lineHeight: 1 }}>{away}</span>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>vs</span>
-                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#fff', letterSpacing: '0.02em', lineHeight: 1 }}>{home}</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '0.01em', lineHeight: 1 }}>{home}</span>
               </div>
 
               {/* Subtitle / prize tagline */}
@@ -151,7 +151,7 @@ export default function FeaturedBanner() {
               {/* Prize name — big and bold */}
               <div style={{ marginBottom: 4 }}>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>WIN</span>
-                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, color: '#e8e8f4', letterSpacing: '0.02em' }}>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, fontWeight: 800, color: '#e8e8f4', letterSpacing: '0.01em' }}>
                   {featured.prize_name}
                 </span>
                 {featured.prize_value && (
@@ -222,7 +222,7 @@ export default function FeaturedBanner() {
               style={{
                 width: '100%', padding: '14px', borderRadius: 8,
                 border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.08)',
-                fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#22c55e', cursor: 'pointer',
+                fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 700, letterSpacing: '0.03em', color: '#22c55e', cursor: 'pointer',
               }}
             >✓ ENTERED{featured.room_id ? ' — TAP TO PLAY' : ''}</button>
           ) : (
@@ -230,7 +230,7 @@ export default function FeaturedBanner() {
               style={{
                 width: '100%', padding: '14px', borderRadius: 8, border: 'none',
                 background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
-                fontFamily: 'var(--db-font-display)', fontSize: 15, letterSpacing: '0.08em', color: '#fff',
+                fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.04em', color: '#fff',
                 cursor: joining ? 'wait' : 'pointer', opacity: joining ? 0.5 : 1,
                 boxShadow: '0 4px 16px rgba(255,107,53,0.3)',
               }}
@@ -244,8 +244,8 @@ export default function FeaturedBanner() {
             position: 'absolute', inset: 0, zIndex: 5, background: 'rgba(12,12,20,0.9)', borderRadius: 14,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           }}>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.1em', color: '#ff6b35', marginBottom: 6 }}>🏆 WINNER</span>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, color: '#e8e8f4' }}>{featured.winner_username}</span>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#ff6b35', marginBottom: 6 }}>🏆 WINNER</span>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, fontWeight: 900, color: '#e8e8f4' }}>{featured.winner_username}</span>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>Won {featured.prize_name}!</span>
           </div>
         )}
