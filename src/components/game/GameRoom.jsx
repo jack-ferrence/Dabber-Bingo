@@ -9,6 +9,14 @@ import { checkBingo } from '../../game/statProcessor.js'
 import { findSwapCandidates } from '../../game/oddsCardGenerator.js'
 import { useCountdown } from '../../hooks/useCountdown.js'
 import { useProfile } from '../../hooks/useProfile.js'
+import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS } from '../../constants/teamColors.js'
+
+function getRoomTeamColor(abbr, sport) {
+  if (!abbr) return 'rgba(255,255,255,0.5)'
+  if (sport === 'mlb') return MLB_TEAM_COLORS[abbr] ?? 'rgba(255,255,255,0.5)'
+  if (sport === 'ncaa') return NCAA_TEAM_COLORS[abbr] ?? 'rgba(255,255,255,0.5)'
+  return NBA_TEAM_COLORS[abbr] ?? 'rgba(255,255,255,0.5)'
+}
 
 import { lazyRetry } from '../../lib/lazyRetry.js'
 
@@ -337,49 +345,55 @@ function GameRoom({
       </header>
 
       {/* ── Live Scoreboard ── */}
-      {room?.status === 'live' && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 16,
-            padding: '6px 16px',
-            background: 'rgba(10,10,18,0.95)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            flexShrink: 0,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.5)' }}>
-              {room.name?.split(' vs ')[0] ?? 'AWAY'}
-            </span>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 28, fontWeight: 700, color: '#e8e8f4', fontVariantNumeric: 'tabular-nums' }}>
-              {room.away_score ?? 0}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 60 }}>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: '#ff6b35', letterSpacing: '0.12em' }}>
-              {room.game_status_detail || (room.game_period ? `Q${room.game_period}` : 'PRE')}
-            </span>
-            {room.game_clock && (
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>
-                {room.game_clock}
+      {room?.status === 'live' && (() => {
+        const awayAbbr = room.name?.split(' vs ')[0]?.trim() ?? 'AWAY'
+        const homeAbbr = room.name?.split(' vs ')[1]?.trim() ?? 'HOME'
+        const awayColor = getRoomTeamColor(awayAbbr, room.sport)
+        const homeColor = getRoomTeamColor(homeAbbr, room.sport)
+        return (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 16,
+              padding: '8px 16px',
+              background: 'rgba(10,10,18,0.95)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: awayColor }}>
+                {awayAbbr}
               </span>
-            )}
-          </div>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, letterSpacing: '0.02em', color: '#e8e8f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                {room.away_score ?? 0}
+              </span>
+            </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 28, fontWeight: 700, color: '#e8e8f4', fontVariantNumeric: 'tabular-nums' }}>
-              {room.home_score ?? 0}
-            </span>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.5)' }}>
-              {room.name?.split(' vs ')[1] ?? 'HOME'}
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 64 }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 12, color: '#ff6b35', letterSpacing: '0.1em' }}>
+                {room.game_status_detail || (room.game_period ? `Q${room.game_period}` : 'PRE')}
+              </span>
+              {room.game_clock && (
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', fontVariantNumeric: 'tabular-nums' }}>
+                  {room.game_clock}
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, letterSpacing: '0.02em', color: '#e8e8f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                {room.home_score ?? 0}
+              </span>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: homeColor }}>
+                {homeAbbr}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* ── Final Score ── */}
       {room?.status === 'finished' && (room.home_score > 0 || room.away_score > 0) && (
@@ -388,21 +402,27 @@ function GameRoom({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 16,
-            padding: '6px 16px',
+            gap: 12,
+            padding: '8px 16px',
             background: 'rgba(10,10,18,0.95)',
             borderBottom: '1px solid rgba(255,255,255,0.05)',
             flexShrink: 0,
           }}
         >
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.45)' }}>
-            {room.name?.split(' vs ')[0]} {room.away_score}
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.35)' }}>
+            {room.name?.split(' vs ')[0]?.trim()}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.12em' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+            {room.away_score}
+          </span>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 12, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em' }}>
             FINAL
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.45)' }}>
-            {room.home_score} {room.name?.split(' vs ')[1]}
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+            {room.home_score}
+          </span>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.35)' }}>
+            {room.name?.split(' vs ')[1]?.trim()}
           </span>
         </div>
       )}
@@ -673,52 +693,30 @@ function GameRoom({
 
       {/* ── Mobile bottom action bar ── */}
       <div className="flex md:hidden items-center justify-between gap-2" style={{
-        flexShrink: 0,
-        padding: '10px 12px',
-        paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
-        background: 'rgba(10,10,18,0.95)', backdropFilter: 'blur(12px)',
+        flexShrink: 0, padding: '12px 16px',
+        paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+        background: 'rgba(10,10,18,0.97)', backdropFilter: 'blur(12px)',
         borderTop: '1px solid rgba(255,255,255,0.06)',
       }}>
-        {/* Left: card progress */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 800, color: '#ff6b35' }}>
-            {markedCount}<span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>/25</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, color: '#ff6b35', lineHeight: 1 }}>
+            {markedCount}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>/25</span>
           </span>
           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
             {(bingoResult.winningLines?.length ?? 0)} line{(bingoResult.winningLines?.length ?? 0) !== 1 ? 's' : ''}
           </span>
         </div>
-
-        {/* Right: action buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button
-            type="button"
-            onClick={() => setMobileLeaderboardSheet(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
-              fontFamily: 'var(--db-font-display)', fontSize: 12, letterSpacing: '0.06em',
-              color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10M6 20v-4M18 20v-8" /></svg>
-            STANDINGS
-          </button>
-          <button
-            type="button"
-            onClick={() => setMobileChatSheet(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
-              fontFamily: 'var(--db-font-display)', fontSize: 12, letterSpacing: '0.06em',
-              color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
-            CHAT
-          </button>
+          <button type="button" onClick={() => setMobileLeaderboardSheet(true)} style={{
+            padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 8, fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600,
+            color: 'rgba(255,255,255,0.55)', cursor: 'pointer', letterSpacing: '0.02em',
+          }}>Standings</button>
+          <button type="button" onClick={() => setMobileChatSheet(true)} style={{
+            padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 8, fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600,
+            color: 'rgba(255,255,255,0.55)', cursor: 'pointer', letterSpacing: '0.02em',
+          }}>Chat</button>
         </div>
       </div>
 

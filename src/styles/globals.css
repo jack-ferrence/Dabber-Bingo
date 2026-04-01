@@ -969,3 +969,9 @@ button[aria-label="Dismiss"]:hover {
     border-radius: 6px !important;
   }
 }
+
+/* Dashboard card press feedback */
+[data-card-press]:active {
+  transform: scale(0.97) !important;
+  transition: transform 80ms cubic-bezier(0.2, 0, 0, 1) !important;
+}
