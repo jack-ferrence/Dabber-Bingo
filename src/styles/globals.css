@@ -975,3 +975,27 @@ button[aria-label="Dismiss"]:hover {
   transform: scale(0.97) !important;
   transition: transform 80ms cubic-bezier(0.2, 0, 0, 1) !important;
 }
+
+/* Simplified square mark animation */
+@keyframes sq-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.sq-just-marked {
+  animation: sq-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Square responsive text sizes */
+@media (min-width: 768px) {
+  .bingo-grid button .sq-player { font-size: 14px !important; }
+  .bingo-grid button .sq-stat   { font-size: 11px !important; }
+}
+@media (max-width: 767px) {
+  .bingo-grid button .sq-player { font-size: 11px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat   { font-size: 9px !important; }
+}
+@media (max-width: 380px) {
+  .bingo-grid button .sq-player { font-size: 10px !important; }
+  .bingo-grid button .sq-stat   { font-size: 8px !important; }
+}

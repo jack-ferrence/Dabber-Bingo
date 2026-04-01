@@ -285,6 +285,17 @@ function GamePage() {
             if (debug) console.log('[GamePage] odds-based card saved', savedCard.id)
             setIsLateJoin(lateJoin)
             setCard(savedCard)
+            // Catch up late-join card with existing stats
+            if (lateJoin && room.game_id) {
+              supabase.rpc('catch_up_card', { p_card_id: savedCard.id, p_game_id: room.game_id })
+                .then(({ data: catchUpResult }) => {
+                  if (catchUpResult?.success && catchUpResult.marked > 0) {
+                    supabase.from('cards').select('*').eq('id', savedCard.id).maybeSingle()
+                      .then(({ data: freshCard }) => { if (freshCard) setCard(freshCard) })
+                  }
+                })
+                .catch(() => {}) // Non-fatal — poll-stats will catch it on next cycle
+            }
             setLoadingCard(false)
             // Kick off roster fetch for PlayerStatsPanel in the background
             if (room.game_id) {
