@@ -144,7 +144,7 @@ const BingoSquare = memo(function BingoSquare({
         borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
         display: 'flex', flexDirection: 'column',
         alignItems: 'flex-start', justifyContent: 'center',
-        padding: '6px 7px 10px',
+        padding: '6px 7px 10px 8px',
         textAlign: 'left',
         background: marked ? 'rgba(255,107,53,0.06)' : '#1a1a2e',
         border: marked
@@ -152,6 +152,9 @@ const BingoSquare = memo(function BingoSquare({
           : isWinning
             ? '1.5px solid rgba(255,107,53,0.3)'
             : '1px solid rgba(255,255,255,0.05)',
+        borderLeft: marked
+          ? '3px solid #ff6b35'
+          : `3px solid ${teamColor}`,
         boxShadow: marked ? '0 0 12px rgba(255,107,53,0.1)' : 'none',
         transition: 'background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 80ms ease',
         transform: justMarked ? 'scale(1.03)' : 'scale(1)',
@@ -192,19 +195,19 @@ const BingoSquare = memo(function BingoSquare({
       )}
 
       {/* Lobby: thin team color accent at bottom */}
-      {isLobby && !showProgress && (
+      {isLobby && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          height: 3, background: teamColor, opacity: 0.4,
+          height: 3, background: teamColor, opacity: 0.5,
         }} />
       )}
 
       {/* Swap hint (mobile) */}
       {isLobby && !swapsExhausted && !showSwapBtn && (
         <span style={{
-          position: 'absolute', top: 3, right: 4,
-          fontFamily: 'var(--db-font-mono)', fontSize: 9,
-          color: 'rgba(255,255,255,0.2)', pointerEvents: 'none',
+          position: 'absolute', top: 2, right: 3,
+          fontFamily: 'var(--db-font-mono)', fontSize: 7,
+          color: 'rgba(255,255,255,0.12)', pointerEvents: 'none',
         }}>↻</span>
       )}
 
