@@ -99,11 +99,11 @@ const BingoSquare = memo(function BingoSquare({
     prevMarkedRef.current = marked
   }, [marked])
 
-  const numBg = marked ? 'rgba(255,107,53,0.12)' : `${teamColor}30`
-  const numColor = marked ? 'rgba(255,107,53,0.45)' : `${teamColor}80`
+  const numBg = marked ? 'rgba(255,107,53,0.25)' : `${teamColor}55`
+  const numColor = marked ? '#ff6b35' : `${teamColor}dd`
   const borderColor = marked
     ? 'rgba(255,107,53,0.5)'
-    : isWinning ? 'rgba(255,107,53,0.45)' : `${teamColor}20`
+    : isWinning ? 'rgba(255,107,53,0.45)' : `${teamColor}55`
   const bg = marked ? 'rgba(255,107,53,0.06)' : '#1a1a2e'
   const shadow = marked
     ? '0 0 8px rgba(255,107,53,0.1)'
@@ -160,7 +160,7 @@ const BingoSquare = memo(function BingoSquare({
       }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 20, fontWeight: 700, color: numColor, lineHeight: 1,
+          fontSize: 22, fontWeight: 700, color: numColor, lineHeight: 1,
         }}>{jerseyNum}</span>
       </div>
 
@@ -169,11 +169,11 @@ const BingoSquare = memo(function BingoSquare({
         flex: 1, padding: '3px 5px', minWidth: 0, overflow: 'hidden',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2,
       }}>
-        <div ref={trackRef} style={{ overflow: 'hidden', height: 14 }}>
+        <div ref={trackRef} style={{ overflow: 'hidden', height: 17 }}>
           <span ref={nameRef} className={scrollClass}
             style={{
               fontFamily: "'Oswald',sans-serif",
-              fontSize: 12, fontWeight: 600, lineHeight: '14px',
+              fontSize: 13, fontWeight: 600, lineHeight: '17px',
               color: marked ? '#ff6b35' : '#e8e8f4',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
               display: 'inline-block',
