@@ -360,13 +360,14 @@ export async function fetchRoster(gameId, sport) {
   // Iterate all statistics groups so MLB pitchers (statistics[1]) are captured too
   for (const team of (data.boxscore?.players ?? [])) {
     const teamName = team.team?.displayName ?? ''
+    const teamAbbr = team.team?.abbreviation ?? ''
     const seen = new Set()
     for (const statsGroup of (team.statistics ?? [])) {
       for (const entry of (statsGroup.athletes ?? [])) {
         const a = entry.athlete
         if (!a?.id || seen.has(String(a.id))) continue
         seen.add(String(a.id))
-        players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, jersey: a.jersey ?? '' })
+        players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, teamAbbr, jersey: a.jersey ?? '' })
       }
     }
   }
@@ -377,12 +378,13 @@ export async function fetchRoster(gameId, sport) {
     for (const comp of competitors) {
       const teamId = comp.id ?? comp.team?.id
       const teamName = comp.team?.displayName ?? ''
+      const teamAbbr = comp.team?.abbreviation ?? ''
       if (!teamId) continue
       try {
         const rosterData = await fetchJson(`${teamsUrl}/${teamId}/roster`)
         for (const a of (rosterData.athletes ?? [])) {
           if (!a?.id) continue
-          players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, jersey: a.jersey ?? '' })
+          players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, teamAbbr, jersey: a.jersey ?? '' })
         }
       } catch (e) {
         console.warn(`odds-utils: roster fetch failed for team ${teamId}:`, e.message)
