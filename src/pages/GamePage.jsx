@@ -207,7 +207,7 @@ function GamePage() {
         if (room.game_id) {
           fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`)
             .then(res => res.ok ? res.json() : null)
-            .then(roster => { if (roster?.players) setRosterPlayers(roster.players.map(p => ({ id: p.id, name: p.name, lastName: p.lastName, team: p.team }))) })
+            .then(roster => { if (roster?.players) setRosterPlayers(roster.players.map(p => ({ id: p.id, name: p.name, lastName: p.lastName, team: p.team, teamAbbr: p.teamAbbr, jersey: p.jersey }))) })
             .catch(() => {})
         }
         return
@@ -301,7 +301,7 @@ function GamePage() {
             if (room.game_id) {
               fetch(`/.netlify/functions/get-roster?game_id=${room.game_id}&sport=${room.sport || 'nba'}`)
                 .then(res => res.ok ? res.json() : null)
-                .then(roster => { if (roster?.players) setRosterPlayers(roster.players.map(p => ({ id: p.id, name: p.name, lastName: p.lastName, team: p.team }))) })
+                .then(roster => { if (roster?.players) setRosterPlayers(roster.players.map(p => ({ id: p.id, name: p.name, lastName: p.lastName, team: p.team, teamAbbr: p.teamAbbr, jersey: p.jersey }))) })
                 .catch(() => {})
             }
             return
