@@ -55,6 +55,7 @@ function parseBoxscorePlayers(summaryData) {
           team: teamName,
           teamAbbr,
           position: athlete.position?.abbreviation ?? '',
+          jersey: athlete.jersey ?? '',
         })
       }
     }
@@ -82,6 +83,7 @@ function parseTeamRoster(rosterData) {
       team: teamName,
       teamAbbr,
       position: athlete.position?.abbreviation ?? '',
+      jersey: athlete.jersey ?? '',
     })
   }
 

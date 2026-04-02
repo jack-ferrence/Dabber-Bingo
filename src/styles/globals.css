@@ -54,45 +54,6 @@ body {
     inset 0 -1px 0 rgba(0, 0, 0, 0.20);
 }
 
-/* Marked square — subtle cinnabar pulse */
-@keyframes marked-pulse {
-  0%, 100% {
-    box-shadow:
-      0 0 6px var(--color-vegas-glow),
-      0 0 14px rgba(255, 107, 53, 0.12),
-      inset 0 0 8px rgba(255, 107, 53, 0.06);
-  }
-  50% {
-    box-shadow:
-      0 0 10px var(--color-vegas-glow),
-      0 0 24px rgba(255, 107, 53, 0.18),
-      inset 0 0 12px rgba(255, 107, 53, 0.10);
-  }
-}
-
-.sq-marked-glow {
-  animation: marked-pulse 3s ease-in-out infinite;
-}
-
-/* Free space — cinnabar shimmer */
-@keyframes gold-shimmer {
-  0%, 100% {
-    box-shadow:
-      0 0 8px rgba(255, 107, 53, 0.3),
-      0 0 20px rgba(255, 107, 53, 0.1),
-      inset 0 0 10px rgba(255, 107, 53, 0.08);
-  }
-  50% {
-    box-shadow:
-      0 0 14px rgba(255, 107, 53, 0.4),
-      0 0 32px rgba(255, 107, 53, 0.15),
-      inset 0 0 16px rgba(255, 107, 53, 0.12);
-  }
-}
-
-.sq-free-glow {
-  animation: gold-shimmer 3s ease-in-out infinite;
-}
 
 /* Machine frame outer glow */
 .machine-glow {
@@ -180,60 +141,6 @@ body {
   animation: slide-up 250ms ease-out;
 }
 
-/* ── Square mark-in: scale pulse on unmarked → marked ── */
-@keyframes sq-mark-in {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.08); }
-  100% { transform: scale(1); }
-}
-
-.sq-mark-in {
-  animation: sq-mark-in 300ms ease-out;
-}
-
-/* ── Shine sweep across newly-marked square (::after pseudo) ── */
-@keyframes shine-sweep {
-  0%   { transform: translateX(-100%) skewX(-20deg); opacity: 0.6; }
-  100% { transform: translateX(200%) skewX(-20deg); opacity: 0; }
-}
-
-.sq-shine::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.18) 40%,
-    rgba(255, 255, 255, 0.25) 50%,
-    rgba(255, 255, 255, 0.18) 60%,
-    transparent 100%
-  );
-  border-radius: inherit;
-  pointer-events: none;
-  animation: shine-sweep 500ms ease-out forwards;
-}
-
-/* ── Bingo line flash: cinnabar pulse on the 5 winning squares ── */
-@keyframes line-flash {
-  0%, 100% { box-shadow: 0 0 0 2px var(--color-accent-gold), 0 0 12px rgba(255, 107, 53, 0.5); }
-  25%      { box-shadow: 0 0 0 3px var(--color-accent-gold), 0 0 28px rgba(255, 107, 53, 0.7); }
-  50%      { box-shadow: 0 0 0 2px var(--color-accent-gold), 0 0 12px rgba(255, 107, 53, 0.5); }
-  75%      { box-shadow: 0 0 0 3px var(--color-accent-gold), 0 0 28px rgba(255, 107, 53, 0.7); }
-}
-
-/* ── Bingo line completion — pulse glow on winning squares ── */
-@keyframes line-glow-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
-  50%  { box-shadow: 0 0 16px 4px rgba(255, 107, 53, 0.4); border-color: #ff6b35; }
-  100% { box-shadow: 0 0 8px 2px rgba(255, 107, 53, 0.15); }
-}
-
-.sq-line-flash {
-  animation: line-glow-pulse 800ms ease-out forwards !important;
-  border-color: #ff6b35 !important;
-  z-index: 2;
-}
 
 /* ── Bingo toast banner ── */
 @keyframes bingo-toast-in {
@@ -753,17 +660,6 @@ html, body {
     gap: 2.5px !important;
   }
 
-  /* Long-press hint for swappable lobby squares */
-  .sq-swap-hint {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 7px;
-    color: #8888aa;
-    opacity: 0.35;
-    pointer-events: none;
-    font-family: var(--db-font-mono);
-  }
 }
 
 /* ── Press / tap feedback on all interactive cards ── */
@@ -908,17 +804,6 @@ button[aria-label="Dismiss"]:hover {
    SQUARE & GAME ROW MICRO-ANIMATIONS
    ══════════════════════════════════════════════════════════ */
 
-/* ── Square mark: spring pop on daub ── */
-@keyframes sq-mark-pop {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(0.92); }
-  70%  { transform: scale(1.06); }
-  100% { transform: scale(1); }
-}
-
-.sq-cell.sq-mark-in {
-  animation: sq-mark-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
 
 /* ── Game row press feedback ── */
 @keyframes game-row-press {
@@ -1011,15 +896,6 @@ button[aria-label="Dismiss"]:hover {
   animation: splash-tagline-fade 0.4s ease-out 2.4s both;
 }
 
-/* Simplified square mark animation */
-@keyframes sq-pop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.04); }
-  100% { transform: scale(1); }
-}
-.sq-just-marked {
-  animation: sq-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
 
 /* Square responsive text sizes */
 @media (min-width: 768px) {
@@ -1035,8 +911,46 @@ button[aria-label="Dismiss"]:hover {
   .bingo-grid button .sq-stat   { font-size: 8px !important; }
 }
 
-/* ── Winning square glow (completed bingo line) ── */
+
+/* ══════════════════════════════════════════════════════════
+   BINGO SQUARE 4A — Marquee + Winning + Mark animation
+   ══════════════════════════════════════════════════════════ */
+
+/* iOS-style name scroll — only applied to overflowing names */
+@keyframes sq-name-marquee {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(0); }
+  55%  { transform: translateX(var(--scroll-dist)); }
+  75%  { transform: translateX(var(--scroll-dist)); }
+  76%  { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+.sq-name-scroll {
+  animation: sq-name-marquee var(--scroll-dur, 10s) linear infinite;
+}
+
+/* Winning square — part of completed bingo line */
 .sq-winning-square {
-  border-color: #ff6b35 !important;
-  box-shadow: 0 0 8px rgba(255,107,53,0.25), inset 0 0 12px rgba(255,107,53,0.08) !important;
+  border-color: rgba(255,107,53,0.5) !important;
+  box-shadow: 0 0 10px rgba(255,107,53,0.15) !important;
+}
+
+/* Mark pop animation */
+@keyframes sq-mark-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.sq-just-marked {
+  animation: sq-mark-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Bingo line flash */
+@keyframes sq-line-glow {
+  0%   { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+  50%  { box-shadow: 0 0 16px 4px rgba(255,107,53,0.4); }
+  100% { box-shadow: 0 0 8px 2px rgba(255,107,53,0.15); }
+}
+.sq-line-flash {
+  animation: sq-line-glow 800ms ease-out forwards !important;
 }

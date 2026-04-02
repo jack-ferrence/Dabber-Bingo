@@ -366,7 +366,7 @@ export async function fetchRoster(gameId, sport) {
         const a = entry.athlete
         if (!a?.id || seen.has(String(a.id))) continue
         seen.add(String(a.id))
-        players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName })
+        players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, jersey: a.jersey ?? '' })
       }
     }
   }
@@ -382,7 +382,7 @@ export async function fetchRoster(gameId, sport) {
         const rosterData = await fetchJson(`${teamsUrl}/${teamId}/roster`)
         for (const a of (rosterData.athletes ?? [])) {
           if (!a?.id) continue
-          players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName })
+          players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, jersey: a.jersey ?? '' })
         }
       } catch (e) {
         console.warn(`odds-utils: roster fetch failed for team ${teamId}:`, e.message)
@@ -559,7 +559,7 @@ export function matchOddsToRoster(oddsProps, rosterPlayers) {
     const fn = normalizeName(prop.player_name)
     const ln = normalizeName(getLastName(prop.player_name))
     const m  = byFull.get(fn) || (ln ? byLast.get(ln) : null)
-    if (m) matched.push({ ...prop, player_id: m.id, player_name: m.name, team_abbr: m.teamAbbr ?? m.team_abbr ?? '' })
+    if (m) matched.push({ ...prop, player_id: m.id, player_name: m.name, team_abbr: m.teamAbbr ?? m.team_abbr ?? '', jersey_number: m.jersey ?? '' })
   }
   return matched
 }

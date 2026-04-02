@@ -167,7 +167,7 @@ export function matchOddsToRoster(oddsProps, rosterPlayers) {
     const fullNorm = normalizeName(prop.player_name)
     const lastNorm = normalizeName(getLastName(prop.player_name))
     const match = byFullName.get(fullNorm) || (lastNorm ? byLastName.get(lastNorm) : null)
-    if (match) matched.push({ ...prop, player_id: match.id, player_name: match.name })
+    if (match) matched.push({ ...prop, player_id: match.id, player_name: match.name, jersey_number: match.jersey ?? '' })
   }
   return matched
 }
@@ -204,6 +204,7 @@ function assembleCard(selected) {
         player_id: p.player_id,
         player_name: p.player_name,
         team_abbr: p.team_abbr ?? '',
+        jersey_number: p.jersey_number ?? '',
         stat_type: p.stat_type,
         threshold: p.threshold,
         display_text: p.display_text,
