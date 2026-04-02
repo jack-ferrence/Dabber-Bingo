@@ -11,15 +11,10 @@ export default function DobberLogo({ size = 24 }) {
           <stop offset="50%" stopColor="#ff6b35"/>
           <stop offset="100%" stopColor="#b8400e"/>
         </linearGradient>
-        <clipPath id="db-rr"><rect width="512" height="512" rx="114"/></clipPath>
       </defs>
-      <g clipPath="url(#db-rr)">
-        <rect width="512" height="512" fill="#ff6b35"/>
-        <circle cx="280" cy="280" r="165" fill="#0c0c14" opacity="0.18"/>
-        <circle cx="250" cy="250" r="165" fill="url(#db-ball)"/>
-        <circle cx="250" cy="250" r="97" fill="none" stroke="url(#db-ring)" strokeWidth="15"/>
-        <text x="250" y="250" textAnchor="middle" fontFamily="'Outfit',sans-serif" fontSize="124" fontWeight="900" fill="#1a1a2e" dominantBaseline="central">D</text>
-      </g>
+      <circle cx="256" cy="256" r="240" fill="url(#db-ball)"/>
+      <circle cx="256" cy="256" r="142" fill="none" stroke="url(#db-ring)" strokeWidth="20"/>
+      <text x="256" y="256" textAnchor="middle" fontFamily="'Outfit',sans-serif" fontSize="182" fontWeight="900" fill="#1a1a2e" dominantBaseline="central">D</text>
     </svg>
   )
 }

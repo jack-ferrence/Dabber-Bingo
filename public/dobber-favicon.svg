@@ -1,21 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="ball" x1="0.3" y1="0.1" x2="0.7" y2="0.9">
-      <stop offset="0%" stop-color="#f2efe9"/>
-      <stop offset="100%" stop-color="#c8c5bf"/>
-    </linearGradient>
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffaa44"/>
-      <stop offset="50%" stop-color="#ff6b35"/>
-      <stop offset="100%" stop-color="#b8400e"/>
-    </linearGradient>
-    <clipPath id="rr"><rect width="1024" height="1024" rx="228"/></clipPath>
+    <linearGradient id="ball" x1="0.3" y1="0.1" x2="0.7" y2="0.9"><stop offset="0%" stop-color="#f2efe9"/><stop offset="100%" stop-color="#c8c5bf"/></linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffaa44"/><stop offset="50%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#b8400e"/></linearGradient>
   </defs>
-  <g clip-path="url(#rr)">
-    <rect width="1024" height="1024" fill="#ff6b35"/>
-    <circle cx="560" cy="560" r="330" fill="#0c0c14" opacity="0.18"/>
-    <circle cx="500" cy="500" r="330" fill="url(#ball)"/>
-    <circle cx="500" cy="500" r="195" fill="none" stroke="url(#ring)" stroke-width="30"/>
-    <text x="500" y="500" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="252" font-weight="900" fill="#1a1a2e" dominant-baseline="central">D</text>
-  </g>
+  <circle cx="256" cy="256" r="240" fill="url(#ball)"/>
+  <circle cx="256" cy="256" r="142" fill="none" stroke="url(#ring)" stroke-width="20"/>
+  <text x="256" y="256" text-anchor="middle" font-family="'Outfit',sans-serif" font-size="182" font-weight="900" fill="#1a1a2e" dominant-baseline="central">D</text>
 </svg>
