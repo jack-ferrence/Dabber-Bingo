@@ -166,8 +166,8 @@ const BingoSquare = memo(function BingoSquare({
     : hexToRgba(teamColor, 0.30)
 
   const numTextColor = marked
-    ? 'rgba(255,107,53,0.7)'
-    : hexToRgba(teamColor, 0.55)
+    ? 'rgba(255,107,53,0.85)'
+    : 'rgba(255,255,255,0.45)'
 
   const bg = marked
     ? 'rgba(255,107,53,0.08)'
