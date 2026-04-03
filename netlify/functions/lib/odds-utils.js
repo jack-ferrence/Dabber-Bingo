@@ -587,6 +587,8 @@ function buildReplacementSquare(originalId, prop) {
     id:            originalId,
     player_id:     prop.player_id,
     player_name:   prop.player_name,
+    team_abbr:     prop.team_abbr ?? '',
+    jersey_number: prop.jersey_number ?? '',
     stat_type:     prop.stat_type,
     threshold:     prop.threshold,
     display_text:  prop.display_text,

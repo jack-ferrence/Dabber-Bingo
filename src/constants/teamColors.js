@@ -6,12 +6,15 @@ export const NBA_TEAM_COLORS = {
   ATL: '#E03A3E', // Hawks
   BOS: '#007A33', // Celtics
   BKN: '#AAAAAA', // Nets (white on dark bg → light gray)
+  BK:  '#AAAAAA', // Nets (ESPN alt)
   CHA: '#1D1160', // Hornets
+  CHO: '#1D1160', // Hornets (ESPN alt)
   CHI: '#CE1141', // Bulls
   CLE: '#860038', // Cavaliers
   DAL: '#00538C', // Mavericks
   DEN: '#FEC524', // Nuggets gold
   DET: '#C8102E', // Pistons
+  GS:  '#1D428A', // Warriors (ESPN uses GS)
   GSW: '#1D428A', // Warriors
   HOU: '#CE1141', // Rockets
   IND: '#FDBB30', // Pacers gold
@@ -21,18 +24,24 @@ export const NBA_TEAM_COLORS = {
   MIA: '#98002E', // Heat
   MIL: '#00471B', // Bucks
   MIN: '#0C2340', // Timberwolves
+  NO:  '#0C2340', // Pelicans (ESPN uses NO)
   NOP: '#0C2340', // Pelicans
+  NY:  '#F58426', // Knicks (ESPN uses NY)
   NYK: '#F58426', // Knicks
   OKC: '#007AC1', // Thunder
   ORL: '#0077C0', // Magic
   PHI: '#006BB6', // 76ers
   PHX: '#E56020', // Suns orange
+  PHO: '#E56020', // Suns (ESPN alt)
   POR: '#E03A3E', // Trail Blazers
   SAC: '#5A2D81', // Kings
+  SA:  '#C4CED4', // Spurs (ESPN uses SA)
   SAS: '#C4CED4', // Spurs
   TOR: '#CE1141', // Raptors
   UTA: '#002B5C', // Jazz
+  UTAH:'#002B5C', // Jazz (ESPN alt)
   WAS: '#002B5C', // Wizards
+  WSH: '#002B5C', // Wizards (ESPN alt)
   DEFAULT: '#475569',
 }
 

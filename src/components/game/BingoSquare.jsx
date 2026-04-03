@@ -220,11 +220,11 @@ const BingoSquare = memo(function BingoSquare({
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', gap: 1,
       }}>
         {/* Player name */}
-        <div ref={trackRef} style={{ overflow: 'hidden', height: 14, width: '100%' }}>
+        <div ref={trackRef} style={{ overflow: 'hidden', height: 18, width: '100%' }}>
           <span ref={nameRef} className={`sq-player ${scrollClass}`}
             style={{
               fontFamily: "'JetBrains Mono',monospace",
-              fontWeight: 800, lineHeight: '14px',
+              fontWeight: 800, lineHeight: '18px',
               color: marked ? '#ff6b35' : '#e8e8f4',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
               display: 'inline-block', textAlign: 'left',
@@ -236,7 +236,7 @@ const BingoSquare = memo(function BingoSquare({
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 700, whiteSpace: 'nowrap',
           color: marked ? 'rgba(255,107,53,0.65)' : '#ff6b35',
-          lineHeight: 1.15,
+          lineHeight: 1.15, textAlign: 'left',
           display: 'block',
         }} className="sq-stat">{statNum}</span>
         {statType && (
@@ -244,7 +244,7 @@ const BingoSquare = memo(function BingoSquare({
             fontFamily: "'JetBrains Mono',monospace",
             fontWeight: 600, whiteSpace: 'nowrap',
             color: marked ? 'rgba(255,107,53,0.40)' : 'rgba(255,107,53,0.65)',
-            lineHeight: 1,
+            lineHeight: 1, textAlign: 'left',
             display: 'block',
           }} className="sq-stat-type">{statType}</span>
         )}
