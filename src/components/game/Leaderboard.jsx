@@ -2,6 +2,7 @@ import { memo, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import Panel from '../ui/Panel.jsx'
 import { getFontFamily, getBadge } from '../../lib/fontMap'
+import BadgeEmoji from '../ui/BadgeEmoji.jsx'
 
 const BINGO_LINES = [
   [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
@@ -88,7 +89,7 @@ const LeaderboardRow = memo(function LeaderboardRow({
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}
       >
-        {badge && <span style={{ marginRight: 4, fontSize: 13 }}>{badge.emoji}</span>}
+        {badge && <BadgeEmoji emoji={badge.emoji} size={13} />}
         {username.length > 14 ? username.slice(0, 14) + '…' : username}
         {isMe && <span style={{ marginLeft: 4, fontSize: 10, color: '#22c55e', opacity: 0.7 }}>(you)</span>}
       </button>

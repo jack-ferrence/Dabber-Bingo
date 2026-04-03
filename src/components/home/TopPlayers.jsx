@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { getFontFamily, getBadge } from '../../lib/fontMap'
+import BadgeEmoji from '../ui/BadgeEmoji.jsx'
 
 const RANK_COLORS = ['#ff6b35', 'rgba(255,255,255,0.7)', 'rgba(255,255,255,0.7)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.3)']
 
@@ -56,7 +57,7 @@ export default function TopPlayers() {
                   className={p.name_color === 'rainbow' ? 'name-rainbow' : ''}
                   style={{ flex: 1, fontFamily: getFontFamily(p.name_font), fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: p.name_color && p.name_color !== 'rainbow' ? p.name_color : 'rgba(255,255,255,0.75)' }}
                 >
-                  {badge && <span style={{ fontSize: 12, marginRight: 3 }}>{badge.emoji}</span>}
+                  {badge && <BadgeEmoji emoji={badge.emoji} size={12} />}
                   {name}
                 </span>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: '#ff6b35', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{(p.total_earned ?? 0).toLocaleString()} ◈</span>
@@ -83,7 +84,7 @@ export default function TopPlayers() {
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: i === 0 ? '#ff6b35' : 'rgba(255,255,255,0.4)' }}>
                   {i + 1}
                 </span>
-                {badge && <span style={{ fontSize: 11 }}>{badge.emoji}</span>}
+                {badge && <BadgeEmoji emoji={badge.emoji} size={11} />}
                 <span
                   className={p.name_color === 'rainbow' ? 'name-rainbow' : ''}
                   style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)' }}

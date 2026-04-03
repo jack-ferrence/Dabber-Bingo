@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
+import DobberBallIcon from '../components/ui/DobberBallIcon.jsx'
 
 const PRESETS = [
   { cents: 300,  label: '$3',  tag: 'Buy us a coffee' },
@@ -11,7 +12,7 @@ const PRESETS = [
 ]
 
 const PERKS = [
-  { emoji: '🎱', text: 'Supporter badge on your profile' },
+  { emoji: 'dobber_ball', text: 'Supporter badge on your profile' },
   { emoji: '⭐', text: 'Priority access to new features' },
   { emoji: '🙏', text: 'Keep Dobber Bingo free for everyone' },
 ]
@@ -120,7 +121,7 @@ export default function ContributePage() {
             padding: '6px 14px', borderRadius: 20, marginBottom: 20,
             background: 'rgba(255,107,53,0.1)', border: '1px solid rgba(255,107,53,0.3)',
           }}>
-            <span style={{ fontSize: 14 }}>🎱</span>
+            <DobberBallIcon size={14} />
             <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: '#ff6b35' }}>
               SUPPORTER
             </span>
@@ -140,7 +141,9 @@ export default function ContributePage() {
           </p>
           {PERKS.map((perk, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: i < PERKS.length - 1 ? 10 : 0 }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>{perk.emoji}</span>
+              {perk.emoji === 'dobber_ball'
+                ? <DobberBallIcon size={16} />
+                : <span style={{ fontSize: 16, flexShrink: 0 }}>{perk.emoji}</span>}
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
                 {perk.text}
               </span>

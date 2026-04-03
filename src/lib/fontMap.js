@@ -29,11 +29,11 @@ export const BADGE_MAP = {
   badge_100:   { emoji: '💯', label: '100' },
   badge_money: { emoji: '💰', label: 'MONEY' },
   badge_eyes:  { emoji: '👀', label: 'EYES' },
-  badge_goat2: { emoji: '🐐', label: 'GOAT' },
   badge_ice:   { emoji: '🧊', label: 'ICE' },
   badge_alien: { emoji: '👽', label: 'ALIEN' },
-  badge_clown:     { emoji: '🤡', label: 'CLOWN' },
-  badge_supporter: { emoji: '🎱', label: 'SUPPORTER' },
+  badge_clown:       { emoji: '🤡',         label: 'CLOWN' },
+  badge_supporter:   { emoji: 'dobber_ball', label: 'SUPPORTER' },
+  badge_dobber_ball: { emoji: 'dobber_ball', label: 'DOBBER BALL' },
 }
 
 export function getBadge(itemId) {

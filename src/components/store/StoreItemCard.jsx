@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { getFontFamily, getBadge, EMOTE_MAP } from '../../lib/fontMap'
 import DaubOverlay from '../game/DaubOverlay.jsx'
+import DobberBallIcon from '../ui/DobberBallIcon.jsx'
 
 // ── Previews ─────────────────────────────────────────────────────────────────
 
@@ -27,7 +28,9 @@ function FontPreview({ fontKey }) {
 function BadgePreview({ emoji, label }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 72, gap: 4 }}>
-      <span style={{ fontSize: 32, lineHeight: 1 }}>{emoji}</span>
+      {emoji === 'dobber_ball'
+        ? <DobberBallIcon size={32} />
+        : <span style={{ fontSize: 32, lineHeight: 1 }}>{emoji}</span>}
       <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em' }}>{label}</span>
     </div>
   )
@@ -162,6 +165,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
   const price = item.price ?? item.cost ?? 0
   const canAfford = isFree || (dobsBalance !== null && dobsBalance >= price)
   const canBuy = isEmailVerified
+  const isSupporterOnly = item.metadata?.supporter_only === true
 
   const showToast = (msg) => {
     setToast(msg)
@@ -279,8 +283,27 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
           </div>
         ) : (
           <>
+            {/* Supporter-only: show link to contribute page */}
+            {!owned && isSupporterOnly && (
+              <a
+                href="/contribute"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  width: '100%', background: 'rgba(255,107,53,0.08)', color: '#ff6b35',
+                  border: '1px solid rgba(255,107,53,0.25)', borderRadius: 6,
+                  fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
+                  padding: '7px 0', textDecoration: 'none', transition: 'background 100ms ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.15)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.08)' }}
+              >
+                <DobberBallIcon size={12} />
+                Support Dobber
+              </a>
+            )}
+
             {/* Purchase row */}
-            {!owned && !isFree && (
+            {!owned && !isFree && !isSupporterOnly && (
               <button
                 type="button"
                 onClick={!canBuy ? onVerifyNeeded : handleBuyClick}

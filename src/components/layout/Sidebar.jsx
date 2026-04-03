@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { useProfile } from '../../hooks/useProfile.js'
 import MyGameItem from '../home/MyGameItem.jsx'
+import DobberBallIcon from '../ui/DobberBallIcon.jsx'
 
 function SidebarContent({ onClose }) {
   const { user, signOut } = useAuth()
@@ -182,6 +183,18 @@ function SidebarContent({ onClose }) {
             Sign out
           </button>
         )}
+
+        <Link
+          to="/contribute"
+          onClick={() => onClose?.()}
+          className="flex items-center gap-2 text-xs"
+          style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,107,53,0.55)', textDecoration: 'none', transition: 'color 120ms ease' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,107,53,0.9)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,107,53,0.55)' }}
+        >
+          <DobberBallIcon size={12} />
+          Support Dobber
+        </Link>
 
         <p className="text-[10px]" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>Dobber v0.1</p>
       </div>

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import Panel from '../ui/Panel.jsx'
 import { getFontFamily, getBadge, EMOTE_CODE_MAP } from '../../lib/fontMap'
 import EmotePicker from '../chat/EmotePicker.jsx'
+import BadgeEmoji from '../ui/BadgeEmoji.jsx'
 
 const MAX_CHAT = 100
 const MAX_CHARS = 280
@@ -40,7 +41,7 @@ const ChatMessage = memo(function ChatMessage({ msg, isNew, profile }) {
     const emoji = EMOTE_CODE_MAP[msg.message.trim()]
     return (
       <div className={`px-1 ${isNew ? 'chat-msg-in' : ''}`} style={{ fontSize: 11, lineHeight: 1.4 }}>
-        {badge && <span style={{ marginRight: 2 }}>{badge.emoji}</span>}
+        {badge && <BadgeEmoji emoji={badge.emoji} size={12} />}
         <span style={{ fontFamily, fontWeight: 700, color: nameColor }}>{msg.username}</span>
         <span style={{ marginLeft: 5, fontSize: 18 }}>{emoji}</span>
       </div>

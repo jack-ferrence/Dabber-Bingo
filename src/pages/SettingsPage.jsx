@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth.jsx'
 import { useProfile } from '../hooks/useProfile.js'
 import { getFontFamily, getBadge } from '../lib/fontMap'
 import DaubOverlay from '../components/game/DaubOverlay.jsx'
+import BadgeEmoji from '../components/ui/BadgeEmoji.jsx'
+import DobberBallIcon from '../components/ui/DobberBallIcon.jsx'
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
 function getPref(key, defaultVal) {
@@ -578,7 +580,7 @@ function CustomizeTab() {
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 6, marginBottom: 12 }}>
           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', minWidth: 16 }}>1</span>
-          {badgeInfo && <span style={{ fontSize: 14 }}>{badgeInfo.emoji}</span>}
+          {badgeInfo && <BadgeEmoji emoji={badgeInfo.emoji} size={14} />}
           <span style={{ fontFamily: getFontFamily(previewFont), fontSize: 13, fontWeight: 700, color: previewColor ?? '#e8e8f4', flex: 1 }}>
             {displayName}
           </span>
@@ -722,7 +724,7 @@ function CustomizeTab() {
                       position: 'relative', padding: 0,
                     }}
                   >
-                    {badge?.emoji ?? '?'}
+                    {badge ? <BadgeEmoji emoji={badge.emoji} size={18} /> : '?'}
                     {!owned && (
                       <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, background: 'rgba(12,12,20,0.75)', borderRadius: '50%' }}>
                         🔒
@@ -1078,7 +1080,7 @@ export default function SettingsPage() {
               transition: 'background 120ms, border-color 120ms',
             }}
           >
-            <span style={{ fontSize: 14 }}>🎱</span>
+            <DobberBallIcon size={14} />
             SUPPORT DOBBER
           </Link>
           <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.2)', margin: '8px 0 0' }}>
