@@ -246,7 +246,7 @@ const BingoSquare = memo(function BingoSquare({
         <span style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'rgba(255,107,53,0.65)' : '#ff6b35',
+          color: marked ? 'rgba(255,140,80,0.7)' : 'rgba(255,255,255,0.55)',
           lineHeight: 1.15, textAlign: 'left',
           display: 'block',
         }} className="sq-stat">{statNum}</span>
@@ -254,7 +254,7 @@ const BingoSquare = memo(function BingoSquare({
           <span style={{
             fontFamily: "'JetBrains Mono',monospace",
             fontWeight: 600, whiteSpace: 'nowrap',
-            color: marked ? 'rgba(255,107,53,0.40)' : 'rgba(255,107,53,0.65)',
+            color: marked ? 'rgba(255,140,80,0.5)' : 'rgba(255,255,255,0.38)',
             lineHeight: 1, textAlign: 'left',
             display: 'block',
           }} className="sq-stat-type">{statType}</span>
