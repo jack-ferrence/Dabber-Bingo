@@ -54,8 +54,8 @@ const ChatMessage = memo(function ChatMessage({ msg, isNew, profile }) {
       <span style={{ fontFamily, fontWeight: 700, color: nameColor }}>
         {msg.username}
       </span>
-      <span style={{ color: 'rgba(255,255,255,0.4)' }}>: </span>
-      <span style={{ color: 'rgba(255,255,255,0.5)' }}>{renderMessageText(msg.message)}</span>
+      <span style={{ color: 'var(--db-text-muted)' }}>: </span>
+      <span style={{ color: 'var(--db-text-secondary)' }}>{renderMessageText(msg.message)}</span>
     </div>
   )
 })
@@ -274,7 +274,7 @@ function LiveChat({ roomId, userId, username, realtimeMessages, initChatMessages
               }}
             >
               <span style={{ fontSize: 28 }}>{fe.emoji}</span>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 8, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 8, color: 'var(--db-text-muted)', whiteSpace: 'nowrap' }}>
                 {fe.username}
               </span>
             </div>

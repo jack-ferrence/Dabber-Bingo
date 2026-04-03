@@ -87,11 +87,11 @@ function BingoBoard({
       <div
         className={`machine-glow ${skinClass}`}
         style={{
-          background: 'linear-gradient(180deg, #0f0f1c 0%, #0a0a14 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--db-bg-surface)',
+          border: '1px solid var(--db-border-default)',
           borderRadius: 12,
           padding: 10,
-          boxShadow: '0 4px 32px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset, 0 -1px 0 rgba(0,0,0,0.3) inset',
+          boxShadow: 'var(--db-shadow-md)',
         }}
       >
         {/* B·I·N·G·O column headers */}
@@ -149,7 +149,7 @@ function BingoBoard({
         />
 
         {/* Footer rule */}
-        <div style={{ marginTop: 8, height: 1, background: 'rgba(255,255,255,0.04)' }} />
+        <div style={{ marginTop: 8, height: 1, background: 'var(--db-border-subtle)' }} />
       </div>
 
 
@@ -157,7 +157,7 @@ function BingoBoard({
       {hasBingo && !bingoDismissed && (
         <div
           className="absolute inset-0 z-10 flex flex-col items-center justify-center"
-          style={{ borderRadius: 12, background: 'rgba(8,8,18,0.94)', backdropFilter: 'blur(6px)', cursor: 'pointer' }}
+          style={{ borderRadius: 12, background: 'var(--db-bg-overlay)', backdropFilter: 'blur(6px)', cursor: 'pointer' }}
           onClick={() => onBingoDismissed?.()}
           role="alert"
           aria-live="polite"
@@ -182,7 +182,7 @@ function BingoBoard({
               fontSize: 16,
               fontWeight: 700,
               letterSpacing: '0.12em',
-              color: 'rgba(255,255,255,0.35)',
+              color: 'var(--db-text-ghost)',
               marginTop: 4,
             }}>
               {winningLines.length} LINE{winningLines.length === 1 ? '' : 'S'}
@@ -208,7 +208,7 @@ function BingoBoard({
           >
             {roomStatus === 'finished' ? 'VIEW CARD' : 'KEEP PLAYING'}
           </button>
-          <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.02em' }}>
+          <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-muted)', letterSpacing: '0.02em' }}>
             tap anywhere to dismiss
           </p>
         </div>
@@ -222,7 +222,7 @@ function BingoBoard({
           <div
             className="relative overflow-hidden"
             style={{
-              background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)',
+              background: 'var(--db-bg-elevated)',
               border: '1px solid rgba(255,107,53,0.4)',
               borderRadius: 8,
               padding: '8px 22px',

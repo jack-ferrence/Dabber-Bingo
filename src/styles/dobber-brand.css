@@ -118,6 +118,153 @@
   --db-duration-slow:  350ms;
 }
 
+/* ============================================================
+   LIGHT MODE — clean, paper-white with warm accents
+   ============================================================ */
+[data-theme="light"] {
+  /* ── Background Scale (lightest → darkest) ── */
+  --db-bg-page:          #f5f5f0;
+  --db-bg-surface:       #ffffff;
+  --db-bg-elevated:      #f0efe8;
+  --db-bg-hover:         #e8e7e0;
+  --db-bg-active:        #dddcd5;
+  --db-bg-input:         #ffffff;
+  --db-bg-marked:        #fff0e8;
+  --db-bg-overlay:       rgba(255, 255, 255, 0.92);
+
+  /* ── Text Scale (darkest → lightest) ── */
+  --db-text-bright:      #1a1a2e;
+  --db-text-primary:     #2a2a3e;
+  --db-text-secondary:   #6b6b80;
+  --db-text-muted:       #9999aa;
+  --db-text-ghost:       #c0c0cc;
+  --db-text-on-primary:  #ffffff;
+
+  /* ── Border Scale ── */
+  --db-border-subtle:    rgba(0, 0, 0, 0.06);
+  --db-border-default:   rgba(0, 0, 0, 0.10);
+  --db-border-active:    rgba(0, 0, 0, 0.18);
+  --db-border-primary:   #ff6b35;
+
+  /* ── Semantic States (slightly adjusted for light bg) ── */
+  --db-live:             #dc2626;
+  --db-live-bg:          rgba(220, 38, 38, 0.08);
+  --db-live-glow:        rgba(220, 38, 38, 0.15);
+  --db-success:          #16a34a;
+  --db-success-bg:       rgba(22, 163, 74, 0.08);
+  --db-warn:             #d97706;
+  --db-warn-bg:          rgba(217, 119, 6, 0.08);
+  --db-info:             #2563eb;
+  --db-info-bg:          rgba(37, 99, 235, 0.08);
+  --db-danger:           #dc2626;
+  --db-danger-bg:        rgba(220, 38, 38, 0.08);
+
+  /* ── Bingo Card States ── */
+  --db-marked-bg:        rgba(255, 107, 53, 0.12);
+  --db-unmarked-bg:      #f0efe8;
+  --db-unmarked-border:  rgba(0, 0, 0, 0.12);
+  --db-free-text:        #ffffff;
+
+  /* ── Shadows (softer for light mode) ── */
+  --db-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.06);
+  --db-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.08);
+  --db-shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.12);
+  --db-shadow-glow:      0 0 16px rgba(255, 107, 53, 0.12);
+  --db-shadow-inset:     inset 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  /* ── Gradients ── */
+  --db-gradient-surface: linear-gradient(160deg, #ffffff 0%, #f8f8f4 100%);
+}
+
+/* System preference auto-detection */
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] {
+    --db-bg-page:          #f5f5f0;
+    --db-bg-surface:       #ffffff;
+    --db-bg-elevated:      #f0efe8;
+    --db-bg-hover:         #e8e7e0;
+    --db-bg-active:        #dddcd5;
+    --db-bg-input:         #ffffff;
+    --db-bg-marked:        #fff0e8;
+    --db-bg-overlay:       rgba(255, 255, 255, 0.92);
+    --db-text-bright:      #1a1a2e;
+    --db-text-primary:     #2a2a3e;
+    --db-text-secondary:   #6b6b80;
+    --db-text-muted:       #9999aa;
+    --db-text-ghost:       #c0c0cc;
+    --db-text-on-primary:  #ffffff;
+    --db-border-subtle:    rgba(0, 0, 0, 0.06);
+    --db-border-default:   rgba(0, 0, 0, 0.10);
+    --db-border-active:    rgba(0, 0, 0, 0.18);
+    --db-border-primary:   #ff6b35;
+    --db-live:             #dc2626;
+    --db-live-bg:          rgba(220, 38, 38, 0.08);
+    --db-live-glow:        rgba(220, 38, 38, 0.15);
+    --db-success:          #16a34a;
+    --db-success-bg:       rgba(22, 163, 74, 0.08);
+    --db-warn:             #d97706;
+    --db-warn-bg:          rgba(217, 119, 6, 0.08);
+    --db-info:             #2563eb;
+    --db-info-bg:          rgba(37, 99, 235, 0.08);
+    --db-danger:           #dc2626;
+    --db-danger-bg:        rgba(220, 38, 38, 0.08);
+    --db-marked-bg:        rgba(255, 107, 53, 0.12);
+    --db-unmarked-bg:      #f0efe8;
+    --db-unmarked-border:  rgba(0, 0, 0, 0.12);
+    --db-free-text:        #ffffff;
+    --db-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.06);
+    --db-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.08);
+    --db-shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.12);
+    --db-shadow-glow:      0 0 16px rgba(255, 107, 53, 0.12);
+    --db-shadow-inset:     inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* ============================================================
+   DARK MODE — explicit block for [data-theme="dark"]
+   ============================================================ */
+[data-theme="dark"] {
+  --db-bg-page:          #0c0c14;
+  --db-bg-surface:       #12121e;
+  --db-bg-elevated:      #1a1a2e;
+  --db-bg-hover:         #22223a;
+  --db-bg-active:        #2a2a44;
+  --db-bg-input:         #1a1a2e;
+  --db-bg-marked:        rgba(255, 107, 53, 0.08);
+  --db-bg-overlay:       rgba(10, 10, 18, 0.92);
+  --db-text-bright:      #f0f0ff;
+  --db-text-primary:     #e0e0f0;
+  --db-text-secondary:   rgba(255,255,255,0.55);
+  --db-text-muted:       rgba(255,255,255,0.4);
+  --db-text-ghost:       rgba(255,255,255,0.25);
+  --db-text-on-primary:  #ffffff;
+  --db-border-subtle:    rgba(255,255,255,0.06);
+  --db-border-default:   rgba(255,255,255,0.09);
+  --db-border-active:    rgba(255,255,255,0.18);
+  --db-border-primary:   #ff6b35;
+  --db-live:             #ff2d2d;
+  --db-live-bg:          rgba(255, 45, 45, 0.12);
+  --db-live-glow:        rgba(255, 45, 45, 0.25);
+  --db-success:          #22c55e;
+  --db-success-bg:       rgba(34, 197, 94, 0.12);
+  --db-warn:             #f59e0b;
+  --db-warn-bg:          rgba(245, 158, 11, 0.12);
+  --db-info:             #3b82f6;
+  --db-info-bg:          rgba(59, 130, 246, 0.12);
+  --db-danger:           #ef4444;
+  --db-danger-bg:        rgba(239, 68, 68, 0.12);
+  --db-marked-bg:        rgba(255, 107, 53, 0.08);
+  --db-unmarked-bg:      rgba(255,255,255,0.04);
+  --db-unmarked-border:  rgba(255,255,255,0.09);
+  --db-free-text:        #0c0c14;
+  --db-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.3);
+  --db-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.4);
+  --db-shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.5);
+  --db-shadow-glow:      0 0 16px rgba(255, 107, 53, 0.25);
+  --db-shadow-inset:     inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  --db-gradient-surface: linear-gradient(160deg, #141420 0%, #0f0f1a 100%);
+}
+
 
 /* ============================================================
    GLOBAL RESETS FOR ARCADE THEME

@@ -83,7 +83,7 @@ export default function StorePage() {
   }, [items, tab])
 
   return (
-    <div className="px-4 py-5 md:px-6 md:py-8" style={{ minHeight: '100%', background: '#0c0c14' }}>
+    <div className="px-4 py-5 md:px-6 md:py-8" style={{ minHeight: '100%', background: 'var(--db-bg-page)' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
 
         {/* Header */}
@@ -131,7 +131,7 @@ export default function StorePage() {
               <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.08em', margin: '0 0 3px' }}>
                 VERIFY YOUR EMAIL TO UNLOCK PURCHASES
               </p>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0 }}>
                 Check your inbox or click to resend the confirmation email.
               </p>
             </div>
@@ -163,9 +163,9 @@ export default function StorePage() {
         <CategoryTabs tabs={TABS} activeTab={tab} onTabChange={setTab} />
 
         {loading ? (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Loading store...</p>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>Loading store...</p>
         ) : filtered.length === 0 ? (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>No items available.</p>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>No items available.</p>
         ) : (
           <div
             style={{

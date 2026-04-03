@@ -45,7 +45,7 @@ function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#09090f', display: 'flex', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', position: 'relative', overflow: 'hidden' }}>
 
       {/* Background radial glow */}
       <div style={{
@@ -66,7 +66,7 @@ function LoginPage() {
         width: 420, flexShrink: 0,
         flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start',
         padding: '0 56px',
-        borderRight: '1px solid rgba(255,255,255,0.05)',
+        borderRight: '1px solid var(--db-border-subtle)',
         position: 'relative',
       }}>
         <div style={{ marginBottom: 48 }}>
@@ -76,7 +76,7 @@ function LoginPage() {
           fontFamily: 'var(--db-font-display)',
           fontSize: 72,
           letterSpacing: '0.04em',
-          color: '#e8e8f4',
+          color: 'var(--db-text-primary)',
           lineHeight: 0.92,
           marginBottom: 20,
         }}>
@@ -86,7 +86,7 @@ function LoginPage() {
         </div>
         <p style={{
           fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400,
-          color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, maxWidth: 280,
+          color: 'var(--db-text-ghost)', lineHeight: 1.6, maxWidth: 280,
         }}>
           Real NBA & MLB props. Live stats. Free to play. One card per game.
         </p>
@@ -96,7 +96,7 @@ function LoginPage() {
           {['Free to play every day', 'Live real-time scoring', 'Win Dobs, win prizes'].map((f) => (
             <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff6b35', flexShrink: 0 }} />
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.45)' }}>
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: 'var(--db-text-muted)' }}>
                 {f}
               </span>
             </div>
@@ -115,7 +115,7 @@ function LoginPage() {
               fontFamily: 'var(--db-font-display)',
               fontSize: 32,
               letterSpacing: '6px',
-              color: '#e8e8f4',
+              color: 'var(--db-text-primary)',
               marginTop: 10,
               lineHeight: 1,
             }}>
@@ -129,13 +129,13 @@ function LoginPage() {
               fontFamily: 'var(--db-font-display)',
               fontSize: 32,
               letterSpacing: '0.06em',
-              color: '#e8e8f4',
+              color: 'var(--db-text-primary)',
               lineHeight: 1,
               margin: '0 0 8px',
             }}>
               WELCOME BACK
             </h1>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0 }}>
               Log in to your Dobber account
             </p>
           </div>
@@ -145,7 +145,7 @@ function LoginPage() {
             <div>
               <label
                 htmlFor="identifier"
-                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}
+                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--db-text-ghost)' }}
               >
                 Username or Email
               </label>
@@ -159,21 +159,21 @@ function LoginPage() {
                 placeholder="username or you@example.com"
                 style={{
                   width: '100%', padding: '11px 14px', borderRadius: 8,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'var(--db-border-subtle)',
+                  border: '1px solid var(--db-border-default)',
                   fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400,
-                  color: '#e8e8f4', outline: 'none', boxSizing: 'border-box',
+                  color: 'var(--db-text-primary)', outline: 'none', boxSizing: 'border-box',
                   transition: 'border-color 140ms ease, background 140ms ease',
                 }}
-                onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(255,107,53,0.5)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
-                onBlur={(e) => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(255,107,53,0.5)'; e.currentTarget.style.background = 'var(--db-border-default)' }}
+                onBlur={(e) => { e.currentTarget.style.border = '1px solid var(--db-border-default)'; e.currentTarget.style.background = 'var(--db-border-subtle)' }}
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}
+                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--db-text-ghost)' }}
               >
                 Password
               </label>
@@ -187,14 +187,14 @@ function LoginPage() {
                 placeholder="••••••••"
                 style={{
                   width: '100%', padding: '11px 14px', borderRadius: 8,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'var(--db-border-subtle)',
+                  border: '1px solid var(--db-border-default)',
                   fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400,
-                  color: '#e8e8f4', outline: 'none', boxSizing: 'border-box',
+                  color: 'var(--db-text-primary)', outline: 'none', boxSizing: 'border-box',
                   transition: 'border-color 140ms ease, background 140ms ease',
                 }}
-                onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(255,107,53,0.5)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
-                onBlur={(e) => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(255,107,53,0.5)'; e.currentTarget.style.background = 'var(--db-border-default)' }}
+                onBlur={(e) => { e.currentTarget.style.border = '1px solid var(--db-border-default)'; e.currentTarget.style.background = 'var(--db-border-subtle)' }}
               />
             </div>
 
@@ -209,8 +209,8 @@ function LoginPage() {
               disabled={loading}
               style={{
                 width: '100%', padding: '12px 0', borderRadius: 8, border: 'none',
-                background: loading ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
-                color: loading ? 'rgba(255,255,255,0.25)' : '#fff',
+                background: loading ? 'var(--db-border-default)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                color: loading ? 'var(--db-text-ghost)' : '#fff',
                 fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.1em',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 boxShadow: loading ? 'none' : '0 4px 16px rgba(255,107,53,0.35)',
@@ -224,7 +224,7 @@ function LoginPage() {
             </button>
           </form>
 
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.3)', marginTop: 24, textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', marginTop: 24, textAlign: 'center' }}>
             No account?{' '}
             <Link
               to="/register"

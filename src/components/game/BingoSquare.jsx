@@ -148,7 +148,7 @@ const BingoSquare = memo(function BingoSquare({
   if (isSwapping) {
     return (
       <div style={{
-        width: '100%', aspectRatio: '1', borderRadius: 6, background: '#1a1a2e',
+        width: '100%', aspectRatio: '1', borderRadius: 6, background: 'var(--db-bg-elevated)',
         border: '1px solid rgba(255,107,53,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
@@ -236,7 +236,7 @@ const BingoSquare = memo(function BingoSquare({
             style={{
               fontFamily: "'JetBrains Mono',monospace",
               fontWeight: 800, lineHeight: '18px',
-              color: marked ? '#ff6b35' : '#e8e8f4',
+              color: marked ? '#ff6b35' : 'var(--db-text-primary)',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
               display: 'inline-block', textAlign: 'left',
             }}>{playerLabel}</span>

@@ -8,11 +8,11 @@ const TABS = [
     label: 'Games',
     icon: (active) => (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="2" y="5" width="16" height="11" rx="2" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.5" />
-        <circle cx="6.5" cy="10.5" r="1.5" fill={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} />
-        <circle cx="10" cy="10.5" r="1.5" fill={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} />
-        <circle cx="13.5" cy="10.5" r="1.5" fill={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} />
-        <path d="M6 5V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.5" />
+        <rect x="2" y="5" width="16" height="11" rx="2" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.5" />
+        <circle cx="6.5" cy="10.5" r="1.5" fill={active ? '#ff6b35' : 'var(--db-text-ghost)'} />
+        <circle cx="10" cy="10.5" r="1.5" fill={active ? '#ff6b35' : 'var(--db-text-ghost)'} />
+        <circle cx="13.5" cy="10.5" r="1.5" fill={active ? '#ff6b35' : 'var(--db-text-ghost)'} />
+        <path d="M6 5V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.5" />
       </svg>
     ),
   },
@@ -21,11 +21,11 @@ const TABS = [
     label: 'Store',
     icon: (active) => (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 5h14l-1.5 8H4.5L3 5Z" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M3 5l-.8-2H1" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.5" strokeLinecap="round" />
-        <circle cx="7" cy="16.5" r="1" fill={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} />
-        <circle cx="13" cy="16.5" r="1" fill={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} />
-        <path d="M7.5 9l1.5 2 3-3" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M3 5h14l-1.5 8H4.5L3 5Z" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M3 5l-.8-2H1" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="7" cy="16.5" r="1" fill={active ? '#ff6b35' : 'var(--db-text-ghost)'} />
+        <circle cx="13" cy="16.5" r="1" fill={active ? '#ff6b35' : 'var(--db-text-ghost)'} />
+        <path d="M7.5 9l1.5 2 3-3" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -34,8 +34,8 @@ const TABS = [
     label: 'Profile',
     icon: (active) => (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <circle cx="10" cy="7" r="3" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.5" />
-        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke={active ? '#ff6b35' : 'rgba(255,255,255,0.3)'} strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="10" cy="7" r="3" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.5" />
+        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke={active ? '#ff6b35' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -63,8 +63,8 @@ export default function MobileTabBar() {
         left: 0,
         right: 0,
         zIndex: 50,
-        background: 'rgba(10,10,18,0.92)',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--db-bg-overlay)',
+        borderTop: '1px solid var(--db-border-subtle)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -123,7 +123,7 @@ export default function MobileTabBar() {
               fontSize: 9.5,
               fontWeight: isActive ? 700 : 500,
               letterSpacing: '0.03em',
-              color: isActive ? '#ff6b35' : 'rgba(255,255,255,0.3)',
+              color: isActive ? '#ff6b35' : 'var(--db-text-ghost)',
               transition: 'color 120ms ease',
             }}>
               {tab.label}

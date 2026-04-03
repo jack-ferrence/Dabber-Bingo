@@ -19,8 +19,8 @@ export default function Navbar({ onMenuClick }) {
     <header
       className="flex-shrink-0 z-50"
       style={{
-        background: 'rgba(10,10,18,0.97)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--db-bg-overlay)',
+        borderBottom: '1px solid var(--db-border-subtle)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
       }}
@@ -39,7 +39,7 @@ export default function Navbar({ onMenuClick }) {
               fontFamily: 'var(--db-font-display)',
               fontSize: 22,
               letterSpacing: '5px',
-              color: '#e8e8f4',
+              color: 'var(--db-text-primary)',
               lineHeight: 1,
               paddingTop: 2,
             }}
@@ -102,12 +102,12 @@ export default function Navbar({ onMenuClick }) {
               style={{
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
                 letterSpacing: '0.02em', textDecoration: 'none',
-                color: isStore ? '#ff6b35' : 'rgba(255,255,255,0.35)',
+                color: isStore ? '#ff6b35' : 'var(--db-text-ghost)',
                 gap: 4,
                 transition: 'color 120ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = isStore ? '#ff6b35' : 'rgba(255,255,255,0.35)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-primary)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isStore ? '#ff6b35' : 'var(--db-text-ghost)' }}
             >
               Store
             </Link>
@@ -137,11 +137,11 @@ export default function Navbar({ onMenuClick }) {
                 </span>
                 <span
                   className="hidden sm:block max-w-[120px] truncate"
-                  style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)' }}
+                  style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-text-muted)' }}
                 >
                   {displayName}
                 </span>
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10 }}>▾</span>
+                <span style={{ color: 'var(--db-text-muted)', fontSize: 10 }}>▾</span>
               </button>
 
               {dropdownOpen && (
@@ -150,14 +150,14 @@ export default function Navbar({ onMenuClick }) {
                   <div
                     className="absolute right-0 top-10 z-20 w-44 py-1.5 animate-in-from-top"
                     style={{
-                      background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: 'var(--db-bg-elevated)',
+                      border: '1px solid var(--db-border-default)',
                       borderRadius: 8,
-                      boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
+                      boxShadow: 'var(--db-shadow-lg)',
                     }}
                   >
-                    <div style={{ padding: '6px 12px 8px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 4 }}>
-                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.7)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ padding: '6px 12px 8px', borderBottom: '1px solid var(--db-border-subtle)', marginBottom: 4 }}>
+                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'var(--db-text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {displayName}
                       </p>
                     </div>
@@ -165,9 +165,9 @@ export default function Navbar({ onMenuClick }) {
                       to="/settings"
                       onClick={() => setDropdownOpen(false)}
                       className="block w-full px-3 py-2 text-left"
-                      style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', display: 'block', borderRadius: 4, margin: '0 4px', width: 'calc(100% - 8px)', transition: 'background 100ms, color 100ms' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
+                      style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-text-secondary)', textDecoration: 'none', display: 'block', borderRadius: 4, margin: '0 4px', width: 'calc(100% - 8px)', transition: 'background 100ms, color 100ms' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-border-subtle)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--db-text-secondary)' }}
                     >
                       Settings
                     </Link>
@@ -175,9 +175,9 @@ export default function Navbar({ onMenuClick }) {
                       type="button"
                       onClick={() => { supabase.auth.signOut(); setDropdownOpen(false) }}
                       className="w-full px-3 py-2 text-left"
-                      style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', display: 'block', borderRadius: 4, margin: '0 4px', width: 'calc(100% - 8px)', transition: 'background 100ms, color 100ms' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)' }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
+                      style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-text-secondary)', background: 'none', border: 'none', cursor: 'pointer', display: 'block', borderRadius: 4, margin: '0 4px', width: 'calc(100% - 8px)', transition: 'background 100ms, color 100ms' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-border-subtle)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--db-text-secondary)' }}
                     >
                       Sign out
                     </button>
@@ -190,9 +190,9 @@ export default function Navbar({ onMenuClick }) {
           <div className="flex items-center gap-3">
             <Link
               to="/login"
-              style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 120ms' }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: 'var(--db-text-muted)', textDecoration: 'none', transition: 'color 120ms' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-primary)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
             >
               Log in
             </Link>

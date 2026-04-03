@@ -81,13 +81,13 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
     >
       <div
         style={{
-          background: `linear-gradient(145deg, ${hexToRgba(awayColor, gradientOpacity)} 0%, #0c0c14 50%, ${hexToRgba(homeColor, gradientOpacity)} 100%)`,
+          background: `linear-gradient(145deg, ${hexToRgba(awayColor, gradientOpacity)} 0%, var(--db-bg-page) 50%, ${hexToRgba(homeColor, gradientOpacity)} 100%)`,
           padding: size === 'tiny' ? '12px 14px 10px' : '16px 18px 14px',
           minHeight: size === 'large' ? 150 : size === 'medium' ? 135 : size === 'small' ? 115 : 95,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          border: '1px solid rgba(255,255,255,0.04)',
+          border: '1px solid var(--db-border-subtle)',
           borderRadius: 14,
         }}
       >
@@ -97,26 +97,26 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
             {isLive && (
               <>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff2d2d', animation: 'pulse-live 1.4s ease-in-out infinite' }} />
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-primary)', fontWeight: 600 }}>
                   LIVE{clockLabel ? ` · ${clockLabel}` : ''}
                 </span>
               </>
             )}
             {isFinished && (
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>FINAL</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-ghost)', fontWeight: 600 }}>FINAL</span>
             )}
             {!isLive && !isFinished && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
                 {getDayPrefix(room.starts_at) !== 'Today' && (
                   <span style={{
                     fontFamily: 'var(--db-font-mono)', fontSize: 9, fontWeight: 700,
-                    color: getDayPrefix(room.starts_at) === 'Tomorrow' ? '#ff6b35' : 'rgba(255,255,255,0.35)',
+                    color: getDayPrefix(room.starts_at) === 'Tomorrow' ? '#ff6b35' : 'var(--db-text-ghost)',
                     letterSpacing: '0.04em', textTransform: 'uppercase',
                   }}>
                     {getDayPrefix(room.starts_at)}
                   </span>
                 )}
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', fontWeight: 500 }}>
                   {formatTime(room.starts_at)}
                 </span>
               </div>
@@ -145,13 +145,13 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           <div style={{ display: 'flex', alignItems: 'baseline', gap: size === 'tiny' ? 6 : 10 }}>
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
-              color: isFinished ? 'rgba(255,255,255,0.4)' : '#fff',
+              color: isFinished ? 'var(--db-text-muted)' : '#fff',
               letterSpacing: '0.01em', lineHeight: 1,
             }}>{away}</span>
-            <span style={{ fontSize: size === 'tiny' ? 9 : 11, color: 'rgba(255,255,255,0.3)' }}>vs</span>
+            <span style={{ fontSize: size === 'tiny' ? 9 : 11, color: 'var(--db-text-ghost)' }}>vs</span>
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
-              color: isFinished ? 'rgba(255,255,255,0.4)' : '#fff',
+              color: isFinished ? 'var(--db-text-muted)' : '#fff',
               letterSpacing: '0.01em', lineHeight: 1,
             }}>{home}</span>
           </div>
@@ -159,7 +159,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           {hasScore && (
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: scoreFontSize,
-              color: isFinished ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.55)',
+              color: isFinished ? 'var(--db-text-ghost)' : 'var(--db-text-secondary)',
               marginTop: 2, display: 'block',
             }}>
               {room.away_score} — {room.home_score}
@@ -174,14 +174,14 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
               <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${Math.min(100, (squaresMarked / 25) * 100)}%`, height: '100%', background: '#ff6b35', borderRadius: 3 }} />
               </div>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.55)', fontWeight: 700 }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-secondary)', fontWeight: 700 }}>
                 {squaresMarked}/25
               </span>
             </div>
           )}
 
           {isJoined && !isFinished && squaresMarked == null && (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-ghost)' }}>
               {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
             </span>
           )}

@@ -7,6 +7,7 @@ import { getFontFamily, getBadge } from '../lib/fontMap'
 import DaubOverlay from '../components/game/DaubOverlay.jsx'
 import BadgeEmoji from '../components/ui/BadgeEmoji.jsx'
 import DobberBallIcon from '../components/ui/DobberBallIcon.jsx'
+import { useTheme } from '../hooks/useTheme.js'
 
 // ── localStorage helpers ──────────────────────────────────────────────────────
 function getPref(key, defaultVal) {
@@ -882,6 +883,7 @@ function CustomizeTab() {
 function PreferencesTab() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { theme: currentTheme, setTheme } = useTheme()
   const [soundEffects,    setSoundEffects]    = useState(() => getPref('sound_effects', true))
   const [markAnimations,  setMarkAnimations]  = useState(() => getPref('mark_animations', true))
   const [autoScroll,      setAutoScroll]      = useState(() => getPref('auto_scroll_stats', true))
@@ -921,6 +923,42 @@ function PreferencesTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+      {/* ── Appearance / Theme ── */}
+      <div style={{ marginBottom: 24 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>
+          Appearance
+        </p>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { key: 'system', label: 'System', desc: 'Match device' },
+            { key: 'dark',   label: 'Dark',   desc: 'Scoreboard' },
+            { key: 'light',  label: 'Light',  desc: 'Bright' },
+          ].map((opt) => {
+            const active = currentTheme === opt.key
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => setTheme(opt.key)}
+                style={{
+                  flex: 1, padding: '10px 6px', borderRadius: 8, cursor: 'pointer',
+                  background: active ? 'rgba(255,107,53,0.1)' : 'rgba(255,255,255,0.04)',
+                  border: active ? '1.5px solid #ff6b35' : '1px solid rgba(255,255,255,0.08)',
+                  transition: 'all 120ms ease',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: active ? '#ff6b35' : 'rgba(255,255,255,0.6)' }}>
+                  {opt.label}
+                </div>
+                <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+                  {opt.desc}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       {/* Game Preferences */}
       <div>
         <SectionLabel>Game Preferences</SectionLabel>

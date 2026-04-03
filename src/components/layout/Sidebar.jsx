@@ -84,9 +84,9 @@ function SidebarContent({ onClose }) {
           <div className="mx-4 mt-2">
             <div
               className="rounded-lg px-4 py-5 text-center"
-              style={{ border: '1px dashed rgba(255,255,255,0.07)' }}
+              style={{ border: '1px dashed var(--db-border-default)' }}
             >
-              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
+              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>
                 No active games.{' '}
                 <Link
                   to="/login"
@@ -103,9 +103,9 @@ function SidebarContent({ onClose }) {
           <div className="mx-4 mt-2">
             <div
               className="rounded-lg px-4 py-5 text-center"
-              style={{ border: '1px dashed rgba(255,255,255,0.07)' }}
+              style={{ border: '1px dashed var(--db-border-default)' }}
             >
-              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
+              <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>
                 No active games. Join one →
               </p>
             </div>
@@ -124,18 +124,18 @@ function SidebarContent({ onClose }) {
       {/* ── Bottom ── */}
       <div
         className="flex-shrink-0 px-5 py-4 space-y-2"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+        style={{ borderTop: '1px solid var(--db-border-subtle)' }}
       >
         {/* User info */}
         {user && (
-          <div className="flex items-center gap-3 pb-3 mb-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center gap-3 pb-3 mb-1" style={{ borderBottom: '1px solid var(--db-border-subtle)' }}>
             <span
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center text-xs font-bold"
               style={{ background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', borderRadius: 4, fontFamily: 'var(--db-font-ui)', fontWeight: 800, boxShadow: '0 2px 8px rgba(255,107,53,0.35)' }}
             >
               {initials}
             </span>
-            <p className="truncate text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.45)', maxWidth: 160 }}>
+            <p className="truncate text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)', maxWidth: 160 }}>
               {displayName}
             </p>
           </div>
@@ -146,9 +146,9 @@ function SidebarContent({ onClose }) {
             to="/settings"
             onClick={() => onClose?.()}
             className="flex items-center gap-2 text-xs"
-            style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', transition: 'color 120ms ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)' }}
+            style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)', textDecoration: 'none', transition: 'color 120ms ease' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -176,9 +176,9 @@ function SidebarContent({ onClose }) {
             type="button"
             onClick={handleSignOut}
             className="block text-xs"
-            style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
+            style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = '#ff4444' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
           >
             Sign out
           </button>
@@ -196,7 +196,7 @@ function SidebarContent({ onClose }) {
           Support Dobber
         </Link>
 
-        <p className="text-[10px]" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>Dobber v0.1</p>
+        <p className="text-[10px]" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)' }}>Dobber v0.1</p>
       </div>
     </div>
   )
@@ -204,8 +204,8 @@ function SidebarContent({ onClose }) {
 
 export default function Sidebar({ open, onClose }) {
   const sidebarStyle = {
-    background: 'rgba(10,10,18,0.92)',
-    borderRight: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--db-bg-overlay)',
+    borderRight: '1px solid var(--db-border-subtle)',
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
   }
@@ -235,7 +235,7 @@ export default function Sidebar({ open, onClose }) {
             {/* Mobile header with close */}
             <div
               className="flex h-12 flex-shrink-0 items-center justify-between px-5"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+              style={{ borderBottom: '1px solid var(--db-border-subtle)' }}
             >
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: '#ff6b35' }}>
                 MY GAMES
@@ -243,9 +243,9 @@ export default function Sidebar({ open, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                style={{ color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, transition: 'color 120ms ease' }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.25)' }}
+                style={{ color: 'var(--db-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, transition: 'color 120ms ease' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
                 aria-label="Close menu"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -18,7 +18,7 @@ function ColorPreview({ hex }) {
 function FontPreview({ fontKey }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 72 }}>
-      <span style={{ fontFamily: getFontFamily(fontKey), fontSize: 18, fontWeight: 700, color: '#e0e0f0' }}>
+      <span style={{ fontFamily: getFontFamily(fontKey), fontSize: 18, fontWeight: 700, color: 'var(--db-text-primary)' }}>
         YourName
       </span>
     </div>
@@ -31,7 +31,7 @@ function BadgePreview({ emoji, label }) {
       {emoji === 'dobber_ball'
         ? <DobberBallIcon size={32} />
         : <span style={{ fontSize: 32, lineHeight: 1 }}>{emoji}</span>}
-      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, color: 'var(--db-text-muted)', letterSpacing: '0.06em' }}>{label}</span>
     </div>
   )
 }
@@ -79,7 +79,7 @@ function SkinPreview({ skinClass }) {
       default:
         return isMarked
           ? { background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.4)' }
-          : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }
+          : { background: 'var(--db-border-subtle)', border: '1px solid var(--db-border-subtle)' }
     }
   }
 
@@ -104,8 +104,8 @@ function DaubPreview({ daubStyle }) {
       {cells.map((marked, i) => (
         <div key={i} style={{
           width: 28, height: 28, borderRadius: 4,
-          background: marked ? 'linear-gradient(160deg, #2d1a0a 0%, #1e1008 100%)' : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${marked ? 'rgba(255,107,53,0.5)' : 'rgba(255,255,255,0.08)'}`,
+          background: marked ? 'linear-gradient(160deg, #2d1a0a 0%, #1e1008 100%)' : 'var(--db-border-subtle)',
+          border: `1px solid ${marked ? 'rgba(255,107,53,0.5)' : 'var(--db-border-default)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           position: 'relative', overflow: 'hidden',
         }}>
@@ -126,7 +126,7 @@ function EmotePreview({ itemId }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 72, gap: 4 }}>
       <span style={{ fontSize: 32, lineHeight: 1 }}>{emote?.emoji ?? '😊'}</span>
-      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>{emote?.code ?? ''}</span>
+      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)' }}>{emote?.code ?? ''}</span>
     </div>
   )
 }
@@ -219,8 +219,8 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
       style={{
         background: equipped
           ? 'linear-gradient(160deg, #1c1408 0%, #130e04 100%)'
-          : 'linear-gradient(160deg, #141420 0%, #0f0f1a 100%)',
-        border: `1px solid ${equipped ? 'rgba(255,107,53,0.4)' : 'rgba(255,255,255,0.07)'}`,
+          : 'var(--db-bg-elevated)',
+        border: `1px solid ${equipped ? 'rgba(255,107,53,0.4)' : 'var(--db-border-default)'}`,
         borderRadius: 10,
         display: 'flex',
         flexDirection: 'column',
@@ -230,17 +230,17 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
       }}
     >
       {/* Preview */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '4px 0' }}>
+      <div style={{ borderBottom: '1px solid var(--db-border-subtle)', padding: '4px 0' }}>
         <ItemPreview item={item} />
       </div>
 
       {/* Info */}
       <div style={{ padding: '10px 12px', flex: 1 }}>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 600, color: '#e8e8f4', margin: '0 0 3px' }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-primary)', margin: '0 0 3px' }}>
           {item.name}
         </p>
         {item.description && (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.3)', margin: 0, lineHeight: 1.4 }}>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0, lineHeight: 1.4 }}>
             {item.description}
           </p>
         )}
@@ -261,8 +261,8 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
           </span>
         ) : confirming ? (
           <div>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', margin: '0 0 8px' }}>
-              Buy <strong style={{ color: '#e8e8f4', fontWeight: 600 }}>{item.name}</strong> for <strong style={{ color: '#ff6b35' }}>{price} ◈</strong>?
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: '0 0 8px' }}>
+              Buy <strong style={{ color: 'var(--db-text-primary)', fontWeight: 600 }}>{item.name}</strong> for <strong style={{ color: '#ff6b35' }}>{price} ◈</strong>?
             </p>
             <div style={{ display: 'flex', gap: 6 }}>
               <button
@@ -275,7 +275,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
-                style={{ flex: 1, background: 'none', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, padding: '6px 0', cursor: 'pointer' }}
+                style={{ flex: 1, background: 'none', color: 'var(--db-text-ghost)', border: '1px solid var(--db-border-default)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, padding: '6px 0', cursor: 'pointer' }}
               >
                 Cancel
               </button>
@@ -311,14 +311,14 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                 style={{
                   width: '100%',
                   background: !canBuy
-                    ? 'rgba(255,255,255,0.04)'
+                    ? 'var(--db-border-subtle)'
                     : canAfford
                       ? 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)'
-                      : 'rgba(255,255,255,0.04)',
+                      : 'var(--db-border-subtle)',
                   color: !canBuy
-                    ? 'rgba(255,255,255,0.2)'
-                    : canAfford ? '#fff' : 'rgba(255,255,255,0.2)',
-                  border: (!canBuy || !canAfford) ? '1px solid rgba(255,255,255,0.07)' : 'none',
+                    ? 'var(--db-text-ghost)'
+                    : canAfford ? '#fff' : 'var(--db-text-ghost)',
+                  border: (!canBuy || !canAfford) ? '1px solid var(--db-border-subtle)' : 'none',
                   borderRadius: 6,
                   fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
                   padding: '7px 0',
@@ -340,7 +340,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
               </span>
             ) : (owned || isFree) ? (
               <>
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: isFree ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.35)' }}>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: isFree ? 'var(--db-text-ghost)' : 'var(--db-text-ghost)' }}>
                   {isFree ? 'Free' : 'Owned ✓'}
                 </span>
 
@@ -355,7 +355,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                         type="button"
                         onClick={handleUnequip}
                         disabled={equipping}
-                        style={{ background: 'none', color: 'rgba(255,255,255,0.3)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, padding: '3px 9px', cursor: 'pointer' }}
+                        style={{ background: 'none', color: 'var(--db-text-ghost)', border: '1px solid var(--db-border-subtle)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, padding: '3px 9px', cursor: 'pointer' }}
                       >
                         Remove
                       </button>
@@ -366,9 +366,9 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                     type="button"
                     onClick={doEquip}
                     disabled={equipping}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, padding: '6px 0', cursor: equipping ? 'wait' : 'pointer', transition: 'all 100ms ease' }}
+                    style={{ width: '100%', background: 'var(--db-border-subtle)', color: 'var(--db-text-muted)', border: '1px solid var(--db-border-subtle)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, padding: '6px 0', cursor: equipping ? 'wait' : 'pointer', transition: 'all 100ms ease' }}
                     onMouseEnter={(e) => { if (!equipping) { e.currentTarget.style.borderColor = 'rgba(255,107,53,0.4)'; e.currentTarget.style.color = '#ff6b35'; e.currentTarget.style.background = 'rgba(255,107,53,0.08)' } }}
-                    onMouseLeave={(e) => { if (!equipping) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' } }}
+                    onMouseLeave={(e) => { if (!equipping) { e.currentTarget.style.borderColor = 'var(--db-border-subtle)'; e.currentTarget.style.color = 'var(--db-text-muted)'; e.currentTarget.style.background = 'var(--db-border-subtle)' } }}
                   >
                     {equipping ? '…' : 'Equip'}
                   </button>

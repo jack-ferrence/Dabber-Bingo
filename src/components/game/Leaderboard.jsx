@@ -73,7 +73,7 @@ const LeaderboardRow = memo(function LeaderboardRow({
         width: 24, textAlign: 'center', flexShrink: 0,
         fontFamily: rank <= 3 ? 'inherit' : 'var(--db-font-display)',
         fontSize: rank <= 3 ? 16 : 13,
-        color: rank <= 3 ? undefined : 'rgba(255,255,255,0.4)',
+        color: rank <= 3 ? undefined : 'var(--db-text-muted)',
       }}>{rankDisplay}</span>
 
       {/* Name */}
@@ -85,7 +85,7 @@ const LeaderboardRow = memo(function LeaderboardRow({
           cursor: isMe ? 'default' : 'pointer',
           fontFamily: getFontFamily(nameFont),
           fontSize: 13, fontWeight: 600,
-          color: nameColor && nameColor !== 'rainbow' ? nameColor : isMe ? '#22c55e' : 'rgba(255,255,255,0.75)',
+          color: nameColor && nameColor !== 'rainbow' ? nameColor : isMe ? '#22c55e' : 'var(--db-text-primary)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}
       >
@@ -98,11 +98,11 @@ const LeaderboardRow = memo(function LeaderboardRow({
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <span style={{
           fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700,
-          color: linesCompleted > 0 ? '#ff6b35' : 'rgba(255,255,255,0.3)',
+          color: linesCompleted > 0 ? '#ff6b35' : 'var(--db-text-ghost)',
         }}>{linesCompleted}<span style={{ fontSize: 9, opacity: 0.5 }}>/12</span></span>
         <span style={{
           fontFamily: 'var(--db-font-mono)', fontSize: 11,
-          color: 'rgba(255,255,255,0.4)',
+          color: 'var(--db-text-muted)',
         }}>{squaresMarked}/25</span>
       </div>
     </div>
@@ -263,7 +263,7 @@ function Leaderboard({ roomId, currentUserId, realtimeCards, participantJoined, 
   return (
     <Panel title="Leaderboard">
       <div className="mb-2 flex items-center justify-between">
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--db-text-secondary)' }}>
           {totalPlayers} player{totalPlayers === 1 ? '' : 's'}
         </span>
         {currentUserRank && (

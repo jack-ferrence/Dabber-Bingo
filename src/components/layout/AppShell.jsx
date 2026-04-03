@@ -10,7 +10,7 @@ export default function AppShell({ children }) {
   return (
     <div
       className="h-screen flex flex-col overflow-hidden"
-      style={{ background: '#0c0c14', color: '#e0e0f0' }}
+      style={{ background: 'var(--db-bg-page)', color: 'var(--db-text-primary)' }}
     >
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
