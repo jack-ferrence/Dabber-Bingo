@@ -1,9 +1,62 @@
 import * as Sentry from '@sentry/node'
 import { createClient } from '@supabase/supabase-js'
 import { getStatsForGame, fetchLiveEspnGames } from '../../src/lib/statsProvider.js'
+import { fetchRoster } from './lib/odds-utils.js'
 
 const LOCK_KEY = 'poll-stats'
 const LOCK_TTL_SECONDS = 50
+
+/**
+ * Backfill jersey numbers into odds_pool and existing cards.
+ * Called once when an MLB game transitions lobby→live (boxscore now has jersey data).
+ */
+async function backfillJerseyNumbers(supabase, room, roster) {
+  if (!roster?.length || !room?.odds_pool?.length) return 0
+
+  const jerseyMap = new Map()
+  for (const p of roster) {
+    if (p.id && p.jersey) jerseyMap.set(String(p.id), String(p.jersey))
+  }
+  if (jerseyMap.size === 0) return 0
+
+  // Update odds_pool in the room
+  let poolChanged = false
+  const updatedPool = room.odds_pool.map(prop => {
+    if (prop.player_id && !prop.jersey_number && jerseyMap.has(String(prop.player_id))) {
+      poolChanged = true
+      return { ...prop, jersey_number: jerseyMap.get(String(prop.player_id)) }
+    }
+    return prop
+  })
+  if (poolChanged) {
+    await supabase.from('rooms').update({ odds_pool: updatedPool }).eq('id', room.id)
+  }
+
+  // Update existing cards
+  const { data: cards } = await supabase
+    .from('cards')
+    .select('id, squares')
+    .eq('room_id', room.id)
+
+  let cardSquaresUpdated = 0
+  for (const card of (cards ?? [])) {
+    if (!card.squares?.length) continue
+    let cardChanged = false
+    const updatedSquares = card.squares.map(sq => {
+      if (sq?.player_id && !sq.jersey_number && jerseyMap.has(String(sq.player_id))) {
+        cardChanged = true
+        return { ...sq, jersey_number: jerseyMap.get(String(sq.player_id)) }
+      }
+      return sq
+    })
+    if (cardChanged) {
+      await supabase.from('cards').update({ squares: updatedSquares }).eq('id', card.id)
+      cardSquaresUpdated++
+    }
+  }
+
+  return jerseyMap.size
+}
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -109,7 +162,7 @@ export async function handler() {
     try {
       const { data: lobbyPublicRooms, error: lobbyErr } = await supabase
         .from('rooms')
-        .select('id, game_id')
+        .select('id, game_id, sport, odds_pool')
         .eq('status', 'lobby')
         .eq('room_type', 'public')
 
@@ -129,6 +182,17 @@ export async function handler() {
               autoStarted++
               log.push(`Auto-started public room ${room.id} for game ${room.game_id}`)
               console.log(`poll-stats: Auto-started public room ${room.id} for game ${room.game_id}`)
+
+              // MLB: backfill jersey numbers now that boxscore is available
+              if (room.sport === 'mlb') {
+                try {
+                  const freshRoster = await fetchRoster(room.game_id, 'mlb')
+                  const filled = await backfillJerseyNumbers(supabase, room, freshRoster)
+                  if (filled > 0) log.push(`jersey backfill: ${filled} players for game ${room.game_id}`)
+                } catch (e) {
+                  console.warn(`poll-stats: jersey backfill failed for ${room.game_id}:`, e.message)
+                }
+              }
             }
           }
         }
