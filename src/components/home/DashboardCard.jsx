@@ -17,6 +17,21 @@ function formatTime(startsAt) {
   return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
+function localDateStr(d) {
+  const dt = new Date(d)
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+}
+
+function getDayPrefix(startsAt) {
+  if (!startsAt) return ''
+  const gameDate = localDateStr(new Date(startsAt))
+  const today = localDateStr(new Date())
+  const tomorrow = localDateStr(new Date(Date.now() + 86_400_000))
+  if (gameDate === today) return 'Today'
+  if (gameDate === tomorrow) return 'Tomorrow'
+  return new Date(startsAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
 function getClock(room) {
   const period = room.game_period ?? 0
   const clock = room.game_clock ?? ''
@@ -84,9 +99,20 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>FINAL</span>
             )}
             {!isLive && !isFinished && (
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
-                {formatTime(room.starts_at)}
-              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
+                {getDayPrefix(room.starts_at) !== 'Today' && (
+                  <span style={{
+                    fontFamily: 'var(--db-font-mono)', fontSize: 9, fontWeight: 700,
+                    color: getDayPrefix(room.starts_at) === 'Tomorrow' ? '#ff6b35' : 'rgba(255,255,255,0.35)',
+                    letterSpacing: '0.04em', textTransform: 'uppercase',
+                  }}>
+                    {getDayPrefix(room.starts_at)}
+                  </span>
+                )}
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                  {formatTime(room.starts_at)}
+                </span>
+              </div>
             )}
           </div>
 

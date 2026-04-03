@@ -8,22 +8,17 @@ const SKELETON_COUNT = 3
 // Helpers
 // ---------------------------------------------------------------------------
 
-// Use Pacific midnight as the day boundary so games are bucketed by their
-// calendar date in PT regardless of the viewer's local timezone.
-function pacificDateStr(d) {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(d)
+function localDateStr(d) {
+  const dt = new Date(d)
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
 }
-function todayPacific() { return pacificDateStr(new Date()) }
-function tomorrowPacific() {
-  return pacificDateStr(new Date(Date.now() + 86_400_000))
-}
+function todayLocal() { return localDateStr(new Date()) }
+function tomorrowLocal() { return localDateStr(new Date(Date.now() + 86_400_000)) }
 function getDayLabel(startsAt) {
   if (!startsAt) return 'today'
-  const gameDate = pacificDateStr(new Date(startsAt))
-  const today = todayPacific()
-  const tomorrow = tomorrowPacific()
-  if (gameDate === today) return 'today'
-  if (gameDate === tomorrow) return 'tomorrow'
+  const gameDate = localDateStr(new Date(startsAt))
+  if (gameDate === todayLocal()) return 'today'
+  if (gameDate === tomorrowLocal()) return 'tomorrow'
   return 'future'
 }
 
@@ -168,8 +163,8 @@ function SliderWithDays({ games, onOpenGame, finishedRanks, myRoomIds }) {
   const futureLobby   = joinable.filter((g) => g.status === 'lobby' && getDayLabel(g.starts_at) === 'future').sort(byStartTime)
   const recentFinished = finished.sort(byStartTimeDesc)
 
-  const todayDateStr    = fmtDate(todayPacific())
-  const tomorrowDateStr = fmtDate(tomorrowPacific())
+  const todayDateStr    = fmtDate(todayLocal())
+  const tomorrowDateStr = fmtDate(tomorrowLocal())
 
   const hasMultipleDays = tomorrowLobby.length > 0 || futureLobby.length > 0
   const hasFinished     = recentFinished.length > 0
@@ -204,7 +199,7 @@ function SliderWithDays({ games, onOpenGame, finishedRanks, myRoomIds }) {
         <>
           <DaySeparator
             label="UPCOMING"
-            sub={fmtDate(pacificDateStr(new Date(futureLobby[0].starts_at)))}
+            sub={fmtDate(localDateStr(new Date(futureLobby[0].starts_at)))}
           />
           <GameCardItems games={futureLobby} onOpenGame={onOpenGame} finishedRanks={finishedRanks} myRoomIds={myRoomIds} />
         </>

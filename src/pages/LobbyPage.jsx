@@ -7,11 +7,19 @@ import DashboardCard from '../components/home/DashboardCard.jsx'
 import TopPlayers from '../components/home/TopPlayers.jsx'
 import FeaturedBanner from '../components/home/FeaturedBanner.jsx'
 
-function isTomorrow(startsAt) {
-  if (!startsAt) return false
-  const gameDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(new Date(startsAt))
-  const tomorrow = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(new Date(Date.now() + 86_400_000))
-  return gameDate === tomorrow
+function localDateStr(d) {
+  const dt = new Date(d)
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+}
+function todayLocal() { return localDateStr(new Date()) }
+function tomorrowLocal() { return localDateStr(new Date(Date.now() + 86_400_000)) }
+function getDayLabel(startsAt) {
+  if (!startsAt) return 'today'
+  const gameDate = localDateStr(new Date(startsAt))
+  if (gameDate === todayLocal()) return 'today'
+  if (gameDate === tomorrowLocal()) return 'tomorrow'
+  if (gameDate < todayLocal()) return 'past'
+  return 'future'
 }
 
 const SPORTS = [
@@ -80,34 +88,47 @@ export default function LobbyPage() {
 
   // Group into sections
   const sections = useMemo(() => {
-    const myGames = []
+    const myGamesToday = []
+    const myGamesTomorrow = []
     const liveNotJoined = []
     const todayLobby = []
     const tomorrowLobby = []
-    const finished = []
+    const finishedJoined = []
+    const finishedOther = []
 
     for (const room of filtered) {
       const isJoined = myRoomIds.has(room.id)
+      const dayLabel = getDayLabel(room.starts_at)
+
       if (isJoined && (room.status === 'live' || room.status === 'lobby')) {
-        myGames.push(room)
+        if (dayLabel === 'tomorrow' || dayLabel === 'future') myGamesTomorrow.push(room)
+        else myGamesToday.push(room)
       } else if (room.status === 'live') {
         liveNotJoined.push(room)
       } else if (room.status === 'lobby') {
-        if (isTomorrow(room.starts_at)) tomorrowLobby.push(room)
+        if (dayLabel === 'tomorrow' || dayLabel === 'future') tomorrowLobby.push(room)
         else todayLobby.push(room)
       } else if (room.status === 'finished') {
-        finished.push(room)
+        if (isJoined) finishedJoined.push(room)
+        else finishedOther.push(room)
       }
     }
 
-    // Sort
-    myGames.sort((a, b) => (b.status === 'live' ? 1 : 0) - (a.status === 'live' ? 1 : 0) || new Date(a.starts_at) - new Date(b.starts_at))
+    myGamesToday.sort((a, b) => (b.status === 'live' ? 1 : 0) - (a.status === 'live' ? 1 : 0) || new Date(a.starts_at) - new Date(b.starts_at))
+    myGamesTomorrow.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
     liveNotJoined.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
     todayLobby.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
     tomorrowLobby.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
-    finished.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at))
+    finishedJoined.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at))
+    finishedOther.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at))
 
-    return { myGames, liveNotJoined, todayLobby, tomorrowLobby, finished: finished.slice(0, 10) }
+    const myGames = [...myGamesToday, ...myGamesTomorrow]
+    const finished = [...finishedJoined, ...finishedOther].slice(0, 10)
+
+    const allTodayDone = liveNotJoined.length === 0 && todayLobby.length === 0 &&
+      myGamesToday.every(g => g.status !== 'live' && g.status !== 'lobby')
+
+    return { myGames, liveNotJoined, todayLobby, tomorrowLobby, finished, allTodayDone }
   }, [filtered, myRoomIds])
 
   const liveCount = allRooms.filter((r) => r.status === 'live').length
@@ -244,6 +265,17 @@ export default function LobbyPage() {
         </div>
       )}
 
+      {/* ═══ SECTION: Your Results (when all today's games are done) ═══ */}
+      {!loading && sections.allTodayDone && sections.finished.length > 0 && (
+        <div style={{ paddingTop: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Today's results</span>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sections.finished.length} games</span>
+          </div>
+          <CardRow games={sections.finished} size="small" />
+        </div>
+      )}
+
       {/* ═══ SECTION: Tomorrow ═══ */}
       {!loading && sections.tomorrowLobby.length > 0 && (
         <div style={{ paddingTop: 16 }}>
@@ -255,8 +287,8 @@ export default function LobbyPage() {
         </div>
       )}
 
-      {/* ═══ SECTION: Finished ═══ */}
-      {!loading && sections.finished.length > 0 && (
+      {/* ═══ SECTION: Recently Finished (when today's games still in progress) ═══ */}
+      {!loading && !sections.allTodayDone && sections.finished.length > 0 && (
         <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', padding: '0 20px', marginBottom: 12 }}>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)' }}>Recently finished</span>
