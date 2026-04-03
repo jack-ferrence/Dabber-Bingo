@@ -518,6 +518,7 @@ function GameRoom({
                 swapCount={swapCount}
                 oddsPool={oddsPool}
                 sport={room?.sport}
+                roomName={room?.name ?? ''}
                 roomStatus={room?.status}
                 bingoDismissed={bingoDismissed}
                 onBingoDismissed={() => setBingoDismissed(true)}

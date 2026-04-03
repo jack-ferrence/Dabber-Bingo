@@ -45,6 +45,83 @@ export const NBA_TEAM_COLORS = {
   DEFAULT: '#475569',
 }
 
+export const MLB_TEAM_COLORS_ALT = {
+  ARI: '#E8D4AC', // sand/cream
+  ATL: '#13274F', // navy
+  BAL: '#000000', // black
+  BOS: '#0D2B56', // navy
+  CHC: '#CC3433', // red
+  CWS: '#27251F', // black
+  CIN: '#000000', // black
+  CLE: '#E31937', // red
+  COL: '#C4CED4', // silver
+  DET: '#FA4616', // orange
+  HOU: '#EB6E1F', // orange
+  KC:  '#BD9B60', // gold
+  LAA: '#003263', // navy
+  LAD: '#EF3E42', // red
+  MIA: '#EF3340', // red
+  MIL: '#12284B', // navy
+  MIN: '#D31145', // red
+  NYM: '#FF5910', // orange
+  NYY: '#C4CED4', // silver
+  OAK: '#EFB21E', // gold
+  PHI: '#002D72', // blue
+  PIT: '#27251F', // black
+  SD:  '#FFC425', // gold
+  SF:  '#27251F', // black
+  SEA: '#005C5C', // teal
+  STL: '#0C2340', // navy
+  TB:  '#8FBCE6', // light blue
+  TEX: '#C0111F', // red
+  TOR: '#1D2D5C', // navy
+  WSH: '#14225A', // navy
+  DEFAULT: '#475569',
+}
+
+export const NBA_TEAM_COLORS_ALT = {
+  ATL: '#C1D32F', // volt green
+  BOS: '#BA9653', // gold
+  BKN: '#000000', // black
+  BK:  '#000000', // black
+  CHA: '#00788C', // teal
+  CHO: '#00788C', // teal
+  CHI: '#000000', // black
+  CLE: '#041E42', // navy
+  DAL: '#00285E', // navy
+  DEN: '#0E2240', // navy
+  DET: '#1D42BA', // blue
+  GS:  '#FFC72C', // gold
+  GSW: '#FFC72C', // gold
+  HOU: '#000000', // black
+  IND: '#002D62', // navy
+  LAC: '#1D428A', // blue
+  LAL: '#FDB927', // gold
+  MEM: '#12173F', // navy
+  MIA: '#F9A01B', // gold
+  MIL: '#EEE1C6', // cream
+  MIN: '#236192', // blue
+  NO:  '#C8102E', // red
+  NOP: '#C8102E', // red
+  NY:  '#0078BE', // blue
+  NYK: '#0078BE', // blue
+  OKC: '#EF6100', // orange
+  ORL: '#000000', // black
+  PHI: '#ED174C', // red
+  PHO: '#1D1160', // purple
+  PHX: '#1D1160', // purple
+  POR: '#000000', // black
+  SAC: '#63727A', // gray
+  SA:  '#000000', // black
+  SAS: '#000000', // black
+  TOR: '#000000', // black
+  UTA: '#00471B', // green
+  UTAH:'#00471B', // green
+  WAS: '#E31837', // red
+  WSH: '#E31837', // red
+  DEFAULT: '#475569',
+}
+
 export const MLB_TEAM_COLORS = {
   ARI: '#A71930', // Diamondbacks
   ATL: '#CE1141', // Braves
@@ -109,4 +186,47 @@ export function hexToRgba(hex, alpha) {
   const g = parseInt(clean.slice(2, 4), 16)
   const b = parseInt(clean.slice(4, 6), 16)
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+/**
+ * Perceived color distance (Euclidean in RGB, 0–441).
+ */
+function colorDistance(hex1, hex2) {
+  const parse = (h) => {
+    const c = (h || '#475569').replace('#', '')
+    return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)]
+  }
+  const [r1, g1, b1] = parse(hex1)
+  const [r2, g2, b2] = parse(hex2)
+  return Math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2)
+}
+
+/**
+ * Get team color for a bingo square, using alternate color when the opponent
+ * team's primary is too similar (distance < 80).
+ * The alphabetically-first team gets the alt color in same-color matchups.
+ */
+export function getSmartTeamColor(abbr, sport, opponentAbbr) {
+  let primaryMap, altMap
+  if (sport === 'mlb') {
+    primaryMap = MLB_TEAM_COLORS
+    altMap = MLB_TEAM_COLORS_ALT
+  } else if (sport === 'ncaa') {
+    return NCAA_TEAM_COLORS[abbr] ?? NCAA_TEAM_COLORS.DEFAULT
+  } else {
+    primaryMap = NBA_TEAM_COLORS
+    altMap = NBA_TEAM_COLORS_ALT
+  }
+
+  const myPrimary = primaryMap[abbr] ?? primaryMap.DEFAULT
+  if (!opponentAbbr) return myPrimary
+
+  const theirPrimary = primaryMap[opponentAbbr] ?? primaryMap.DEFAULT
+  if (colorDistance(myPrimary, theirPrimary) >= 80) return myPrimary
+
+  // Colors too similar — alphabetically-first team gets the alt
+  if (abbr < opponentAbbr) {
+    return altMap?.[abbr] ?? myPrimary
+  }
+  return myPrimary
 }

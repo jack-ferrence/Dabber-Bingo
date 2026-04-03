@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS } from '../../constants/teamColors.js'
+import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS, getSmartTeamColor } from '../../constants/teamColors.js'
 
 function getTeamColor(abbr, sport) {
   if (!abbr) return '#3a3a5c'
@@ -36,14 +36,19 @@ const BingoSquare = memo(function BingoSquare({
   daubStyle = 'classic',
   sport = 'nba',
   currentValue = 0,
+  opponentAbbr = '',
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
   const displayText = square?.display_text ?? ''
   const threshold = Number(square?.threshold) || 0
   const teamAbbr = square?.team_abbr ?? ''
-  const teamColor = getTeamColor(teamAbbr, sport)
-  const jerseyNum = square?.jersey_number ?? ''
+  const teamColor = opponentAbbr
+    ? getSmartTeamColor(teamAbbr, sport, opponentAbbr)
+    : getTeamColor(teamAbbr, sport)
+  const jerseyNum = square?.jersey_number || ''
+  // Fallback: show team abbreviation when no jersey number (common in MLB pre-game)
+  const numberDisplay = jerseyNum || teamAbbr || ''
   const { name: playerLabel, stat: statLabel } = parseDisplay(isFree ? '' : displayText)
   // Split "27.5+ PTS" → statNum="27.5+" statType="PTS"
   const statParts = statLabel.match(/^([\d.]+\+?)\s+(.+)$/)
@@ -209,9 +214,11 @@ const BingoSquare = memo(function BingoSquare({
       }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 26, fontWeight: 700, lineHeight: 1,
+          fontSize: jerseyNum ? 26 : 14,
+          fontWeight: 700, lineHeight: 1,
           color: numTextColor,
-        }}>{jerseyNum || '·'}</span>
+          letterSpacing: jerseyNum ? 0 : '0.04em',
+        }}>{numberDisplay}</span>
       </div>
 
       {/* ── Right side: player name + stat ── */}

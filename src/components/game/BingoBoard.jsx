@@ -22,9 +22,15 @@ function BingoBoard({
   bingoDismissed = false,
   onBingoDismissed,
   statValueMap = null,
+  roomName = '',
 }) {
   const flat = Array.isArray(squares[0]) ? squares.flat() : squares
   const winSet = new Set(winningSquares)
+
+  // Parse both teams from room name for smart color differentiation
+  const _teams = roomName.split(' vs ').map(t => t.trim())
+  const awayTeam = _teams[0] || ''
+  const homeTeam = _teams[1] || ''
 
   const prevLineCountRef = useRef(winningLines.length)
   const [flashIndices, setFlashIndices] = useState(new Set())
@@ -118,6 +124,7 @@ function BingoBoard({
               nextSwapCost={swapCount === 0 ? 10 : 50}
               daubStyle={daubStyle}
               sport={sport}
+              opponentAbbr={square?.team_abbr === homeTeam ? awayTeam : homeTeam}
               currentValue={
                 square?.player_id && square?.stat_type && statValueMap
                   ? (statValueMap[`${square.player_id}:${square.stat_type}`] ?? 0)
