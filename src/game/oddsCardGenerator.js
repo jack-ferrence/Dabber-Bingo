@@ -228,11 +228,13 @@ function buildCard(pool, targetMidpoint, statMaxPerType = null) {
   const targetProb = americanToProb(targetMidpoint)
   const tolerance  = 0.03  // ±3% implied probability tolerance for the average
 
-  function selectFrom(shuffled) {
+  function selectFrom(shuffled, enforceTeamBalance = true) {
     const selected = []
     const usedConflictKeys = new Set()
     const usedDisplayTexts = new Set()
     const statTypeCounts   = {}
+    const teamCounts       = {}
+    const MAX_PER_TEAM     = 14  // max 14 of 24 squares from one team (~58%)
 
     for (const prop of shuffled) {
       if (selected.length >= 24) break
@@ -243,16 +245,21 @@ function buildCard(pool, targetMidpoint, statMaxPerType = null) {
         const max = statMaxPerType[st] ?? 4
         if ((statTypeCounts[st] ?? 0) >= max) continue
       }
+      // Team balance: cap per team
+      if (enforceTeamBalance && prop.team_abbr) {
+        if ((teamCounts[prop.team_abbr] ?? 0) >= MAX_PER_TEAM) continue
+      }
       usedConflictKeys.add(prop.conflict_key)
       usedDisplayTexts.add(prop.display_text)
       statTypeCounts[prop.stat_type] = (statTypeCounts[prop.stat_type] ?? 0) + 1
+      if (prop.team_abbr) teamCounts[prop.team_abbr] = (teamCounts[prop.team_abbr] ?? 0) + 1
       selected.push(prop)
     }
     return selected
   }
 
   for (let attempt = 0; attempt < 50; attempt++) {
-    const selected = selectFrom(shuffle(pool))
+    const selected = selectFrom(shuffle(pool), true)
     if (selected.length < 24) continue
 
     const avgProb = selected.reduce((sum, p) => sum + americanToProb(p.american_odds), 0) / selected.length
@@ -261,9 +268,13 @@ function buildCard(pool, targetMidpoint, statMaxPerType = null) {
     }
   }
 
-  // Fallback: build the card even if the average isn't within tolerance
-  const selected = selectFrom(shuffle(pool))
-  if (selected.length < 24) return null
+  // Fallback: try with team balance first, then without if pool is too skewed
+  const selected = selectFrom(shuffle(pool), true)
+  if (selected.length < 24) {
+    const relaxed = selectFrom(shuffle(pool), false)
+    if (relaxed.length < 24) return null
+    return assembleCard(shuffle(relaxed))
+  }
   return assembleCard(shuffle(selected))
 }
 
