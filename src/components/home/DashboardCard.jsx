@@ -49,6 +49,13 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
   const isFinished = room.status === 'finished'
   const sport = room.sport ?? 'nba'
 
+  const oddsStatus = room.odds_status ?? 'pending'
+  const msUntilStart = room.starts_at ? new Date(room.starts_at) - Date.now() : Infinity
+  const showPropsWarning = !isLive && !isFinished
+    && oddsStatus !== 'ready'
+    && msUntilStart < 2 * 60 * 60 * 1000
+    && msUntilStart > 0
+
   const widths = { large: 280, medium: 260, small: 240, tiny: 200 }
   const cardWidth = widths[size] ?? 260
   const teamFontSize = size === 'large' ? 28 : size === 'medium' ? 25 : size === 'small' ? 22 : 18
@@ -184,9 +191,16 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35', fontWeight: 600 }}>
                 {isLive ? 'Join late →' : 'Join game →'}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 2, display: 'block' }}>
-                {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
+                  {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
+                </span>
+                {showPropsWarning && (
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 8, fontWeight: 700, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 4, padding: '2px 6px', letterSpacing: '0.04em' }}>
+                    PROPS PENDING
+                  </span>
+                )}
+              </div>
             </>
           )}
 

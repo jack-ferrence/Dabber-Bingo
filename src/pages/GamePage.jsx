@@ -24,16 +24,31 @@ function GamePage() {
   const [gameStartedNotification, setGameStartedNotification] = useState(false)
   const prevStatusRef = useRef(null)
 
-  // Auto-retry when room goes live and we have no card (e.g. MLB lineup just became available)
+  // Auto-retry when room goes live and we have no card.
+  // Re-fetches room every 60s for up to 15 minutes to check if odds have arrived.
+  const MAX_RETRY_ATTEMPTS = 15
+  const RETRY_INTERVAL_MS = 60_000
+
   useEffect(() => {
-    if (room?.status === 'live' && !card && !loadingCard && room?.odds_status !== 'ready') {
-      const timer = setTimeout(() => {
+    if (room?.status === 'live' && !card && !loadingCard && retryCount < MAX_RETRY_ATTEMPTS) {
+      const timer = setTimeout(async () => {
+        const { data: freshRoom } = await supabase
+          .from('rooms_with_counts')
+          .select('*')
+          .eq('id', roomId)
+          .maybeSingle()
+        if (freshRoom) {
+          setRoom(freshRoom)
+          if (freshRoom.odds_pool?.length >= MIN_PROPS_FOR_CARD) {
+            setOddsPool(freshRoom.odds_pool)
+          }
+        }
         setRetryCount((c) => c + 1)
-      }, 30_000)
+      }, RETRY_INTERVAL_MS)
       return () => clearTimeout(timer)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room?.status, card, loadingCard, room?.odds_status])
+  }, [room?.status, card, loadingCard, retryCount])
 
   // Re-fetch full room when odds become ready — realtime patch may not include odds_pool
   useEffect(() => {
@@ -242,29 +257,15 @@ function GamePage() {
       // Live rooms: the pool was locked in when the game went live — skip odds_status check
       // Lobby rooms: wait for odds_status === 'ready' before generating
 
-      // If live room has no odds, try re-fetching once before giving up
-      if (room.status === 'live' && roomOddsPool.length < MIN_PROPS_FOR_CARD && retryCount === 0) {
-        const { data: freshRoom } = await supabase
-          .from('rooms')
-          .select('odds_pool, odds_status')
-          .eq('id', roomId)
-          .maybeSingle()
-        if (freshRoom?.odds_pool?.length >= MIN_PROPS_FOR_CARD) {
-          setOddsPool(freshRoom.odds_pool)
-          setRetryCount(1)
-          return // Will re-run the effect with the new odds pool
-        }
-      }
+      // Retry logic handled by the auto-retry effect above
 
       const oddsReady = room.status === 'live'
         ? roomOddsPool.length >= MIN_PROPS_FOR_CARD
         : room.odds_status === 'ready' && roomOddsPool.length >= MIN_PROPS_FOR_CARD
 
       if (!oddsReady) {
-        // For live games with no odds pool, show an error instead of the
-        // "waiting for lineups" screen — the lineups aren't coming.
         if (room.status === 'live') {
-          setError('This game started before odds were loaded. No card available — try another game.')
+          setError(retryCount >= MAX_RETRY_ATTEMPTS ? 'no_props_available' : 'waiting_for_props')
         }
         setLoadingCard(false)
         return

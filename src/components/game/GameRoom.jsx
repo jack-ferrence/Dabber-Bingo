@@ -616,72 +616,87 @@ function GameRoom({
                     YOU&apos;RE IN
                   </h2>
 
-                  <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#8888aa', lineHeight: 1.7, margin: '0 0 18px' }}>
-                    {room?.status === 'live'
-                      ? 'Waiting for game data to load...'
-                      : room?.sport === 'mlb'
-                        ? 'Your card will be generated once MLB lineups are posted — usually about an hour before first pitch.'
-                        : 'Waiting for odds to load. This usually takes a few minutes.'}
-                  </p>
+                  {/* Status message — varies by error code */}
+                  {error === 'waiting_for_props' ? (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 12 }}>
+                        <div className="db-spinner" />
+                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: '#ff6b35', margin: 0 }}>
+                          Checking for player props...
+                        </p>
+                      </div>
+                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: '#8888aa', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
+                        Sportsbooks haven&apos;t posted enough props for this matchup yet. We&apos;re checking every minute — your card will generate automatically once they appear.
+                      </p>
+                    </>
+                  ) : error === 'no_props_available' ? (
+                    <>
+                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#8888aa', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
+                        Player props aren&apos;t available for this matchup. This sometimes happens with smaller-market games.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/')}
+                        style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                      >
+                        BACK TO LOBBY
+                      </button>
+                    </>
+                  ) : error ? (
+                    <>
+                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff6b35', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
+                        {error}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/')}
+                        style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                      >
+                        BACK TO LOBBY
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: '#8888aa', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
+                        {room?.odds_status === 'insufficient'
+                          ? 'Waiting for sportsbooks to post player props for this game...'
+                          : room?.sport === 'mlb'
+                            ? 'Your card will be generated once MLB lineups are posted — usually about an hour before first pitch.'
+                            : 'Waiting for odds to load. This usually takes a few minutes.'}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/')}
+                        style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                      >
+                        BACK TO LOBBY
+                      </button>
+                    </>
+                  )}
 
                   {/* Game time + player count */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 20 }}>
-                    {room?.starts_at && (
-                      <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#8888aa', margin: 0 }}>
-                        Game starts {new Date(room.starts_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                      </p>
-                    )}
-                    {room?.participant_count > 0 && (
-                      <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#8888aa', margin: 0 }}>
-                        {room.participant_count} player{room.participant_count === 1 ? '' : 's'} joined
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => navigate('/')}
-                    style={{
-                      background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4,
-                      fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700,
-                      letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%',
-                    }}
-                  >
-                    BACK TO LOBBY
-                  </button>
+                  {error !== 'no_props_available' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 12 }}>
+                      {room?.starts_at && (
+                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#8888aa', margin: 0 }}>
+                          Game starts {new Date(room.starts_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                        </p>
+                      )}
+                      {room?.participant_count > 0 && (
+                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#8888aa', margin: 0 }}>
+                          {room.participant_count} player{room.participant_count === 1 ? '' : 's'} joined
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {room?.odds_status === 'ready' && onRetryCard && (
                     <button
                       type="button"
                       onClick={onRetryCard}
-                      style={{
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        fontFamily: 'var(--db-font-mono)', fontSize: 9,
-                        color: '#8888aa', marginTop: 10, textDecoration: 'underline',
-                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--db-font-mono)', fontSize: 9, color: '#8888aa', marginTop: 10, textDecoration: 'underline' }}
                     >
                       Odds are available — tap to generate card
-                    </button>
-                  )}
-
-                  {room?.status === 'live' && onRetryCard && (
-                    <button
-                      type="button"
-                      onClick={onRetryCard}
-                      style={{
-                        marginTop: 12,
-                        background: 'rgba(255,107,53,0.1)',
-                        border: '1px solid rgba(255,107,53,0.25)',
-                        borderRadius: 6,
-                        padding: '8px 20px',
-                        fontFamily: 'var(--db-font-mono)',
-                        fontSize: 11,
-                        fontWeight: 600,
-                        color: '#ff6b35',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Retry
                     </button>
                   )}
                 </div>
