@@ -8,6 +8,15 @@ function getTeamColor(abbr, sport) {
   return NBA_TEAM_COLORS[abbr] ?? '#3a3a5c'
 }
 
+/** Convert hex to rgba string */
+function hexToRgba(hex, alpha) {
+  if (!hex || hex.length < 7) return `rgba(58,58,92,${alpha})`
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
 function parseDisplay(text) {
   if (!text) return { name: '', stat: '' }
   const m = text.match(/^(.+?)\s+([\d.]+\+?\s+\S+)$/)
@@ -39,7 +48,7 @@ const BingoSquare = memo(function BingoSquare({
   const progressPct = threshold > 0 ? Math.min(100, ((currentValue ?? 0) / threshold) * 100) : 0
   const showProgress = !isLobby && !isFree && threshold > 0
 
-  // Marquee: measure after fonts load
+  // ── Marquee scroll for long names ──
   const trackRef = useRef(null)
   const nameRef = useRef(null)
   const [scrollClass, setScrollClass] = useState('')
@@ -62,9 +71,21 @@ const BingoSquare = memo(function BingoSquare({
     else setTimeout(measure, 200)
   }, [isFree, playerLabel])
 
+  // ── Mark animation ──
   const prevMarkedRef = useRef(marked)
   const [justMarked, setJustMarked] = useState(false)
 
+  useEffect(() => {
+    if (marked && !prevMarkedRef.current) {
+      setJustMarked(true)
+      const t = setTimeout(() => setJustMarked(false), 600)
+      prevMarkedRef.current = marked
+      return () => clearTimeout(t)
+    }
+    prevMarkedRef.current = marked
+  }, [marked])
+
+  // ── Long-press for swap on mobile ──
   const longPressTimer = useRef(null)
   const longPressFired = useRef(false)
   const touchStart = useRef({ x: 0, y: 0 })
@@ -89,40 +110,31 @@ const BingoSquare = memo(function BingoSquare({
     if (longPressFired.current) { e.preventDefault(); longPressFired.current = false }
   }
 
-  useEffect(() => {
-    if (marked && !prevMarkedRef.current) {
-      setJustMarked(true)
-      const t = setTimeout(() => setJustMarked(false), 600)
-      prevMarkedRef.current = marked
-      return () => clearTimeout(t)
-    }
-    prevMarkedRef.current = marked
-  }, [marked])
-
-  const numBg = marked ? 'rgba(255,107,53,0.25)' : `${teamColor}55`
-  const numColor = marked ? '#ff6b35' : `${teamColor}dd`
-  const borderColor = marked
-    ? 'rgba(255,107,53,0.5)'
-    : isWinning ? 'rgba(255,107,53,0.45)' : `${teamColor}55`
-  const bg = marked ? 'rgba(255,107,53,0.06)' : '#1a1a2e'
-  const shadow = marked
-    ? '0 0 8px rgba(255,107,53,0.1)'
-    : isWinning ? '0 0 10px rgba(255,107,53,0.15)' : 'none'
-
+  // ══════════════════════════════════════════════
+  // FREE SQUARE
+  // ══════════════════════════════════════════════
   if (isFree) {
     return (
       <button type="button" onClick={() => onClick?.(square)}
-        className={`${isWinning ? 'sq-winning-square' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
+        className={`sq-free-glow ${isWinning ? 'sq-winning-square' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
           width: '100%', aspectRatio: '1', borderRadius: 6,
           background: '#ff6b35', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 12px rgba(255,107,53,0.3)',
         }}>
-        <span style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 18, color: '#fff', letterSpacing: '0.1em' }}>FREE</span>
+        <span style={{
+          fontFamily: "'Bebas Neue',sans-serif",
+          fontSize: 20, fontWeight: 700, color: '#0c0c14',
+          letterSpacing: '0.08em',
+        }}>FREE</span>
       </button>
     )
   }
 
+  // ══════════════════════════════════════════════
+  // SWAPPING STATE
+  // ══════════════════════════════════════════════
   if (isSwapping) {
     return (
       <div style={{
@@ -135,6 +147,37 @@ const BingoSquare = memo(function BingoSquare({
     )
   }
 
+  // ══════════════════════════════════════════════
+  // COLORS — 4A design: team-color identity
+  // ══════════════════════════════════════════════
+
+  const numBg = marked
+    ? 'rgba(255,107,53,0.20)'
+    : hexToRgba(teamColor, 0.30)
+
+  const numTextColor = marked
+    ? 'rgba(255,107,53,0.7)'
+    : hexToRgba(teamColor, 0.55)
+
+  const bg = marked
+    ? 'rgba(255,107,53,0.08)'
+    : hexToRgba(teamColor, 0.06)
+
+  const borderColor = marked
+    ? 'rgba(255,107,53,0.55)'
+    : isWinning
+      ? 'rgba(255,107,53,0.45)'
+      : hexToRgba(teamColor, 0.20)
+
+  const shadow = marked
+    ? '0 0 8px rgba(255,107,53,0.15)'
+    : isWinning
+      ? '0 0 10px rgba(255,107,53,0.15)'
+      : 'none'
+
+  // ══════════════════════════════════════════════
+  // RENDER — Number block left, name + stat right
+  // ══════════════════════════════════════════════
   return (
     <button type="button"
       onClick={() => { if (longPressFired.current) return; onClick?.(square, index) }}
@@ -149,44 +192,49 @@ const BingoSquare = memo(function BingoSquare({
         display: 'flex', overflow: 'hidden', position: 'relative',
         background: bg, border: `1.5px solid ${borderColor}`,
         boxShadow: shadow, cursor: 'pointer', padding: 0,
-        transition: 'border-color 150ms, box-shadow 150ms',
+        transition: 'border-color 150ms, box-shadow 150ms, background 150ms',
         transform: justMarked ? 'scale(1.03)' : 'scale(1)',
       }}
     >
-      {/* Number panel */}
+      {/* ── Left number panel: team-colored block ── */}
       <div style={{
-        width: '26%', flexShrink: 0, background: numBg,
+        width: '30%', flexShrink: 0,
+        background: numBg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        borderRight: `1px solid ${marked ? 'rgba(255,107,53,0.15)' : hexToRgba(teamColor, 0.12)}`,
       }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 22, fontWeight: 700, color: numColor, lineHeight: 1,
+          fontSize: 36, fontWeight: 700, lineHeight: 1,
+          color: numTextColor,
         }}>{jerseyNum}</span>
       </div>
 
-      {/* Text */}
+      {/* ── Right side: player name + stat ── */}
       <div style={{
-        flex: 1, padding: '3px 5px', minWidth: 0, overflow: 'hidden',
+        flex: 1, padding: '5px 6px 8px 7px', minWidth: 0, overflow: 'hidden',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2,
       }}>
         <div ref={trackRef} style={{ overflow: 'hidden', height: 17 }}>
-          <span ref={nameRef} className={scrollClass}
+          <span ref={nameRef} className={`sq-player ${scrollClass}`}
             style={{
-              fontFamily: "'Oswald',sans-serif",
-              fontSize: 13, fontWeight: 600, lineHeight: '17px',
+              fontFamily: "'JetBrains Mono',monospace",
+              fontWeight: 800, lineHeight: '17px',
               color: marked ? '#ff6b35' : '#e8e8f4',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
               display: 'inline-block',
             }}>{playerLabel}</span>
         </div>
-        <span style={{
+
+        <span className="sq-stat" style={{
           fontFamily: "'JetBrains Mono',monospace",
-          fontSize: 9, fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'rgba(255,107,53,0.4)' : '#ff6b35',
+          fontWeight: 700, whiteSpace: 'nowrap',
+          color: marked ? 'rgba(255,107,53,0.50)' : '#ff6b35',
+          lineHeight: 1.2,
         }}>{statLabel}</span>
       </div>
 
-      {/* Progress bar */}
+      {/* ── Progress bar (bottom, full width) ── */}
       {showProgress && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
@@ -194,22 +242,35 @@ const BingoSquare = memo(function BingoSquare({
         }}>
           <div style={{
             width: marked ? '100%' : `${progressPct}%`,
-            height: '100%', background: marked ? '#ff6b35' : teamColor,
+            height: '100%',
+            background: marked
+              ? 'linear-gradient(90deg, #ff8855, #ff6b35)'
+              : `linear-gradient(90deg, ${hexToRgba(teamColor, 0.5)}, ${teamColor})`,
             transition: 'width 0.5s ease-out',
           }} />
         </div>
       )}
 
+      {/* Static team-color bar when no progress tracking */}
       {!showProgress && !marked && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
-          background: teamColor, opacity: 0.4,
+          background: teamColor, opacity: 0.35,
         }} />
       )}
 
+      {/* Marked: orange bottom bar */}
+      {!showProgress && marked && (
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
+          background: '#ff6b35', opacity: 0.7,
+        }} />
+      )}
+
+      {/* Injury swap badge */}
       {square?.replaced_injury && (
         <span style={{
-          position: 'absolute', top: 1, right: 3,
+          position: 'absolute', top: 1, right: 3, zIndex: 2,
           fontFamily: "'JetBrains Mono',monospace", fontSize: 7, color: '#ff6b35', opacity: 0.5,
         }}>♻</span>
       )}

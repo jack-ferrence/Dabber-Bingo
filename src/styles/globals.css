@@ -818,23 +818,22 @@ button[aria-label="Dismiss"]:hover {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Square font sizes: mobile-first, desktop boost ── */
+/* ── Square font sizes: 4A design ── */
 @media (max-width: 767px) {
-  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 900 !important; }
-  .bingo-grid button .sq-stat   { font-size: 10px !important; }
-  .bingo-grid button .sq-team   { font-size: 6px !important; }
+  .bingo-grid button .sq-player { font-size: 11px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat   { font-size: 9px !important; font-weight: 700 !important; }
 }
-
 @media (max-width: 380px) {
-  .bingo-grid button .sq-player { font-size: 9px !important; font-weight: 900 !important; }
-  .bingo-grid button .sq-stat   { font-size: 9px !important; }
-  .bingo-grid button .sq-team   { font-size: 5px !important; }
+  .bingo-grid button .sq-player { font-size: 10px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat   { font-size: 8px !important; }
 }
-
+@media (min-width: 768px) {
+  .bingo-grid button .sq-player { font-size: 14px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat   { font-size: 11px !important; }
+}
 @media (min-width: 1024px) {
-  .bingo-grid button .sq-player { font-size: 14px !important; }
+  .bingo-grid button .sq-player { font-size: 15px !important; }
   .bingo-grid button .sq-stat   { font-size: 12px !important; }
-  .bingo-grid button .sq-team   { font-size: 9px !important; }
 }
 
 /* Board fills available height better on mobile */
@@ -897,19 +896,7 @@ button[aria-label="Dismiss"]:hover {
 }
 
 
-/* Square responsive text sizes */
-@media (min-width: 768px) {
-  .bingo-grid button .sq-player { font-size: 14px !important; }
-  .bingo-grid button .sq-stat   { font-size: 11px !important; }
-}
-@media (max-width: 767px) {
-  .bingo-grid button .sq-player { font-size: 11px !important; font-weight: 800 !important; }
-  .bingo-grid button .sq-stat   { font-size: 9px !important; }
-}
-@media (max-width: 380px) {
-  .bingo-grid button .sq-player { font-size: 10px !important; }
-  .bingo-grid button .sq-stat   { font-size: 8px !important; }
-}
+/* (square responsive sizes consolidated above) */
 
 
 /* ══════════════════════════════════════════════════════════
