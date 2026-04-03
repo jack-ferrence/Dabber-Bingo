@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import BingoSquare from './BingoSquare.jsx'
+import BingoLineMiniMap from './BingoLineMiniMap.jsx'
 
 const CONFETTI_COLORS = ['#FFD700', '#00D46E', '#8B5CF6', '#FF4757', '#00FF88', '#FF6B6B']
 const HEADER_LETTERS = ['B', 'I', 'N', 'G', 'O']
@@ -35,6 +36,12 @@ function BingoBoard({
   const prevLineCountRef = useRef(winningLines.length)
   const [flashIndices, setFlashIndices] = useState(new Set())
   const [toast, setToast] = useState(null)
+  const [highlightedLine, setHighlightedLine] = useState(null)
+
+  const handleHighlightLine = useCallback((lineIndices) => {
+    setHighlightedLine(new Set(lineIndices))
+    setTimeout(() => setHighlightedLine(null), 1500)
+  }, [])
 
   useEffect(() => {
     const prevCount = prevLineCountRef.current
@@ -125,6 +132,7 @@ function BingoBoard({
               daubStyle={daubStyle}
               sport={sport}
               opponentAbbr={square?.team_abbr === homeTeam ? awayTeam : homeTeam}
+              isHighlighted={highlightedLine?.has(index) ?? false}
               currentValue={
                 square?.player_id && square?.stat_type && statValueMap
                   ? (statValueMap[`${square.player_id}:${square.stat_type}`] ?? 0)
@@ -133,6 +141,12 @@ function BingoBoard({
             />
           ))}
         </div>
+
+        {/* Bingo line mini-maps */}
+        <BingoLineMiniMap
+          winningLines={winningLines}
+          onHighlightLine={handleHighlightLine}
+        />
 
         {/* Footer rule */}
         <div style={{ marginTop: 8, height: 1, background: 'rgba(255,255,255,0.04)' }} />

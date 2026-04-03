@@ -37,6 +37,7 @@ const BingoSquare = memo(function BingoSquare({
   sport = 'nba',
   currentValue = 0,
   opponentAbbr = '',
+  isHighlighted = false,
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
@@ -200,9 +201,12 @@ const BingoSquare = memo(function BingoSquare({
         width: '100%', aspectRatio: '1', borderRadius: 6,
         display: 'flex', overflow: 'hidden', position: 'relative',
         background: bg, border: `1.5px solid ${borderColor}`,
-        boxShadow: shadow, cursor: 'pointer', padding: 0,
-        transition: 'border-color 150ms, box-shadow 150ms, background 150ms',
-        transform: justMarked ? 'scale(1.03)' : 'scale(1)',
+        boxShadow: isHighlighted
+          ? '0 0 12px rgba(255,107,53,0.5), inset 0 0 8px rgba(255,107,53,0.15)'
+          : shadow,
+        cursor: 'pointer', padding: 0,
+        transition: 'border-color 150ms, box-shadow 150ms, background 150ms, transform 150ms',
+        transform: justMarked ? 'scale(1.03)' : isHighlighted ? 'scale(1.05)' : 'scale(1)',
       }}
     >
       {/* ── Left number panel: team-colored block ── */}

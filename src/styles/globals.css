@@ -945,3 +945,10 @@ button[aria-label="Dismiss"]:hover {
 .sq-line-flash {
   animation: sq-line-glow 800ms ease-out forwards !important;
 }
+
+/* ── Bingo mini-map entrance animation ── */
+@keyframes minimap-pop-in {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
