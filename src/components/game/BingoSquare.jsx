@@ -64,7 +64,7 @@ const BingoSquare = memo(function BingoSquare({
       const name = nameRef.current
       if (!track || !name) return
       const overflow = name.scrollWidth - track.clientWidth
-      if (overflow > 5) {
+      if (overflow > 2) {
         name.style.setProperty('--scroll-dist', `-${overflow}px`)
         name.style.setProperty('--scroll-dur', `${10 + overflow * 0.04}s`)
         name.style.animationDelay = `${2 + Math.random() * 4}s`
@@ -209,25 +209,25 @@ const BingoSquare = memo(function BingoSquare({
       }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 36, fontWeight: 700, lineHeight: 1,
+          fontSize: 26, fontWeight: 700, lineHeight: 1,
           color: numTextColor,
-        }}>{jerseyNum}</span>
+        }}>{jerseyNum || '·'}</span>
       </div>
 
       {/* ── Right side: player name + stat ── */}
       <div style={{
-        flex: 1, padding: '5px 5px 8px 6px', minWidth: 0, overflow: 'hidden',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1,
+        flex: 1, padding: '3px 3px 6px 4px', minWidth: 0, overflow: 'hidden',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', gap: 1,
       }}>
         {/* Player name */}
-        <div ref={trackRef} style={{ overflow: 'hidden', height: 16 }}>
+        <div ref={trackRef} style={{ overflow: 'hidden', height: 14, width: '100%' }}>
           <span ref={nameRef} className={`sq-player ${scrollClass}`}
             style={{
               fontFamily: "'JetBrains Mono',monospace",
-              fontWeight: 800, lineHeight: '16px',
+              fontWeight: 800, lineHeight: '14px',
               color: marked ? '#ff6b35' : '#e8e8f4',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
-              display: 'inline-block',
+              display: 'inline-block', textAlign: 'left',
             }}>{playerLabel}</span>
         </div>
 

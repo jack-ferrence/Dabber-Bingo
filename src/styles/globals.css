@@ -820,24 +820,24 @@ button[aria-label="Dismiss"]:hover {
 
 /* ── Square font sizes: 4A design ── */
 @media (max-width: 767px) {
-  .bingo-grid button .sq-player    { font-size: 11px !important; font-weight: 800 !important; }
-  .bingo-grid button .sq-stat      { font-size: 9px !important; font-weight: 700 !important; }
-  .bingo-grid button .sq-stat-type { font-size: 8px !important; }
-}
-@media (max-width: 380px) {
-  .bingo-grid button .sq-player    { font-size: 10px !important; font-weight: 800 !important; }
-  .bingo-grid button .sq-stat      { font-size: 8px !important; }
+  .bingo-grid button .sq-player    { font-size: 9px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat      { font-size: 8px !important; font-weight: 700 !important; }
   .bingo-grid button .sq-stat-type { font-size: 7px !important; }
 }
+@media (max-width: 380px) {
+  .bingo-grid button .sq-player    { font-size: 8px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat      { font-size: 7px !important; }
+  .bingo-grid button .sq-stat-type { font-size: 6px !important; }
+}
 @media (min-width: 768px) {
-  .bingo-grid button .sq-player    { font-size: 14px !important; font-weight: 800 !important; }
-  .bingo-grid button .sq-stat      { font-size: 11px !important; }
-  .bingo-grid button .sq-stat-type { font-size: 10px !important; }
+  .bingo-grid button .sq-player    { font-size: 12px !important; font-weight: 800 !important; }
+  .bingo-grid button .sq-stat      { font-size: 10px !important; }
+  .bingo-grid button .sq-stat-type { font-size: 9px !important; }
 }
 @media (min-width: 1024px) {
-  .bingo-grid button .sq-player    { font-size: 15px !important; }
-  .bingo-grid button .sq-stat      { font-size: 12px !important; }
-  .bingo-grid button .sq-stat-type { font-size: 11px !important; }
+  .bingo-grid button .sq-player    { font-size: 13px !important; }
+  .bingo-grid button .sq-stat      { font-size: 11px !important; }
+  .bingo-grid button .sq-stat-type { font-size: 10px !important; }
 }
 
 /* Board fills available height better on mobile */
