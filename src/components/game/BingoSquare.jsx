@@ -45,6 +45,10 @@ const BingoSquare = memo(function BingoSquare({
   const teamColor = getTeamColor(teamAbbr, sport)
   const jerseyNum = square?.jersey_number ?? ''
   const { name: playerLabel, stat: statLabel } = parseDisplay(isFree ? '' : displayText)
+  // Split "27.5+ PTS" → statNum="27.5+" statType="PTS"
+  const statParts = statLabel.match(/^([\d.]+\+?)\s+(.+)$/)
+  const statNum  = statParts ? statParts[1] : statLabel
+  const statType = statParts ? statParts[2] : ''
   const progressPct = threshold > 0 ? Math.min(100, ((currentValue ?? 0) / threshold) * 100) : 0
   const showProgress = !isLobby && !isFree && threshold > 0
 
@@ -212,26 +216,38 @@ const BingoSquare = memo(function BingoSquare({
 
       {/* ── Right side: player name + stat ── */}
       <div style={{
-        flex: 1, padding: '5px 6px 8px 7px', minWidth: 0, overflow: 'hidden',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2,
+        flex: 1, padding: '5px 5px 8px 6px', minWidth: 0, overflow: 'hidden',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 1,
       }}>
-        <div ref={trackRef} style={{ overflow: 'hidden', height: 17 }}>
+        {/* Player name */}
+        <div ref={trackRef} style={{ overflow: 'hidden', height: 16 }}>
           <span ref={nameRef} className={`sq-player ${scrollClass}`}
             style={{
               fontFamily: "'JetBrains Mono',monospace",
-              fontWeight: 800, lineHeight: '17px',
+              fontWeight: 800, lineHeight: '16px',
               color: marked ? '#ff6b35' : '#e8e8f4',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
               display: 'inline-block',
             }}>{playerLabel}</span>
         </div>
 
-        <span className="sq-stat" style={{
+        {/* Stat — two lines: number then abbreviation */}
+        <span style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'rgba(255,107,53,0.50)' : '#ff6b35',
-          lineHeight: 1.2,
-        }}>{statLabel}</span>
+          color: marked ? 'rgba(255,107,53,0.65)' : '#ff6b35',
+          lineHeight: 1.15,
+          display: 'block',
+        }} className="sq-stat">{statNum}</span>
+        {statType && (
+          <span style={{
+            fontFamily: "'JetBrains Mono',monospace",
+            fontWeight: 600, whiteSpace: 'nowrap',
+            color: marked ? 'rgba(255,107,53,0.40)' : 'rgba(255,107,53,0.65)',
+            lineHeight: 1,
+            display: 'block',
+          }} className="sq-stat-type">{statType}</span>
+        )}
       </div>
 
       {/* ── Progress bar (bottom, full width) ── */}
