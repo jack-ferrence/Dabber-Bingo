@@ -119,104 +119,118 @@
 }
 
 /* ============================================================
-   LIGHT MODE — clean, paper-white with warm accents
+   LIGHT MODE — Clean, functional, Underdog-inspired
+   Light is the default for new users (system = light unless OS is dark).
    ============================================================ */
-[data-theme="light"] {
-  /* ── Background Scale (lightest → darkest) ── */
-  --db-bg-page:          #f5f5f0;
-  --db-bg-surface:       #ffffff;
-  --db-bg-elevated:      #f0efe8;
-  --db-bg-hover:         #e8e7e0;
-  --db-bg-active:        #dddcd5;
-  --db-bg-input:         #ffffff;
-  --db-bg-marked:        #fff0e8;
-  --db-bg-overlay:       rgba(255, 255, 255, 0.92);
 
-  /* ── Text Scale (darkest → lightest) ── */
-  --db-text-bright:      #1a1a2e;
-  --db-text-primary:     #2a2a3e;
+[data-theme="light"],
+[data-theme="system"] {
+  --db-bg-page:          #f2f2f7;
+  --db-bg-surface:       #ffffff;
+  --db-bg-elevated:      #f7f7fa;
+  --db-bg-hover:         #ededf2;
+  --db-bg-active:        #e4e4ea;
+  --db-bg-input:         #ffffff;
+  --db-bg-marked:        #fff4ed;
+  --db-bg-overlay:       rgba(255, 255, 255, 0.95);
+
+  --db-text-bright:      #111118;
+  --db-text-primary:     #1c1c28;
   --db-text-secondary:   #6b6b80;
-  --db-text-muted:       #9999aa;
-  --db-text-ghost:       #c0c0cc;
+  --db-text-muted:       #9898aa;
+  --db-text-ghost:       #c4c4d0;
   --db-text-on-primary:  #ffffff;
 
-  /* ── Border Scale ── */
-  --db-border-subtle:    rgba(0, 0, 0, 0.06);
-  --db-border-default:   rgba(0, 0, 0, 0.10);
-  --db-border-active:    rgba(0, 0, 0, 0.18);
+  --db-border-subtle:    #e8e8ee;
+  --db-border-default:   #d8d8e0;
+  --db-border-active:    #c0c0cc;
   --db-border-primary:   #ff6b35;
 
-  /* ── Semantic States (slightly adjusted for light bg) ── */
   --db-live:             #dc2626;
-  --db-live-bg:          rgba(220, 38, 38, 0.08);
-  --db-live-glow:        rgba(220, 38, 38, 0.15);
+  --db-live-bg:          rgba(220, 38, 38, 0.06);
+  --db-live-glow:        rgba(220, 38, 38, 0.12);
   --db-success:          #16a34a;
-  --db-success-bg:       rgba(22, 163, 74, 0.08);
+  --db-success-bg:       rgba(22, 163, 74, 0.06);
   --db-warn:             #d97706;
-  --db-warn-bg:          rgba(217, 119, 6, 0.08);
+  --db-warn-bg:          rgba(217, 119, 6, 0.06);
   --db-info:             #2563eb;
-  --db-info-bg:          rgba(37, 99, 235, 0.08);
+  --db-info-bg:          rgba(37, 99, 235, 0.06);
   --db-danger:           #dc2626;
-  --db-danger-bg:        rgba(220, 38, 38, 0.08);
+  --db-danger-bg:        rgba(220, 38, 38, 0.06);
 
-  /* ── Bingo Card States ── */
-  --db-marked-bg:        rgba(255, 107, 53, 0.12);
-  --db-unmarked-bg:      #f0efe8;
-  --db-unmarked-border:  rgba(0, 0, 0, 0.12);
+  --db-marked:           #ff6b35;
+  --db-marked-bg:        #fff4ed;
+  --db-marked-border:    rgba(255, 107, 53, 0.5);
+  --db-unmarked:         #f7f7fa;
+  --db-unmarked-border:  #d8d8e0;
   --db-free-text:        #ffffff;
+  --db-win-glow:         rgba(255, 107, 53, 0.15);
 
-  /* ── Shadows (softer for light mode) ── */
-  --db-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.06);
-  --db-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.08);
-  --db-shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.12);
-  --db-shadow-glow:      0 0 16px rgba(255, 107, 53, 0.12);
-  --db-shadow-inset:     inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  --db-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.04);
+  --db-shadow-md:        0 2px 8px rgba(0, 0, 0, 0.06);
+  --db-shadow-lg:        0 4px 16px rgba(0, 0, 0, 0.08);
+  --db-shadow-glow:      0 0 16px rgba(255, 107, 53, 0.10);
+  --db-shadow-inset:     inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  --db-shadow-amber:     0 0 16px rgba(255, 107, 53, 0.10);
+  --db-shadow-live:      0 0 12px rgba(220, 38, 38, 0.20);
 
-  /* ── Gradients ── */
-  --db-gradient-surface: linear-gradient(160deg, #ffffff 0%, #f8f8f4 100%);
+  --db-gradient-primary: linear-gradient(135deg, #ff7a45 0%, #e05520 100%);
+  --db-gradient-surface: none;
+  --db-gradient-dark:    none;
+  --db-gradient-tile:    none;
+  --db-gradient-tile-hover: none;
+  --db-gradient-tile-marked: #fff4ed;
 }
 
-/* System preference auto-detection */
-@media (prefers-color-scheme: light) {
+/* Users who explicitly prefer dark OS — system resolves to dark */
+@media (prefers-color-scheme: dark) {
   [data-theme="system"] {
-    --db-bg-page:          #f5f5f0;
-    --db-bg-surface:       #ffffff;
-    --db-bg-elevated:      #f0efe8;
-    --db-bg-hover:         #e8e7e0;
-    --db-bg-active:        #dddcd5;
-    --db-bg-input:         #ffffff;
-    --db-bg-marked:        #fff0e8;
-    --db-bg-overlay:       rgba(255, 255, 255, 0.92);
-    --db-text-bright:      #1a1a2e;
-    --db-text-primary:     #2a2a3e;
-    --db-text-secondary:   #6b6b80;
-    --db-text-muted:       #9999aa;
-    --db-text-ghost:       #c0c0cc;
-    --db-text-on-primary:  #ffffff;
-    --db-border-subtle:    rgba(0, 0, 0, 0.06);
-    --db-border-default:   rgba(0, 0, 0, 0.10);
-    --db-border-active:    rgba(0, 0, 0, 0.18);
+    --db-bg-page:          #0c0c14;
+    --db-bg-surface:       #12121e;
+    --db-bg-elevated:      #1a1a2e;
+    --db-bg-hover:         #22223a;
+    --db-bg-active:        #2a2a44;
+    --db-bg-input:         #1a1a2e;
+    --db-bg-marked:        #2a1a10;
+    --db-bg-overlay:       rgba(12, 12, 20, 0.85);
+    --db-text-bright:      #f0f0ff;
+    --db-text-primary:     #e0e0f0;
+    --db-text-secondary:   #8888aa;
+    --db-text-muted:       #555577;
+    --db-text-ghost:       #3a3a55;
+    --db-text-on-primary:  #0c0c14;
+    --db-border-subtle:    #1a1a2e;
+    --db-border-default:   #2a2a44;
+    --db-border-active:    #3a3a55;
     --db-border-primary:   #ff6b35;
-    --db-live:             #dc2626;
-    --db-live-bg:          rgba(220, 38, 38, 0.08);
-    --db-live-glow:        rgba(220, 38, 38, 0.15);
-    --db-success:          #16a34a;
-    --db-success-bg:       rgba(22, 163, 74, 0.08);
-    --db-warn:             #d97706;
-    --db-warn-bg:          rgba(217, 119, 6, 0.08);
-    --db-info:             #2563eb;
-    --db-info-bg:          rgba(37, 99, 235, 0.08);
-    --db-danger:           #dc2626;
-    --db-danger-bg:        rgba(220, 38, 38, 0.08);
-    --db-marked-bg:        rgba(255, 107, 53, 0.12);
-    --db-unmarked-bg:      #f0efe8;
-    --db-unmarked-border:  rgba(0, 0, 0, 0.12);
-    --db-free-text:        #ffffff;
-    --db-shadow-sm:        0 1px 2px rgba(0, 0, 0, 0.06);
-    --db-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.08);
-    --db-shadow-lg:        0 8px 24px rgba(0, 0, 0, 0.12);
-    --db-shadow-glow:      0 0 16px rgba(255, 107, 53, 0.12);
-    --db-shadow-inset:     inset 0 1px 3px rgba(0, 0, 0, 0.06);
+    --db-live:             #ff2d2d;
+    --db-live-bg:          rgba(255, 45, 45, 0.12);
+    --db-live-glow:        rgba(255, 45, 45, 0.25);
+    --db-success:          #22c55e;
+    --db-success-bg:       rgba(34, 197, 94, 0.12);
+    --db-warn:             #f59e0b;
+    --db-warn-bg:          rgba(245, 158, 11, 0.12);
+    --db-info:             #3b82f6;
+    --db-info-bg:          rgba(59, 130, 246, 0.12);
+    --db-danger:           #ff2d2d;
+    --db-danger-bg:        rgba(255, 45, 45, 0.12);
+    --db-marked:           #ff6b35;
+    --db-marked-bg:        #2a1a10;
+    --db-marked-border:    #ff6b35;
+    --db-unmarked:         #1a1a2e;
+    --db-unmarked-border:  #2a2a44;
+    --db-free-text:        #0c0c14;
+    --db-win-glow:         rgba(255, 107, 53, 0.30);
+    --db-shadow-sm:        none;
+    --db-shadow-md:        0 4px 24px rgba(0, 0, 0, 0.5);
+    --db-shadow-lg:        0 8px 40px rgba(0, 0, 0, 0.6);
+    --db-shadow-glow:      0 0 20px rgba(255, 107, 53, 0.15);
+    --db-shadow-inset:     inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    --db-gradient-surface: linear-gradient(160deg, #141420 0%, #0f0f1a 100%);
+    --db-gradient-dark:    linear-gradient(180deg, #14141f 0%, #0c0c14 100%);
+    --db-gradient-tile:    linear-gradient(160deg, #1e1e30 0%, #161624 100%);
+    --db-gradient-tile-hover: linear-gradient(160deg, #22223a 0%, #1c1c2e 100%);
+    --db-gradient-tile-marked: linear-gradient(160deg, #2d1a0a 0%, #1e1008 100%);
   }
 }
 
@@ -915,4 +929,99 @@
 }
 .name-rainbow {
   animation: rainbow-name 4s linear infinite;
+}
+
+
+/* ============================================================
+   LIGHT MODE — Component Overrides
+   CSS-only overrides so component files stay untouched.
+   ============================================================ */
+
+/* ── Bingo squares: white cards, dark text ── */
+[data-theme="light"] .bingo-grid button,
+[data-theme="system"] .bingo-grid button {
+  background: #ffffff !important;
+  border-color: #e0e0e8 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Number panel: light gray bg in light mode */
+[data-theme="light"] .bingo-grid button > div:first-child,
+[data-theme="system"] .bingo-grid button > div:first-child {
+  background: #f2f2f7 !important;
+  border-right-color: #e0e0e8 !important;
+}
+
+/* Player name in light mode */
+[data-theme="light"] .bingo-grid button .sq-player,
+[data-theme="system"] .bingo-grid button .sq-player {
+  color: #111118 !important;
+}
+
+/* Stat line in light mode: orange pops on white */
+[data-theme="light"] .bingo-grid button .sq-stat,
+[data-theme="system"] .bingo-grid button .sq-stat {
+  color: var(--db-primary) !important;
+}
+[data-theme="light"] .bingo-grid button .sq-stat-type,
+[data-theme="system"] .bingo-grid button .sq-stat-type {
+  color: rgba(255,107,53,0.65) !important;
+}
+
+/* Marked square: warm bg, orange border */
+[data-theme="light"] .sq-winning-square,
+[data-theme="light"] .sq-just-marked,
+[data-theme="system"] .sq-winning-square,
+[data-theme="system"] .sq-just-marked {
+  border-color: rgba(255,107,53,0.5) !important;
+}
+
+/* FREE square stays orange in both modes — no override needed */
+
+/* ── Scrollbar ── */
+[data-theme="light"] ::-webkit-scrollbar-track,
+[data-theme="system"] ::-webkit-scrollbar-track {
+  background: #f2f2f7;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb,
+[data-theme="system"] ::-webkit-scrollbar-thumb {
+  background: #d0d0d8;
+}
+[data-theme="light"] *,
+[data-theme="system"] * {
+  scrollbar-color: #d0d0d8 #f2f2f7;
+}
+
+/* ── Ghost buttons in light mode ── */
+[data-theme="light"] .db-btn-ghost,
+[data-theme="system"] .db-btn-ghost {
+  color: #6b6b80;
+  border-color: #d8d8e0;
+}
+[data-theme="light"] .db-btn-ghost:hover,
+[data-theme="system"] .db-btn-ghost:hover {
+  background: #ededf2;
+  border-color: #c0c0cc;
+  color: #1c1c28;
+}
+
+/* ── Surface cards ── */
+[data-theme="light"] .db-card,
+[data-theme="system"] .db-card {
+  background: #ffffff !important;
+  border-color: #e8e8ee !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* ── Spinner track ── */
+[data-theme="light"] .db-spinner,
+[data-theme="system"] .db-spinner {
+  border-color: #e0e0e8;
+  border-top-color: #ff6b35;
+}
+
+/* ── Section label (.db-label) ── */
+[data-theme="light"] .db-label,
+[data-theme="system"] .db-label {
+  color: #9898aa;
 }

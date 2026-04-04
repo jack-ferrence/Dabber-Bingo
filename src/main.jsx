@@ -35,12 +35,11 @@ import ErrorBoundary from './components/ErrorBoundary.jsx'
 // Apply saved theme immediately to prevent flash of wrong theme
 ;(function () {
   try {
-    const saved = localStorage.getItem('dobber-theme') || 'dark'
+    const saved = localStorage.getItem('dobber-theme') || 'system'
     document.documentElement.setAttribute('data-theme', saved)
-    const resolved = saved === 'system'
-      ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
-      : saved
-    document.body.style.background = resolved === 'light' ? '#f5f5f0' : '#0c0c14'
+    const isDark = saved === 'dark' || (saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    document.body.style.background = isDark ? '#0c0c14' : '#f2f2f7'
+    document.body.style.color = isDark ? '#e0e0f0' : '#1c1c28'
   } catch {}
 })()
 

@@ -6,28 +6,27 @@ const VALID_THEMES = ['system', 'light', 'dark']
 function getStoredTheme() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return VALID_THEMES.includes(stored) ? stored : 'dark'
+    return VALID_THEMES.includes(stored) ? stored : 'system'
   } catch {
-    return 'dark'
+    return 'system'
   }
 }
 
 function getResolvedTheme(preference) {
   if (preference === 'system') {
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
   return preference
 }
 
 function applyTheme(preference) {
-  const html = document.documentElement
-  html.setAttribute('data-theme', preference)
+  document.documentElement.setAttribute('data-theme', preference)
   const resolved = getResolvedTheme(preference)
+  const isDark = resolved === 'dark'
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) {
-    meta.setAttribute('content', resolved === 'light' ? '#f5f5f0' : '#0c0c14')
-  }
-  document.body.style.background = resolved === 'light' ? '#f5f5f0' : '#0c0c14'
+  if (meta) meta.setAttribute('content', isDark ? '#0c0c14' : '#f2f2f7')
+  document.body.style.background = isDark ? '#0c0c14' : '#f2f2f7'
+  document.body.style.color = isDark ? '#e0e0f0' : '#1c1c28'
 }
 
 export function useTheme() {
@@ -46,7 +45,7 @@ export function useTheme() {
 
   useEffect(() => {
     if (theme !== 'system') return
-    const mq = window.matchMedia('(prefers-color-scheme: light)')
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = () => applyTheme('system')
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)

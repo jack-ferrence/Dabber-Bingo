@@ -925,14 +925,14 @@ function PreferencesTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       {/* ── Appearance / Theme ── */}
       <div style={{ marginBottom: 24 }}>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--db-text-muted)', marginBottom: 10 }}>
           Appearance
         </p>
         <div style={{ display: 'flex', gap: 8 }}>
           {[
             { key: 'system', label: 'System', desc: 'Match device' },
-            { key: 'dark',   label: 'Dark',   desc: 'Scoreboard' },
             { key: 'light',  label: 'Light',  desc: 'Bright' },
+            { key: 'dark',   label: 'Dark',   desc: 'Scoreboard' },
           ].map((opt) => {
             const active = currentTheme === opt.key
             return (
@@ -942,15 +942,15 @@ function PreferencesTab() {
                 onClick={() => setTheme(opt.key)}
                 style={{
                   flex: 1, padding: '10px 6px', borderRadius: 8, cursor: 'pointer',
-                  background: active ? 'rgba(255,107,53,0.1)' : 'rgba(255,255,255,0.04)',
-                  border: active ? '1.5px solid #ff6b35' : '1px solid rgba(255,255,255,0.08)',
+                  background: active ? 'rgba(255,107,53,0.1)' : 'var(--db-bg-elevated)',
+                  border: active ? '1.5px solid #ff6b35' : '1px solid var(--db-border-default)',
                   transition: 'all 120ms ease',
                 }}
               >
-                <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: active ? '#ff6b35' : 'rgba(255,255,255,0.6)' }}>
+                <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: active ? '#ff6b35' : 'var(--db-text-secondary)' }}>
                   {opt.label}
                 </div>
-                <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+                <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'var(--db-text-muted)', marginTop: 3 }}>
                   {opt.desc}
                 </div>
               </button>
