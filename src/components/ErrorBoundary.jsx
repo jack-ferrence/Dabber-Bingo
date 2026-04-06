@@ -16,12 +16,12 @@ function isChunkError(error) {
 
 function FallbackUI() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0c0c14', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 16px', textAlign: 'center' }}>
-      <div style={{ background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 12, padding: 32, maxWidth: 360, width: '100%' }}>
-        <h1 style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, letterSpacing: '0.04em', color: '#e8e8f4' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 16px', textAlign: 'center' }}>
+      <div style={{ background: 'var(--db-bg-surface)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 12, padding: 32, maxWidth: 360, width: '100%' }}>
+        <h1 style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, letterSpacing: '0.04em', color: 'var(--db-text-primary)' }}>
           SOMETHING WENT WRONG
         </h1>
-        <p style={{ marginTop: 8, fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>
+        <p style={{ marginTop: 8, fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)' }}>
           An unexpected error occurred.
         </p>
         <button
@@ -46,17 +46,17 @@ function FallbackUI() {
           onClick={() => window.location.reload()}
           style={{
             marginTop: 8, width: '100%',
-            background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 8,
+            background: 'var(--db-bg-elevated)', color: 'var(--db-text-muted)', border: '1px solid var(--db-border-default)', borderRadius: 8,
             padding: '8px 20px', fontFamily: 'var(--db-font-ui)', fontSize: 12,
             fontWeight: 500, cursor: 'pointer',
             transition: 'background 100ms ease, color 100ms ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
         >
           Refresh page
         </button>
-        <p style={{ marginTop: 16, fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
+        <p style={{ marginTop: 16, fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-ghost)' }}>
           Dobber v0.1
         </p>
       </div>

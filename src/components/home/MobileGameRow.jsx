@@ -29,8 +29,8 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
           : `linear-gradient(to right, ${hexToRgba(awayColor, 0.05)}, rgba(255,255,255,0.02) 30%, rgba(255,255,255,0.02) 70%, ${hexToRgba(homeColor, 0.05)})`,
         border: isMyRoom && !isLive && !isFinished
           ? `1px solid ${hexToRgba(homeColor, 0.18)}`
-          : '1px solid rgba(255,255,255,0.06)',
-        borderLeft: isMyRoom ? '3px solid #22c55e' : isLive ? '3px solid #ff2d2d' : isFinished ? '3px solid rgba(255,255,255,0.1)' : `3px solid ${homeColor}`,
+          : '1px solid var(--db-border-hover)',
+        borderLeft: isMyRoom ? '3px solid #22c55e' : isLive ? '3px solid #ff2d2d' : isFinished ? '3px solid var(--db-border-default)' : `3px solid ${homeColor}`,
         cursor: 'pointer',
         transition: 'background 120ms ease',
         position: 'relative',
@@ -45,13 +45,13 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
       {/* Left: teams + status */}
       <div style={{ minWidth: 0, flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'rgba(255,255,255,0.25)' : awayColor }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'var(--db-text-ghost)' : awayColor }}>
             {away}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 400, color: 'var(--db-text-ghost)' }}>
             vs
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'rgba(255,255,255,0.25)' : homeColor }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'var(--db-text-ghost)' : homeColor }}>
             {home}
           </span>
         </div>
@@ -61,27 +61,27 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#ff2d2d', display: 'inline-block', animation: 'pulse-live 1.4s ease-in-out infinite', flexShrink: 0 }} />
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: '#ff4444', letterSpacing: '0.06em' }}>LIVE</span>
               {room.game_clock && (
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginLeft: 2 }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--db-text-secondary)', marginLeft: 2 }}>
                   {room.game_period ? `${room.sport === 'mlb' ? `Inn ${room.game_period}` : `Q${room.game_period}`} · ` : ''}{room.game_clock}
                 </span>
               )}
               {room.away_score != null && room.home_score != null && (
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.7)', marginLeft: 4 }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: 'var(--db-text-primary)', marginLeft: 4 }}>
                   {room.away_score} - {room.home_score}
                 </span>
               )}
             </div>
           ) : isFinished ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.35)' }}>FINAL</span>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.08em', color: 'var(--db-text-ghost)' }}>FINAL</span>
               {room.away_score != null && room.home_score != null && (
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.45)', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
                   {room.away_score}–{room.home_score}
                 </span>
               )}
             </div>
           ) : (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)' }}>
               {room.starts_at
                 ? new Date(room.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
                 : 'Upcoming'}
@@ -102,11 +102,11 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
             ✓ IN
           </span>
         ) : isFinished ? (
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.3)' }}>View →</span>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'var(--db-text-ghost)' }}>View →</span>
         ) : isLive ? (
           <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 600, color: '#ff6b35' }}>Play →</span>
         ) : (
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.3)' }}>Play →</span>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'var(--db-text-ghost)' }}>Play →</span>
         )}
       </div>
     </div>

@@ -37,7 +37,7 @@ export default function MyGameItem({ room }) {
       <div className="flex-1 min-w-0">
         <p
           className="truncate text-sm font-semibold leading-tight"
-          style={{ color: '#e0e0f0' }}
+          style={{ color: 'var(--db-text-primary)' }}
         >
           {room.name}
         </p>
@@ -48,7 +48,7 @@ export default function MyGameItem({ room }) {
               LIVE
             </span>
           ) : (
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-ghost)' }}>
               {formatStartsAt(room.starts_at)}
             </span>
           )}

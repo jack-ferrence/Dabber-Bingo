@@ -54,8 +54,8 @@ export default function InstallPrompt() {
       left: 12,
       right: 12,
       zIndex: 60,
-      background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'var(--db-bg-surface)',
+      border: '1px solid var(--db-border-default)',
       borderRadius: 12,
       padding: '14px 16px',
       display: 'flex',
@@ -67,10 +67,10 @@ export default function InstallPrompt() {
       <img src="/icon-192.png" alt="Dobber" width={40} height={40} style={{ borderRadius: 8, flexShrink: 0 }} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.08em', color: '#e8e8f4', margin: '0 0 2px' }}>
+        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.08em', color: 'var(--db-text-primary)', margin: '0 0 2px' }}>
           ADD DOBBER TO HOME SCREEN
         </p>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.3)', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0 }}>
           {isIos ? 'Tap Share ↑ then "Add to Home Screen"' : 'Install for the full app experience'}
         </p>
       </div>

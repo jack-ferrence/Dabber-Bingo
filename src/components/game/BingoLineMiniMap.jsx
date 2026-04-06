@@ -25,7 +25,7 @@ const LineMiniGrid = memo(function LineMiniGrid({ lineIndices, lineNumber, onTap
         gridTemplateColumns: 'repeat(5, 1fr)',
         gap: 2,
         padding: 3,
-        background: 'rgba(255,255,255,0.03)',
+        background: 'var(--db-bg-elevated)',
         borderRadius: 4,
         border: '1px solid rgba(255,107,53,0.15)',
       }}>
@@ -38,7 +38,7 @@ const LineMiniGrid = memo(function LineMiniGrid({ lineIndices, lineNumber, onTap
               borderRadius: 1.5,
               background: lineSet.has(i)
                 ? '#ff6b35'
-                : 'rgba(255,255,255,0.06)',
+                : 'var(--db-bg-hover)',
               boxShadow: lineSet.has(i)
                 ? '0 0 3px rgba(255,107,53,0.4)'
                 : 'none',

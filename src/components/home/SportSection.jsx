@@ -48,7 +48,7 @@ function DaySeparator({ label, sub }) {
         justifyContent: 'center',
         padding: '0 16px',
         minHeight: 100,
-        borderRight: '1px solid rgba(255,255,255,0.05)',
+        borderRight: '1px solid var(--db-border-subtle)',
         marginRight: 4,
       }}
     >
@@ -56,7 +56,7 @@ function DaySeparator({ label, sub }) {
         style={{
           fontFamily: 'var(--db-font-display)',
           fontSize: 11,
-          color: 'rgba(255,255,255,0.4)',
+          color: 'var(--db-text-muted)',
           letterSpacing: '0.1em',
           whiteSpace: 'nowrap',
         }}
@@ -69,7 +69,7 @@ function DaySeparator({ label, sub }) {
             fontFamily: 'var(--db-font-ui)',
             fontSize: 10,
             fontWeight: 400,
-            color: 'rgba(255,255,255,0.35)',
+            color: 'var(--db-text-ghost)',
             marginTop: 3,
             whiteSpace: 'nowrap',
           }}
@@ -113,7 +113,7 @@ function MobileGameList({ games, onOpenGame, myRoomIds }) {
   const finished     = games.filter((g) => g.status === 'finished').sort(byStartTimeDesc)
 
   const Divider = ({ label }) => (
-    <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', padding: '6px 0 2px' }}>
+    <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, color: 'var(--db-text-muted)', letterSpacing: '0.1em', padding: '6px 0 2px' }}>
       {label}
     </div>
   )
@@ -129,7 +129,7 @@ function MobileGameList({ games, onOpenGame, myRoomIds }) {
 
   if (games.length === 0) {
     return (
-      <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', padding: '12px 0' }}>
+      <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', padding: '12px 0' }}>
         No games available. Check back later!
       </div>
     )
@@ -252,7 +252,7 @@ export default function SportSection({
               fontSize: 26,
               lineHeight: 1,
               letterSpacing: '0.04em',
-              color: '#e0e0f0',
+              color: 'var(--db-text-primary)',
             }}
           >
             {label}
@@ -282,8 +282,8 @@ export default function SportSection({
                 fontFamily: 'var(--db-font-ui)',
                 fontSize: 11,
                 fontWeight: 600,
-                color: 'rgba(255,255,255,0.4)',
-                background: 'rgba(255,255,255,0.06)',
+                color: 'var(--db-text-muted)',
+                background: 'var(--db-bg-hover)',
                 padding: '2px 8px',
                 borderRadius: 10,
               }}
@@ -305,14 +305,14 @@ export default function SportSection({
         ) : games.length === 0 ? (
           <div
             className="rounded-xl px-6 py-8 text-center"
-            style={{ border: '1px dashed rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}
+            style={{ border: '1px dashed var(--db-border-subtle)', background: 'var(--db-bg-elevated)' }}
           >
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>No games available. Check back later!</p>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)' }}>No games available. Check back later!</p>
           </div>
         ) : !hasUpcoming && games.length > 0 ? (
           <>
             <div className="mb-3 px-1">
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)' }}>
                 No upcoming games right now — showing recent results.
               </p>
             </div>
@@ -328,7 +328,7 @@ export default function SportSection({
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-              <div key={i} style={{ height: 52, borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }} />
+              <div key={i} style={{ height: 52, borderRadius: 8, background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)' }} />
             ))}
           </div>
         ) : (

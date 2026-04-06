@@ -35,7 +35,7 @@ export default function HeroBanner() {
           style={{
             fontFamily: 'var(--db-font-display)',
             fontSize: 'clamp(38px, 5.5vw, 60px)',
-            color: '#e8e8f4',
+            color: 'var(--db-text-primary)',
             lineHeight: 1.05,
             letterSpacing: '0.02em',
           }}
@@ -44,7 +44,7 @@ export default function HeroBanner() {
         </h1>
         <p
           className="mt-4 leading-relaxed"
-          style={{ fontFamily: 'var(--db-font-ui)', fontWeight: 400, color: 'rgba(255,255,255,0.45)', fontSize: 'clamp(14px, 2vw, 17px)', maxWidth: 460 }}
+          style={{ fontFamily: 'var(--db-font-ui)', fontWeight: 400, color: 'var(--db-text-muted)', fontSize: 'clamp(14px, 2vw, 17px)', maxWidth: 460 }}
         >
           Live bingo cards powered by real NBA stats. Free to play. Every game.
         </p>

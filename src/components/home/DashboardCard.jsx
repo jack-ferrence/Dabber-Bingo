@@ -171,7 +171,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
         <div>
           {isJoined && !isFinished && squaresMarked != null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ flex: 1, height: 5, background: 'var(--db-bg-active)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${Math.min(100, (squaresMarked / 25) * 100)}%`, height: '100%', background: '#ff6b35', borderRadius: 3 }} />
               </div>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-secondary)', fontWeight: 700 }}>
@@ -192,7 +192,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
                 {isLive ? 'Join late →' : 'Join game →'}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-ghost)' }}>
                   {sport.toUpperCase()}{room.participant_count ? ` · ${room.participant_count} playing` : ''}
                 </span>
                 {showPropsWarning && (

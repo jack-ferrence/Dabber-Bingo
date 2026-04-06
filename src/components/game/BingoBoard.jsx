@@ -245,7 +245,7 @@ function BingoBoard({
             <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.1em', color: '#ff6b35', lineHeight: 1 }}>
               BINGO!
             </p>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: '#6666aa', marginTop: 2, fontWeight: 500 }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', marginTop: 2, fontWeight: 500 }}>
               Line {toast.lineNum} completed
             </p>
           </div>

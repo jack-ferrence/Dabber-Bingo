@@ -219,7 +219,7 @@ export default function LobbyPage() {
         <div style={{ padding: '20px' }}>
           <div style={{ display: 'flex', gap: 12, overflowX: 'auto' }}>
             {[1,2,3].map((i) => (
-              <div key={i} style={{ flexShrink: 0, width: 260, height: 140, borderRadius: 14, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)', animation: 'pulse 1.8s ease-in-out infinite' }} />
+              <div key={i} style={{ flexShrink: 0, width: 260, height: 140, borderRadius: 14, background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)', animation: 'pulse 1.8s ease-in-out infinite' }} />
             ))}
           </div>
         </div>

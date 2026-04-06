@@ -8,13 +8,13 @@ const arrowBase = {
   width: 32,
   height: 32,
   borderRadius: '50%',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'var(--db-bg-hover)',
+  border: '1px solid var(--db-border-default)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   cursor: 'pointer',
-  color: 'rgba(255,255,255,0.4)',
+  color: 'var(--db-text-muted)',
   transition: 'background 100ms ease, color 100ms ease',
   flexShrink: 0,
 }
@@ -55,8 +55,8 @@ export default function HorizontalSlider({ children, scrollAmount = 320 }) {
           aria-label="Scroll left"
           onClick={scrollLeft}
           style={{ ...arrowBase, left: -14 }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-active)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 2L4 6l4 4" />
@@ -78,8 +78,8 @@ export default function HorizontalSlider({ children, scrollAmount = 320 }) {
           aria-label="Scroll right"
           onClick={scrollRight}
           style={{ ...arrowBase, right: -14 }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-active)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 2l4 4-4 4" />

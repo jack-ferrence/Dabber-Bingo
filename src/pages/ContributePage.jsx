@@ -71,7 +71,7 @@ export default function ContributePage() {
   }
 
   return (
-    <div style={{ minHeight: '100%', background: '#0c0c14', padding: '24px 20px 48px' }}>
+    <div style={{ minHeight: '100%', background: 'var(--db-bg-page)', padding: '24px 20px 48px' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
 
         {/* Header */}
@@ -83,7 +83,7 @@ export default function ContributePage() {
           SUPPORT DOBBER
         </h1>
         <p style={{
-          fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'rgba(255,255,255,0.45)',
+          fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-text-muted)',
           margin: '0 0 28px',
         }}>
           Dobber Bingo is completely free to play. If you enjoy it, a small contribution goes a long way.
@@ -98,7 +98,7 @@ export default function ContributePage() {
             <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 700, letterSpacing: '0.06em', color: '#22c55e', margin: 0 }}>
               🎉 THANK YOU FOR SUPPORTING DOBBER!
             </p>
-            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.45)', margin: '4px 0 0' }}>
+            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', margin: '4px 0 0' }}>
               Your supporter badge will appear shortly.
             </p>
           </div>
@@ -130,12 +130,12 @@ export default function ContributePage() {
 
         {/* Perks */}
         <div style={{
-          background: '#12121e', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
           borderRadius: 10, padding: '16px 18px', marginBottom: 24,
         }}>
           <p style={{
             fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em',
-            color: 'rgba(255,255,255,0.35)', margin: '0 0 12px',
+            color: 'var(--db-text-ghost)', margin: '0 0 12px',
           }}>
             WHAT YOU GET
           </p>
@@ -144,7 +144,7 @@ export default function ContributePage() {
               {perk.emoji === 'dobber_ball'
                 ? <DobberBallIcon size={16} />
                 : <span style={{ fontSize: 16, flexShrink: 0 }}>{perk.emoji}</span>}
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-secondary)' }}>
                 {perk.text}
               </span>
             </div>
@@ -154,7 +154,7 @@ export default function ContributePage() {
         {/* Preset amounts */}
         <p style={{
           fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em',
-          color: 'rgba(255,255,255,0.35)', margin: '0 0 10px',
+          color: 'var(--db-text-ghost)', margin: '0 0 10px',
         }}>
           CHOOSE AMOUNT
         </p>
@@ -168,15 +168,15 @@ export default function ContributePage() {
                 onClick={() => { setUseCustom(false); setSelectedCents(p.cents) }}
                 style={{
                   padding: '12px 4px', borderRadius: 8, cursor: 'pointer',
-                  background: active ? 'rgba(255,107,53,0.12)' : '#12121e',
-                  border: active ? '1.5px solid rgba(255,107,53,0.5)' : '1px solid rgba(255,255,255,0.07)',
+                  background: active ? 'rgba(255,107,53,0.12)' : 'var(--db-bg-surface)',
+                  border: active ? '1.5px solid rgba(255,107,53,0.5)' : '1px solid var(--db-border-subtle)',
                   transition: 'background 120ms, border-color 120ms',
                 }}
               >
-                <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, fontWeight: 900, letterSpacing: '0.02em', color: active ? '#ff6b35' : '#e8e8f4' }}>
+                <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, fontWeight: 900, letterSpacing: '0.02em', color: active ? '#ff6b35' : 'var(--db-text-primary)' }}>
                   {p.label}
                 </div>
-                <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: active ? 'rgba(255,107,53,0.7)' : 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+                <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: active ? 'rgba(255,107,53,0.7)' : 'var(--db-text-ghost)', marginTop: 3 }}>
                   {p.tag}
                 </div>
               </button>
@@ -188,7 +188,7 @@ export default function ContributePage() {
         <div style={{ position: 'relative', marginBottom: 24 }}>
           <span style={{
             position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-            fontFamily: 'var(--db-font-mono)', fontSize: 14, color: useCustom ? '#ff6b35' : 'rgba(255,255,255,0.3)',
+            fontFamily: 'var(--db-font-mono)', fontSize: 14, color: useCustom ? '#ff6b35' : 'var(--db-text-ghost)',
             pointerEvents: 'none',
           }}>$</span>
           <input
@@ -202,9 +202,9 @@ export default function ContributePage() {
             onChange={(e) => { setUseCustom(true); setCustomValue(e.target.value) }}
             style={{
               width: '100%', padding: '12px 12px 12px 26px', borderRadius: 8,
-              background: '#12121e',
-              border: useCustom ? '1.5px solid rgba(255,107,53,0.4)' : '1px solid rgba(255,255,255,0.07)',
-              fontFamily: 'var(--db-font-mono)', fontSize: 14, color: '#e8e8f4',
+              background: 'var(--db-bg-surface)',
+              border: useCustom ? '1.5px solid rgba(255,107,53,0.4)' : '1px solid var(--db-border-subtle)',
+              fontFamily: 'var(--db-font-mono)', fontSize: 14, color: 'var(--db-text-primary)',
               outline: 'none', boxSizing: 'border-box',
               transition: 'border-color 120ms',
             }}
@@ -230,7 +230,7 @@ export default function ContributePage() {
               ? 'rgba(255,107,53,0.25)'
               : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
             fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 900,
-            letterSpacing: '0.05em', color: loading || amountCents < 100 ? 'rgba(255,255,255,0.4)' : '#fff',
+            letterSpacing: '0.05em', color: loading || amountCents < 100 ? 'var(--db-text-muted)' : '#fff',
             cursor: loading || amountCents < 100 ? 'not-allowed' : 'pointer',
             boxShadow: loading || amountCents < 100 ? 'none' : '0 4px 20px rgba(255,107,53,0.35)',
             transition: 'background 150ms, box-shadow 150ms',
@@ -241,7 +241,7 @@ export default function ContributePage() {
 
         <p style={{
           fontFamily: 'var(--db-font-mono)', fontSize: 10,
-          color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 12,
+          color: 'var(--db-text-ghost)', textAlign: 'center', marginTop: 12,
         }}>
           Secure checkout via Stripe. No account required.
         </p>

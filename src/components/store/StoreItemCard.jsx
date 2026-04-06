@@ -42,24 +42,24 @@ function SkinPreview({ skinClass }) {
     switch (skinClass) {
       case 'neon':
         return isMarked
-          ? { background: '#1a1a2e', border: '1px solid rgba(255,107,53,0.7)', boxShadow: '0 0 6px rgba(255,107,53,0.3)' }
-          : { background: '#0c0c14', border: '1px solid rgba(255,107,53,0.35)' }
+          ? { background: 'var(--db-bg-elevated)', border: '1px solid rgba(255,107,53,0.7)', boxShadow: '0 0 6px rgba(255,107,53,0.3)' }
+          : { background: 'var(--db-bg-page)', border: '1px solid rgba(255,107,53,0.35)' }
       case 'retro':
         return isMarked
           ? { background: '#2a1a10', border: '1px solid #ff6b35' }
           : {
-              background: '#0c0c14',
-              border: '1px solid #2a2a44',
+              background: 'var(--db-bg-page)',
+              border: '1px solid var(--db-bg-active)',
               backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,0.02) 1px,rgba(255,255,255,0.02) 2px)',
             }
       case 'minimal':
         return isMarked
           ? { background: 'rgba(255,107,53,0.06)', border: '0.5px solid rgba(255,107,53,0.5)', borderRadius: 1 }
-          : { background: 'transparent', border: '0.5px solid #2a2a44', borderRadius: 1 }
+          : { background: 'transparent', border: '0.5px solid var(--db-bg-active)', borderRadius: 1 }
       case 'gold':
         return isMarked
           ? { background: 'rgba(245,158,11,0.08)', border: '1px solid #f59e0b' }
-          : { background: '#0c0c14', border: '1px solid rgba(245,158,11,0.25)' }
+          : { background: 'var(--db-bg-page)', border: '1px solid rgba(245,158,11,0.25)' }
       case 'terminal':
         return isMarked
           ? { background: '#0a1a0a', border: '1px solid #33ff33', borderRadius: 0 }

@@ -118,14 +118,14 @@ function GameBrowserPage() {
             style={{
               fontFamily: 'var(--db-font-display)',
               fontSize: 40,
-              color: '#e0e0f0',
+              color: 'var(--db-text-primary)',
               lineHeight: 1,
               letterSpacing: '0.02em',
             }}
           >
             Tonight&apos;s NBA Games
           </h1>
-          <p className="mt-2 text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
+          <p className="mt-2 text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>
             Pick a game to create a bingo room.
           </p>
         </div>
@@ -134,9 +134,9 @@ function GameBrowserPage() {
           onClick={() => navigate('/')}
           className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition hover:opacity-80"
           style={{
-            background: 'rgba(255,255,255,0.05)',
-            color: 'rgba(255,255,255,0.4)',
-            border: '1px solid rgba(255,255,255,0.09)',
+            background: 'var(--db-bg-elevated)',
+            color: 'var(--db-text-muted)',
+            border: '1px solid var(--db-border-default)',
             borderRadius: 8,
             fontFamily: 'var(--db-font-ui)',
             fontSize: 13,
@@ -161,13 +161,13 @@ function GameBrowserPage() {
       )}
 
       {loading ? (
-        <div className="loading-pulse flex min-h-[200px] items-center justify-center text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>
+        <div className="loading-pulse flex min-h-[200px] items-center justify-center text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)' }}>
           Loading games from ESPN…
         </div>
       ) : games.length === 0 ? (
         <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 text-center">
-          <p className="text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>No NBA games scheduled today.</p>
-          <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>Check back on a game day.</p>
+          <p className="text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>No NBA games scheduled today.</p>
+          <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>Check back on a game day.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 card-stagger-wrap">
@@ -175,7 +175,7 @@ function GameBrowserPage() {
             <div
               key={game.id}
               className="relative flex flex-col justify-between rounded-xl p-5"
-              style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)', border: '1px solid rgba(255,255,255,0.07)' }}
+              style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)' }}
             >
               {game.isLive && (
                 <span
@@ -190,7 +190,7 @@ function GameBrowserPage() {
               {game.isFinished && (
                 <span
                   className="absolute right-3 top-3 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.3)', border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'var(--db-font-display)', letterSpacing: '0.06em' }}
+                  style={{ background: 'var(--db-bg-hover)', color: 'var(--db-text-ghost)', border: '1px solid var(--db-border-default)', fontFamily: 'var(--db-font-display)', letterSpacing: '0.06em' }}
                 >
                   Final
                 </span>
@@ -198,12 +198,12 @@ function GameBrowserPage() {
 
               <div className="space-y-3">
                 <TeamRow team={game.away} showScore={game.isLive || game.isFinished} />
-                <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                <div style={{ height: 1, background: 'var(--db-border-subtle)' }} />
                 <TeamRow team={game.home} showScore={game.isLive || game.isFinished} />
               </div>
 
               <div className="mt-4 flex items-center justify-between">
-                <div className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>
+                <div className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)' }}>
                   {game.isLive
                     ? game.statusDetail
                     : game.isFinished
@@ -233,17 +233,17 @@ function GameBrowserPage() {
       )}
 
       {creatingGameId && (
-        <div className="modal-overlay fixed inset-0 z-30 flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
+        <div className="modal-overlay fixed inset-0 z-30 flex items-center justify-center px-4" style={{ background: 'var(--db-bg-overlay)' }}>
           <div
             className="modal-panel-in w-full max-w-md p-6"
-            style={{ background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, boxShadow: '0 24px 60px rgba(0,0,0,0.6)' }}
+            style={{ background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-default)', borderRadius: 14, boxShadow: '0 24px 60px rgba(0,0,0,0.6)' }}
           >
-            <h2 className="text-lg font-semibold tracking-tight" style={{ color: '#e0e0f0' }}>
+            <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--db-text-primary)' }}>
               Create Room
             </h2>
-            <p className="mt-1 text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>
+            <p className="mt-1 text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)' }}>
               ESPN Game ID:{' '}
-              <span style={{ fontFamily: 'var(--db-font-mono)', color: 'rgba(255,255,255,0.5)' }}>{creatingGameId}</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', color: 'var(--db-text-secondary)' }}>{creatingGameId}</span>
             </p>
 
             {createError && (
@@ -271,7 +271,7 @@ function GameBrowserPage() {
                 <label
                   htmlFor="room-name"
                   className="mb-1 block text-xs font-medium uppercase tracking-wide"
-                  style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)' }}
+                  style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.1em', color: 'var(--db-text-ghost)' }}
                 >
                   Room name
                 </label>
@@ -285,14 +285,14 @@ function GameBrowserPage() {
                   onChange={(e) => setCustomName(e.target.value)}
                   className="w-full rounded-md px-3 py-2 text-sm outline-none transition"
                   style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.09)',
-                    color: '#e8e8f4',
+                    background: 'var(--db-bg-elevated)',
+                    border: '1px solid var(--db-border-default)',
+                    color: 'var(--db-text-primary)',
                     fontFamily: 'var(--db-font-ui)',
                     transition: 'border-color 120ms ease',
                   }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = '#ff6b35' }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)' }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--db-border-default)' }}
                   placeholder="My Bingo Room"
                 />
               </div>
@@ -308,9 +308,9 @@ function GameBrowserPage() {
                     }
                   }}
                   className="rounded-md px-3 py-1.5 text-xs font-medium transition"
-                  style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 6, transition: 'background 100ms, color 100ms' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+                  style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)', background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 6, transition: 'background 100ms, color 100ms' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
                 >
                   Cancel
                 </button>
@@ -345,14 +345,14 @@ function TeamRow({ team, showScore }) {
           />
         )}
         <div>
-          <p className="text-sm font-medium" style={{ color: '#e0e0f0' }}>{team.name}</p>
-          <p className="text-[10px] uppercase tracking-wide" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.3)' }}>
+          <p className="text-sm font-medium" style={{ color: 'var(--db-text-primary)' }}>{team.name}</p>
+          <p className="text-[10px] uppercase tracking-wide" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)' }}>
             {team.abbr}
           </p>
         </div>
       </div>
       {showScore && (
-        <span className="text-lg font-bold tabular-nums" style={{ color: '#e0e0f0' }}>
+        <span className="text-lg font-bold tabular-nums" style={{ color: 'var(--db-text-primary)' }}>
           {team.score}
         </span>
       )}

@@ -167,7 +167,7 @@ const BingoSquare = memo(function BingoSquare({
 
   const numTextColor = marked
     ? 'rgba(255,107,53,0.85)'
-    : 'rgba(255,255,255,0.45)'
+    : 'var(--db-text-muted)'
 
   const bg = marked
     ? 'rgba(255,107,53,0.08)'
@@ -246,7 +246,7 @@ const BingoSquare = memo(function BingoSquare({
         <span style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'rgba(255,140,80,0.7)' : 'rgba(255,255,255,0.55)',
+          color: marked ? 'rgba(255,140,80,0.7)' : 'var(--db-text-secondary)',
           lineHeight: 1.15, textAlign: 'left',
           display: 'block',
         }} className="sq-stat">{statNum}</span>
@@ -254,7 +254,7 @@ const BingoSquare = memo(function BingoSquare({
           <span style={{
             fontFamily: "'JetBrains Mono',monospace",
             fontWeight: 600, whiteSpace: 'nowrap',
-            color: marked ? 'rgba(255,140,80,0.5)' : 'rgba(255,255,255,0.38)',
+            color: marked ? 'rgba(255,140,80,0.5)' : 'var(--db-text-ghost)',
             lineHeight: 1, textAlign: 'left',
             display: 'block',
           }} className="sq-stat-type">{statType}</span>
@@ -265,7 +265,7 @@ const BingoSquare = memo(function BingoSquare({
       {showProgress && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
-          background: 'rgba(255,255,255,0.05)',
+          background: 'var(--db-bg-elevated)',
         }}>
           <div style={{
             width: marked ? '100%' : `${progressPct}%`,

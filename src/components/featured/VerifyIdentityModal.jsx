@@ -4,13 +4,13 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 
 const inputStyle = {
   width: '100%',
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.09)',
+  background: 'var(--db-bg-elevated)',
+  border: '1px solid var(--db-border-default)',
   borderRadius: 6,
   padding: '10px 12px',
   fontFamily: 'var(--db-font-ui)',
   fontSize: 13,
-  color: '#e8e8f4',
+  color: 'var(--db-text-primary)',
   outline: 'none',
   boxSizing: 'border-box',
   transition: 'border-color 120ms ease',
@@ -25,15 +25,15 @@ function StepIndicator({ number, label, done, active }) {
       <div style={{
         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: done ? '#22c55e' : active ? '#ff6b35' : 'rgba(255,255,255,0.08)',
-        color: done || active ? '#fff' : 'rgba(255,255,255,0.3)',
+        background: done ? '#22c55e' : active ? '#ff6b35' : 'var(--db-bg-hover)',
+        color: done || active ? '#fff' : 'var(--db-text-ghost)',
         fontFamily: 'var(--db-font-display)', fontSize: 12,
       }}>
         {done ? '✓' : number}
       </div>
       <span style={{
         fontFamily: 'var(--db-font-display)', fontSize: 12,
-        color: done ? '#22c55e' : active ? '#e8e8f4' : 'rgba(255,255,255,0.3)',
+        color: done ? '#22c55e' : active ? 'var(--db-text-primary)' : 'var(--db-text-ghost)',
         letterSpacing: '0.06em',
         textDecoration: done ? 'line-through' : 'none',
       }}>
@@ -118,8 +118,8 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
   if (loading) {
     return (
       <div className="modal-overlay" style={{ position: 'fixed', inset: 0, zIndex: 999, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-        <div style={{ background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)', borderRadius: 12, padding: 32, textAlign: 'center', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Checking verification...</span>
+        <div style={{ background: 'var(--db-bg-surface)', borderRadius: 12, padding: 32, textAlign: 'center', border: '1px solid var(--db-border-default)' }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-ghost)' }}>Checking verification...</span>
         </div>
       </div>
     )
@@ -135,8 +135,8 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
         className="modal-panel-in"
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--db-bg-surface)',
+          border: '1px solid var(--db-border-default)',
           borderRadius: 14,
           padding: 28, width: '100%', maxWidth: 420,
           maxHeight: '90vh', overflowY: 'auto',
@@ -146,17 +146,17 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
-            <h3 style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.06em', color: '#e8e8f4', margin: 0 }}>
+            <h3 style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.06em', color: 'var(--db-text-primary)', margin: 0 }}>
               VERIFY IDENTITY
             </h3>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.3)', margin: '4px 0 0' }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-ghost)', margin: '4px 0 0' }}>
               Required for featured game entry
             </p>
           </div>
           <button type="button" onClick={onClose}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 16, cursor: 'pointer', padding: '2px 6px', borderRadius: 4, transition: 'color 120ms ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
+            style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 16, cursor: 'pointer', padding: '2px 6px', borderRadius: 4, transition: 'color 120ms ease' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
           >✕</button>
         </div>
 
@@ -165,7 +165,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
           background: 'rgba(255,107,53,0.06)', border: '1px solid rgba(255,107,53,0.18)',
           borderRadius: 6, padding: '10px 14px', marginBottom: 20,
         }}>
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0, lineHeight: 1.6 }}>
             Featured games award real prizes. To prevent multi-accounting, we require email and phone verification. Each phone number can only be linked to one account.
           </p>
         </div>
@@ -174,14 +174,14 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
         <StepIndicator number={1} label="VERIFY EMAIL" done={emailVerified} active={activeStep === 1} />
         <StepIndicator number={2} label="VERIFY PHONE NUMBER" done={phoneVerified} active={activeStep === 2} />
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 8, paddingTop: 16 }}>
+        <div style={{ borderTop: '1px solid var(--db-border-subtle)', marginTop: 8, paddingTop: 16 }}>
           {/* Email section */}
           {!emailVerified && (
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#e8e8f4', margin: '0 0 8px' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--db-text-primary)', margin: '0 0 8px' }}>
                 Step 1: Verify your email
               </p>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', margin: '0 0 12px', lineHeight: 1.6 }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: '0 0 12px', lineHeight: 1.6 }}>
                 Check your inbox for a verification link from Dobber. Email: <span style={{ color: '#ff6b35' }}>{user?.email}</span>
               </p>
               <button type="button" onClick={handleResendEmail}
@@ -203,10 +203,10 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
           {/* Phone section — only show when email is done */}
           {emailVerified && !phoneVerified && (
             <div>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#e8e8f4', margin: '0 0 8px' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--db-text-primary)', margin: '0 0 8px' }}>
                 Step 2: Add your phone number
               </p>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', margin: '0 0 12px', lineHeight: 1.5 }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: '0 0 12px', lineHeight: 1.5 }}>
                 US numbers only for now. Each phone can only be linked to one account.
               </p>
 
@@ -218,7 +218,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
                   placeholder="(555) 123-4567"
                   style={{ ...inputStyle, flex: 1 }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = '#ff6b35' }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)' }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--db-border-default)' }}
                 />
                 <button type="button" onClick={handleSubmitPhone} disabled={phoneSubmitting}
                   style={{
@@ -254,7 +254,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
               <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#22c55e', margin: '0 0 8px' }}>
                 ✓ FULLY VERIFIED
               </p>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>
                 You're eligible for all featured games!
               </p>
             </div>
@@ -279,13 +279,13 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
           ) : (
             <button type="button" onClick={onClose}
               style={{
-                flex: 1, padding: '10px 0', borderRadius: 8, border: '1px solid rgba(255,255,255,0.09)',
-                background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', cursor: 'pointer',
+                flex: 1, padding: '10px 0', borderRadius: 8, border: '1px solid var(--db-border-default)',
+                background: 'var(--db-bg-elevated)', color: 'var(--db-text-muted)', cursor: 'pointer',
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500,
                 transition: 'background 100ms ease, color 100ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
             >
               I'll do this later
             </button>

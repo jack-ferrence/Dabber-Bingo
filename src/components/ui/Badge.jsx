@@ -2,7 +2,7 @@ const VARIANTS = {
   success: { background: 'rgba(34,197,94,0.12)',  color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)' },
   warning: { background: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.25)' },
   danger:  { background: 'rgba(255,45,45,0.12)',  color: '#ff2d2d', border: '1px solid rgba(255,45,45,0.25)' },
-  muted:   { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.08)' },
+  muted:   { background: 'var(--db-bg-elevated)', color: 'var(--db-text-ghost)', border: '1px solid var(--db-border-default)' },
 }
 
 function Badge({ variant = 'muted', pulse = false, pop = false, className = '', children }) {

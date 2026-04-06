@@ -51,9 +51,9 @@ function StatusBadge({ status }) {
   return (
     <span
       style={{
-        background: 'rgba(255,255,255,0.05)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        color: 'rgba(255,255,255,0.3)',
+        background: 'var(--db-bg-hover)',
+        border: '1px solid var(--db-border-default)',
+        color: 'var(--db-text-ghost)',
         fontFamily: 'var(--db-font-display)',
         fontSize: 9.5,
         letterSpacing: '0.10em',
@@ -79,19 +79,19 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
     <div
       className="flex flex-col justify-between rounded-xl transition-all duration-200"
       style={{
-        background: 'linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderLeft: showAccent ? `3px solid ${accentColor}` : '1px solid rgba(255,255,255,0.07)',
+        background: 'var(--db-bg-elevated)',
+        border: '1px solid var(--db-border-subtle)',
+        borderLeft: showAccent ? `3px solid ${accentColor}` : '1px solid var(--db-border-subtle)',
         padding: showAccent ? '16px 20px 16px 18px' : '16px 20px',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'
+        e.currentTarget.style.borderColor = 'var(--db-border-active)'
         e.currentTarget.style.boxShadow = isLive
           ? '0 4px 20px rgba(255,45,45,0.12)'
           : '0 4px 20px rgba(0,0,0,0.15)'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'
+        e.currentTarget.style.borderColor = 'var(--db-border-subtle)'
         e.currentTarget.style.boxShadow = 'none'
       }}
     >
@@ -99,7 +99,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
         <div className="min-w-0">
           <h3
             className="truncate font-semibold"
-            style={{ fontFamily: 'var(--db-font-ui)', color: '#e8e8f4', fontSize: 14, lineHeight: 1.3 }}
+            style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-primary)', fontSize: 14, lineHeight: 1.3 }}
           >
             {room.name}
           </h3>
@@ -133,7 +133,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
                 height="12"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="rgba(255,255,255,0.25)"
+                stroke="var(--db-text-ghost)"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

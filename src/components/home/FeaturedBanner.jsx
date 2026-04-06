@@ -27,7 +27,7 @@ function FeaturedCountdown({ date }) {
   if (hours > 0 || days > 0) parts.push(`${hours}h`)
   parts.push(`${minutes}m`)
   if (days === 0) parts.push(`${String(seconds).padStart(2, '0')}s`)
-  return <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 16, fontWeight: 700, color: '#e8e8f4', fontVariantNumeric: 'tabular-nums' }}>{parts.join('  ')}</span>
+  return <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--db-text-primary)', fontVariantNumeric: 'tabular-nums' }}>{parts.join('  ')}</span>
 }
 
 export default function FeaturedBanner() {
@@ -102,7 +102,7 @@ export default function FeaturedBanner() {
             AUTO-GENERATED BANNER — team colors + prize image
             ══════════════════════════════════════════════════════ */}
         <div style={{
-          background: `linear-gradient(135deg, ${hexToRgba(awayColor, 0.5)} 0%, #0c0c14 45%, #0c0c14 55%, ${hexToRgba(homeColor, 0.5)} 100%)`,
+          background: `linear-gradient(135deg, ${hexToRgba(awayColor, 0.5)} 0%, var(--db-bg-page) 45%, var(--db-bg-page) 55%, ${hexToRgba(homeColor, 0.5)} 100%)`,
           padding: '20px 18px 16px',
           position: 'relative',
           overflow: 'hidden',
@@ -129,16 +129,16 @@ export default function FeaturedBanner() {
                   fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em',
                   color: '#ff6b35', background: 'rgba(255,107,53,0.15)', padding: '3px 10px', borderRadius: 4,
                 }}>⭐ FEATURED</span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-secondary)' }}>
                   {sport.toUpperCase()}
                 </span>
               </div>
 
               {/* Team matchup — auto-generated */}
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '0.01em', lineHeight: 1 }}>{away}</span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>vs</span>
-                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '0.01em', lineHeight: 1 }}>{home}</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, fontWeight: 900, color: 'var(--db-text-bright)', letterSpacing: '0.01em', lineHeight: 1 }}>{away}</span>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-ghost)' }}>vs</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 26, fontWeight: 900, color: 'var(--db-text-bright)', letterSpacing: '0.01em', lineHeight: 1 }}>{home}</span>
               </div>
 
               {/* Subtitle / prize tagline */}
@@ -150,12 +150,12 @@ export default function FeaturedBanner() {
 
               {/* Prize name — big and bold */}
               <div style={{ marginBottom: 4 }}>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>WIN</span>
-                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, fontWeight: 800, color: '#e8e8f4', letterSpacing: '0.01em' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'var(--db-text-muted)', display: 'block', marginBottom: 2 }}>WIN</span>
+                <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, fontWeight: 800, color: 'var(--db-text-primary)', letterSpacing: '0.01em' }}>
                   {featured.prize_name}
                 </span>
                 {featured.prize_value && (
-                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginLeft: 8 }}>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', marginLeft: 8 }}>
                     ({featured.prize_value})
                   </span>
                 )}
@@ -182,25 +182,25 @@ export default function FeaturedBanner() {
             INFO + JOIN BUTTON — below the banner graphic
             ══════════════════════════════════════════════════════ */}
         <div style={{
-          background: '#12121e',
-          borderTop: '1px solid rgba(255,255,255,0.04)',
+          background: 'var(--db-bg-surface)',
+          borderTop: '1px solid var(--db-border-subtle)',
           padding: '14px 18px 16px',
         }}>
           {/* Stats row */}
           <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 14 }}>
             <div>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>STARTS IN</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'var(--db-text-muted)', display: 'block', marginBottom: 2 }}>STARTS IN</span>
               <FeaturedCountdown date={featured.starts_at} />
             </div>
             <div>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>ENTRY</span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#e8e8f4' }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'var(--db-text-muted)', display: 'block', marginBottom: 2 }}>ENTRY</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--db-text-primary)' }}>
                 {featured.free_entry ? 'FREE' : `${featured.entry_fee} Dobs`}
               </span>
             </div>
             <div>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 2 }}>PLAYERS</span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#e8e8f4' }}>{entryCount}</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, letterSpacing: '0.08em', color: 'var(--db-text-muted)', display: 'block', marginBottom: 2 }}>PLAYERS</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--db-text-primary)' }}>{entryCount}</span>
             </div>
           </div>
 
@@ -241,12 +241,12 @@ export default function FeaturedBanner() {
         {/* Winner overlay */}
         {featured.status === 'finished' && featured.winner_username && (
           <div style={{
-            position: 'absolute', inset: 0, zIndex: 5, background: 'rgba(12,12,20,0.9)', borderRadius: 14,
+            position: 'absolute', inset: 0, zIndex: 5, background: 'var(--db-bg-overlay)', borderRadius: 14,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           }}>
             <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#ff6b35', marginBottom: 6 }}>🏆 WINNER</span>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, fontWeight: 900, color: '#e8e8f4' }}>{featured.winner_username}</span>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>Won {featured.prize_name}!</span>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, fontWeight: 900, color: 'var(--db-text-primary)' }}>{featured.winner_username}</span>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', marginTop: 6 }}>Won {featured.prize_name}!</span>
           </div>
         )}
       </div>

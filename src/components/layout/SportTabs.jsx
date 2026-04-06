@@ -20,7 +20,7 @@ export default function SportTabs({ onTabClick }) {
   return (
     <div
       className="flex items-center overflow-x-auto"
-      style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', scrollbarWidth: 'none' }}
+      style={{ borderBottom: '1px solid var(--db-border-subtle)', scrollbarWidth: 'none' }}
     >
       {SPORTS.map((sport) => (
         <button
@@ -34,7 +34,7 @@ export default function SportTabs({ onTabClick }) {
             fontWeight: 600,
             padding: '8px 16px',
             cursor: sport.active ? 'pointer' : 'default',
-            color: sport.active ? '#ff6b35' : 'rgba(255,255,255,0.15)',
+            color: sport.active ? '#ff6b35' : 'var(--db-text-ghost)',
             background: 'none',
             borderTop: 'none',
             borderLeft: 'none',
@@ -49,7 +49,7 @@ export default function SportTabs({ onTabClick }) {
         >
           {sport.label}
           {!sport.active && (
-            <span style={{ marginLeft: 6, fontSize: 8, fontFamily: 'var(--db-font-display)', color: 'rgba(255,255,255,0.12)', letterSpacing: '0.06em' }}>
+            <span style={{ marginLeft: 6, fontSize: 8, fontFamily: 'var(--db-font-display)', color: 'var(--db-text-ghost)', letterSpacing: '0.06em' }}>
               SOON
             </span>
           )}

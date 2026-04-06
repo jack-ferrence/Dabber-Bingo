@@ -35,18 +35,18 @@ export default function EmotePicker({ userId, onQuickReact }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         title="Emotes"
-        style={{ background: 'none', border: 'none', cursor: 'pointer', color: open ? '#ff6b35' : 'rgba(255,255,255,0.25)', fontSize: 14, padding: '4px 6px', borderRadius: 4, lineHeight: 1, transition: 'color 100ms ease' }}
-        onMouseEnter={(e) => { if (!open) e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
-        onMouseLeave={(e) => { if (!open) e.currentTarget.style.color = 'rgba(255,255,255,0.25)' }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: open ? '#ff6b35' : 'var(--db-text-ghost)', fontSize: 14, padding: '4px 6px', borderRadius: 4, lineHeight: 1, transition: 'color 100ms ease' }}
+        onMouseEnter={(e) => { if (!open) e.currentTarget.style.color = 'var(--db-text-secondary)' }}
+        onMouseLeave={(e) => { if (!open) e.currentTarget.style.color = 'var(--db-text-ghost)' }}
       >
         😊
       </button>
 
       {open && (
-        <div style={{ position: 'absolute', bottom: '100%', left: 0, marginBottom: 4, background: 'linear-gradient(160deg, #141420 0%, #0e0e1a 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: 8, zIndex: 50, minWidth: 160, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+        <div style={{ position: 'absolute', bottom: '100%', left: 0, marginBottom: 4, background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-default)', borderRadius: 8, padding: 8, zIndex: 50, minWidth: 160, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
           {ownedEmotes.length === 0 ? (
             <div style={{ padding: '4px 2px' }}>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.3)', margin: '0 0 6px' }}>No emotes owned.</p>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-ghost)', margin: '0 0 6px' }}>No emotes owned.</p>
               <Link to="/store?tab=chat_emote"
                 style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}
                 onClick={() => setOpen(false)}
@@ -66,7 +66,7 @@ export default function EmotePicker({ userId, onQuickReact }) {
                     title={emote.code}
                     onClick={() => { onQuickReact?.(emote.code); setOpen(false) }}
                     style={{ width: 28, height: 28, borderRadius: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 100ms ease' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)' }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
                   >
                     {emote.emoji}

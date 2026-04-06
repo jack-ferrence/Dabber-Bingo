@@ -37,18 +37,18 @@ function App() {
   if (isGameRoute) {
     if (loading) {
       return (
-        <div style={{ minHeight: '100vh', background: '#0c0c14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Loading...</span>
+        <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'var(--db-text-secondary)' }}>Loading...</span>
         </div>
       )
     }
     if (!user) return <Navigate to="/login" replace />
 
     return (
-      <div className="h-screen flex flex-col" style={{ background: '#0c0c14' }}>
+      <div className="h-screen flex flex-col" style={{ background: 'var(--db-bg-page)' }}>
         <header
           className="flex h-12 shrink-0 items-center justify-between px-3"
-          style={{ background: 'rgba(10,10,18,0.97)', borderBottom: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}
+          style={{ background: 'var(--db-bg-overlay)', borderBottom: '1px solid var(--db-border-subtle)', backdropFilter: 'blur(12px)' }}
         >
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <DobberLogo size={22} />
@@ -56,12 +56,12 @@ function App() {
               fontFamily: 'var(--db-font-display)',
               fontSize: 'clamp(14px, 3vw, 20px)',
               letterSpacing: '0.15em',
-              color: '#e8e8f4',
+              color: 'var(--db-text-primary)',
               lineHeight: 1,
             }}>DOBBER</span>
           </Link>
           {user && (
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-ghost)' }}>
               {profileUsername ?? user.email}
             </span>
           )}

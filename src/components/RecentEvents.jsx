@@ -83,12 +83,12 @@ function RecentEvents({ gameId }) {
             <li
               key={ev.id}
               className="animate-in-from-top"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, padding: '6px 10px', fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.7)' }}
+              style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)', borderRadius: 6, padding: '6px 10px', fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-primary)' }}
             >
               <span style={{ fontWeight: 600, color: '#ff6b35' }}>
                 {PLAYER_NAMES[ev.player_id] ?? ev.player_id}
               </span>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}> — </span>
+              <span style={{ color: 'var(--db-text-muted)' }}> — </span>
               <span>{statTypeLabel(ev.stat_type)}</span>
             </li>
           ))

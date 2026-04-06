@@ -31,7 +31,7 @@ function SectionLabel({ children }) {
   return (
     <p style={{
       fontFamily: 'var(--db-font-display)', fontSize: 11,
-      letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)',
+      letterSpacing: '0.1em', color: 'var(--db-text-muted)',
       marginBottom: 12, marginTop: 0,
     }}>
       {children}
@@ -43,10 +43,10 @@ function InfoRow({ label, children }) {
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+      padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)',
     }}>
-      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
-      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: '#e8e8f4' }}>{children}</span>
+      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: 'var(--db-text-primary)' }}>{children}</span>
     </div>
   )
 }
@@ -58,11 +58,11 @@ function SkinPreview({ skinClass }) {
       case 'neon':
         return isMarked
           ? { background: '#1a1a2e', border: '1px solid rgba(255,107,53,0.7)', boxShadow: '0 0 6px rgba(255,107,53,0.3)' }
-          : { background: '#0c0c14', border: '1px solid rgba(255,107,53,0.35)' }
+          : { background: 'var(--db-bg-page)', border: '1px solid rgba(255,107,53,0.35)' }
       case 'retro':
         return isMarked
           ? { background: '#2a1a10', border: '1px solid #ff6b35' }
-          : { background: '#0c0c14', border: '1px solid #2a2a44', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,0.02) 1px,rgba(255,255,255,0.02) 2px)' }
+          : { background: 'var(--db-bg-page)', border: '1px solid var(--db-bg-active)', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,0.02) 1px,rgba(255,255,255,0.02) 2px)' }
       case 'minimal':
         return isMarked
           ? { background: 'rgba(255,107,53,0.06)', border: '0.5px solid rgba(255,107,53,0.5)', borderRadius: 1 }
@@ -70,11 +70,11 @@ function SkinPreview({ skinClass }) {
       case 'gold':
         return isMarked
           ? { background: 'rgba(245,158,11,0.08)', border: '1px solid #f59e0b' }
-          : { background: '#0c0c14', border: '1px solid rgba(245,158,11,0.25)' }
+          : { background: 'var(--db-bg-page)', border: '1px solid rgba(245,158,11,0.25)' }
       default:
         return isMarked
           ? { background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.4)' }
-          : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }
+          : { background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)' }
     }
   }
 
@@ -96,7 +96,7 @@ function Toggle({ value, onChange, disabled = false }) {
       onClick={() => !disabled && onChange(!value)}
       style={{
         width: 36, height: 20, borderRadius: 10,
-        background: value ? '#ff6b35' : 'rgba(255,255,255,0.1)',
+        background: value ? '#ff6b35' : 'var(--db-bg-active)',
         border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
         position: 'relative', flexShrink: 0,
         transition: 'background 200ms ease',
@@ -238,9 +238,9 @@ function ProfileTab() {
   ]
 
   const ghostBtnStyle = {
-    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 8,
+    background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 8,
     fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
-    color: 'rgba(255,255,255,0.4)', padding: '8px 18px', cursor: 'pointer',
+    color: 'var(--db-text-muted)', padding: '8px 18px', cursor: 'pointer',
     transition: 'background 120ms ease, color 120ms ease',
   }
 
@@ -250,7 +250,7 @@ function ProfileTab() {
       <div>
         <SectionLabel>Account</SectionLabel>
         <InfoRow label="Username">{username ?? '—'}</InfoRow>
-        <InfoRow label="Email"><span style={{ color: 'rgba(255,255,255,0.5)' }}>{user?.email ?? '—'}</span></InfoRow>
+        <InfoRow label="Email"><span style={{ color: 'var(--db-text-secondary)' }}>{user?.email ?? '—'}</span></InfoRow>
         <InfoRow label="Verified">
           {isVerified ? (
             <span style={{ color: '#22c55e', fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500 }}>✓ Verified</span>
@@ -261,8 +261,8 @@ function ProfileTab() {
                 type="button"
                 onClick={handleResend}
                 style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
-                  fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.4)',
+                  background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 6,
+                  fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-text-muted)',
                   padding: '3px 10px', cursor: 'pointer',
                 }}
               >
@@ -277,20 +277,20 @@ function ProfileTab() {
       {/* Featured Game Verification */}
       <div>
         <SectionLabel>Featured Game Verification</SectionLabel>
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 16, marginBottom: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>Email</span>
+        <div style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)', borderRadius: 10, padding: 16, marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--db-border-subtle)' }}>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)' }}>Email</span>
             {isVerified ? (
               <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#22c55e' }}>✓ Verified</span>
             ) : (
               <button type="button" onClick={handleResend}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.4)', padding: '4px 12px', cursor: 'pointer' }}>
+                style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-text-muted)', padding: '4px 12px', cursor: 'pointer' }}>
                 {resendMsg || 'Send verification'}
               </button>
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>Phone</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)' }}>Phone</span>
             {phoneVerified ? (
               <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#22c55e' }}>
                 ✓ {phoneNumber}
@@ -304,13 +304,13 @@ function ProfileTab() {
                   placeholder="(555) 123-4567"
                   style={{
                     width: 150, padding: '6px 10px', borderRadius: 6,
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
-                    fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: '#e8e8f4',
+                    background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)',
+                    fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-primary)',
                     outline: 'none', boxSizing: 'border-box',
                     transition: 'border-color 140ms ease',
                   }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(255,107,53,0.5)' }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)' }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--db-border-default)' }}
                 />
                 <button type="button" onClick={handleSubmitPhone} disabled={phoneSubmitting}
                   style={{
@@ -327,7 +327,7 @@ function ProfileTab() {
             <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff5555', marginTop: 8, marginBottom: 0 }}>{phoneError}</p>
           )}
         </div>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0, lineHeight: 1.5 }}>
           Both required to enter featured games with prizes. Each phone number can only be linked to one account.
         </p>
       </div>
@@ -337,11 +337,11 @@ function ProfileTab() {
         <SectionLabel>Stats</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
           {statCards.map((sc) => (
-            <div key={sc.label} style={{ background: 'linear-gradient(160deg, #141420 0%, #0f0f1a 100%)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 14 }}>
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', margin: '0 0 6px' }}>
+            <div key={sc.label} style={{ background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)', borderRadius: 10, padding: 14 }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: 'var(--db-text-ghost)', textTransform: 'uppercase', margin: '0 0 6px' }}>
                 {sc.label}
               </p>
-              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 22, fontWeight: 700, color: sc.accent ? '#ff6b35' : '#e8e8f4', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 22, fontWeight: 700, color: sc.accent ? '#ff6b35' : 'var(--db-text-primary)', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
                 {sc.value}
               </p>
             </div>
@@ -355,27 +355,27 @@ function ProfileTab() {
           type="button"
           onClick={showTxns ? () => setShowTxns(false) : loadTxns}
           style={{ ...ghostBtnStyle, textTransform: 'uppercase' }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
         >
           {showTxns ? 'Hide transaction history' : 'View transaction history'}
         </button>
         {showTxns && (
           <div style={{ marginTop: 12 }}>
             {txns.length === 0 ? (
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>No transactions yet.</p>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)' }}>No transactions yet.</p>
             ) : txns.map((t, i) => (
               <div
                 key={i}
                 style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  padding: '9px 0', borderBottom: '1px solid var(--db-border-subtle)',
                 }}
               >
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.4)', minWidth: 80 }}>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', minWidth: 80 }}>
                   {formatDate(t.created_at)}
                 </span>
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.5)', flex: 1, textAlign: 'center' }}>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-secondary)', flex: 1, textAlign: 'center' }}>
                   {reasonLabel(t.reason)}
                 </span>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: t.amount >= 0 ? '#22c55e' : '#ff5555', fontVariantNumeric: 'tabular-nums' }}>
@@ -396,8 +396,8 @@ function ProfileTab() {
               type="button"
               onClick={handleChangePassword}
               style={ghostBtnStyle}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
             >
               Change Password
             </button>
@@ -412,7 +412,7 @@ function ProfileTab() {
             onClick={handleSignOut}
             style={ghostBtnStyle}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,45,45,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,45,45,0.3)'; e.currentTarget.style.color = '#ff5555' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.borderColor = 'var(--db-border-default)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
           >
             Sign Out
           </button>
@@ -421,21 +421,21 @@ function ProfileTab() {
               <button
                 type="button"
                 onClick={() => setShowDelete(true)}
-                style={{ background: 'none', border: 'none', fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
+                style={{ background: 'none', border: 'none', fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = '#ff5555' }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
               >
                 Delete Account
               </button>
             ) : (
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: 14 }}>
-                <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginBottom: 10, marginTop: 0 }}>
+              <div style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)', borderRadius: 8, padding: 14 }}>
+                <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)', marginBottom: 10, marginTop: 0 }}>
                   Contact support to delete your account.
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowDelete(false)}
-                  style={{ background: 'none', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.35)', padding: '5px 14px', cursor: 'pointer' }}
+                  style={{ background: 'none', border: '1px solid var(--db-border-default)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-text-ghost)', padding: '5px 14px', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
@@ -575,17 +575,17 @@ function CustomizeTab() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
       {/* Live Preview */}
-      <div style={{ background: 'linear-gradient(160deg, #141420 0%, #0f0f1a 100%)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: 16 }}>
-        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', marginBottom: 12, marginTop: 0 }}>
+      <div style={{ background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)', borderRadius: 10, padding: 16 }}>
+        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, letterSpacing: '0.12em', color: 'var(--db-text-muted)', marginBottom: 12, marginTop: 0 }}>
           LIVE PREVIEW
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 6, marginBottom: 12 }}>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', minWidth: 16 }}>1</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'var(--db-bg-elevated)', borderRadius: 6, marginBottom: 12 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', minWidth: 16 }}>1</span>
           {badgeInfo && <BadgeEmoji emoji={badgeInfo.emoji} size={14} />}
-          <span style={{ fontFamily: getFontFamily(previewFont), fontSize: 13, fontWeight: 700, color: previewColor ?? '#e8e8f4', flex: 1 }}>
+          <span style={{ fontFamily: getFontFamily(previewFont), fontSize: 13, fontWeight: 700, color: previewColor ?? 'var(--db-text-primary)', flex: 1 }}>
             {displayName}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums' }}>0/12 0/25</span>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', fontVariantNumeric: 'tabular-nums' }}>0/12 0/25</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SkinPreview skinClass={previewSkin} />
@@ -593,7 +593,7 @@ function CustomizeTab() {
       </div>
 
       {loadingItems ? (
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Loading...</p>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>Loading...</p>
       ) : (
         <>
           {/* Name Color */}
@@ -607,12 +607,12 @@ function CustomizeTab() {
                   title="Default"
                   style={{
                     width: 28, height: 28, borderRadius: '50%',
-                    background: '#e0e0f0',
+                    background: 'var(--db-text-primary)',
                     border: !previewColor ? '2px solid #ff6b35' : '2px solid transparent',
                     cursor: 'pointer',
                   }}
                 />
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Default</span>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'var(--db-text-ghost)', textTransform: 'uppercase' }}>Default</span>
               </div>
               {colorItems.map((item) => {
                 const owned = inventory.has(item.id)
@@ -625,7 +625,7 @@ function CustomizeTab() {
                     title={owned ? item.name : `${item.name} (locked)`}
                     style={{
                       width: 28, height: 28, borderRadius: '50%',
-                      background: item.metadata?.hex ?? '#e0e0f0',
+                      background: item.metadata?.hex ?? 'var(--db-text-primary)',
                       border: isEquipped ? '2px solid #ff6b35' : '2px solid transparent',
                       boxShadow: isEquipped && owned ? `0 0 8px ${item.metadata?.hex}88` : undefined,
                       opacity: owned ? 1 : 0.25,
@@ -652,9 +652,9 @@ function CustomizeTab() {
                 onClick={handleDefaultFontSelect}
                 style={{
                   background: previewFont === 'default' ? 'rgba(255,107,53,0.08)' : 'none',
-                  border: previewFont === 'default' ? '1px solid #ff6b35' : '1px solid rgba(255,255,255,0.09)',
+                  border: previewFont === 'default' ? '1px solid #ff6b35' : '1px solid var(--db-border-default)',
                   borderRadius: 4, padding: '6px 12px', cursor: 'pointer',
-                  fontFamily: getFontFamily('default'), fontSize: 13, color: '#e0e0f0',
+                  fontFamily: getFontFamily('default'), fontSize: 13, color: 'var(--db-text-primary)',
                 }}
               >
                 Default
@@ -670,12 +670,12 @@ function CustomizeTab() {
                     title={owned ? item.name : `${item.name} (locked)`}
                     style={{
                       background: isEquipped ? 'rgba(255,107,53,0.08)' : 'none',
-                      border: isEquipped ? '1px solid #ff6b35' : '1px solid rgba(255,255,255,0.09)',
+                      border: isEquipped ? '1px solid #ff6b35' : '1px solid var(--db-border-default)',
                       borderRadius: 4, padding: '6px 12px',
                       cursor: owned ? 'pointer' : 'default',
                       opacity: owned ? 1 : 0.25,
                       fontFamily: getFontFamily(item.metadata?.font ?? 'default'),
-                      fontSize: 13, color: '#e0e0f0',
+                      fontSize: 13, color: 'var(--db-text-primary)',
                     }}
                   >
                     {item.name}
@@ -696,9 +696,9 @@ function CustomizeTab() {
                 title="Remove badge"
                 style={{
                   width: 36, height: 36, borderRadius: '50%',
-                  background: !previewBadge ? 'rgba(255,107,53,0.08)' : 'rgba(255,255,255,0.04)',
-                  border: !previewBadge ? '2px solid #ff6b35' : '2px solid rgba(255,255,255,0.09)',
-                  cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.3)',
+                  background: !previewBadge ? 'rgba(255,107,53,0.08)' : 'var(--db-bg-elevated)',
+                  border: !previewBadge ? '2px solid #ff6b35' : '2px solid var(--db-border-default)',
+                  cursor: 'pointer', fontSize: 14, color: 'var(--db-text-ghost)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   padding: 0,
                 }}
@@ -717,8 +717,8 @@ function CustomizeTab() {
                     title={owned ? item.name : `${item.name} (locked)`}
                     style={{
                       width: 36, height: 36, borderRadius: '50%',
-                      background: isEquipped ? 'rgba(255,107,53,0.08)' : 'rgba(255,255,255,0.04)',
-                      border: isEquipped ? '2px solid #ff6b35' : '2px solid rgba(255,255,255,0.08)',
+                      background: isEquipped ? 'rgba(255,107,53,0.08)' : 'var(--db-bg-elevated)',
+                      border: isEquipped ? '2px solid #ff6b35' : '2px solid var(--db-border-default)',
                       cursor: owned ? 'pointer' : 'default',
                       opacity: owned ? 1 : 0.25,
                       fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -748,8 +748,8 @@ function CustomizeTab() {
                   onClick={handleDefaultDaubSelect}
                   style={{
                     width: 52, height: 52,
-                    background: previewDaub === 'classic' ? 'rgba(255,107,53,0.08)' : 'rgba(255,255,255,0.04)',
-                    border: previewDaub === 'classic' ? '2px solid #ff6b35' : '1px solid rgba(255,255,255,0.09)',
+                    background: previewDaub === 'classic' ? 'rgba(255,107,53,0.08)' : 'var(--db-bg-elevated)',
+                    border: previewDaub === 'classic' ? '2px solid #ff6b35' : '1px solid var(--db-border-default)',
                     borderRadius: 6, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     position: 'relative', overflow: 'hidden',
@@ -758,7 +758,7 @@ function CustomizeTab() {
                 >
                   <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 18, color: '#ff6b35' }}>✓</span>
                 </button>
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Classic</span>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'var(--db-text-ghost)', textTransform: 'uppercase' }}>Classic</span>
               </div>
               {daubItems.map((item) => {
                 const owned = inventory.has(item.id)
@@ -772,8 +772,8 @@ function CustomizeTab() {
                       title={owned ? item.name : `${item.name} (locked)`}
                       style={{
                         width: 52, height: 52,
-                        background: isEquipped ? 'rgba(255,107,53,0.08)' : 'rgba(255,255,255,0.04)',
-                        border: isEquipped ? '2px solid #ff6b35' : '1px solid rgba(255,255,255,0.09)',
+                        background: isEquipped ? 'rgba(255,107,53,0.08)' : 'var(--db-bg-elevated)',
+                        border: isEquipped ? '2px solid #ff6b35' : '1px solid var(--db-border-default)',
                         borderRadius: 6,
                         cursor: owned ? 'pointer' : 'default',
                         position: 'relative', overflow: 'hidden',
@@ -788,7 +788,7 @@ function CustomizeTab() {
                         <span style={{ position: 'absolute', top: 3, right: 3, fontSize: 9 }}>🔒</span>
                       )}
                     </button>
-                    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'var(--db-text-ghost)', textTransform: 'uppercase' }}>
                       {item.name}
                     </span>
                   </div>
@@ -806,14 +806,14 @@ function CustomizeTab() {
                   type="button"
                   onClick={handleDefaultSkinSelect}
                   style={{
-                    background: previewSkin === 'default' ? 'rgba(255,107,53,0.08)' : 'rgba(255,255,255,0.04)',
-                    border: previewSkin === 'default' ? '2px solid #ff6b35' : '1px solid rgba(255,255,255,0.09)',
+                    background: previewSkin === 'default' ? 'rgba(255,107,53,0.08)' : 'var(--db-bg-elevated)',
+                    border: previewSkin === 'default' ? '2px solid #ff6b35' : '1px solid var(--db-border-default)',
                     borderRadius: 6, padding: 8, cursor: 'pointer',
                   }}
                 >
                   <SkinPreview skinClass="default" />
                 </button>
-                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Default</span>
+                <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'var(--db-text-ghost)', textTransform: 'uppercase' }}>Default</span>
               </div>
               {skinItems.map((item) => {
                 const owned = inventory.has(item.id)
@@ -825,8 +825,8 @@ function CustomizeTab() {
                       type="button"
                       onClick={owned ? () => handleSkinSelect(item) : undefined}
                       style={{
-                        background: isEquipped ? 'rgba(255,107,53,0.08)' : 'rgba(255,255,255,0.04)',
-                        border: isEquipped ? '2px solid #ff6b35' : '1px solid rgba(255,255,255,0.09)',
+                        background: isEquipped ? 'rgba(255,107,53,0.08)' : 'var(--db-bg-elevated)',
+                        border: isEquipped ? '2px solid #ff6b35' : '1px solid var(--db-border-default)',
                         borderRadius: 6, padding: 8,
                         cursor: owned ? 'pointer' : 'default',
                         position: 'relative',
@@ -837,7 +837,7 @@ function CustomizeTab() {
                         <span style={{ position: 'absolute', top: 3, right: 3, fontSize: 9 }}>🔒</span>
                       )}
                     </button>
-                    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, color: 'var(--db-text-ghost)', textTransform: 'uppercase' }}>
                       {item.name}
                     </span>
                   </div>
@@ -852,13 +852,13 @@ function CustomizeTab() {
               type="button"
               onClick={handleReset}
               style={{
-                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 8,
+                background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 8,
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500,
-                color: 'rgba(255,255,255,0.4)', padding: '7px 16px',
+                color: 'var(--db-text-muted)', padding: '7px 16px',
                 cursor: 'pointer', transition: 'background 100ms ease, color 100ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
             >
               Reset to Defaults
             </button>
@@ -914,9 +914,9 @@ function PreferencesTab() {
   const PrefRow = ({ label, control }) => (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+      padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)',
     }}>
-      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.55)' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-secondary)' }}>{label}</span>
       {control}
     </div>
   )
@@ -980,13 +980,13 @@ function PreferencesTab() {
             onClick={() => handleSportChange(opt.val)}
             style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer',
+              padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)', cursor: 'pointer',
             }}
           >
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.55)' }}>{opt.label}</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-secondary)' }}>{opt.label}</span>
             <span style={{
               width: 16, height: 16, borderRadius: '50%', display: 'block',
-              border: `2px solid ${defaultSport === opt.val ? '#ff6b35' : 'rgba(255,255,255,0.15)'}`,
+              border: `2px solid ${defaultSport === opt.val ? '#ff6b35' : 'var(--db-border-active)'}`,
               background: defaultSport === opt.val ? '#ff6b35' : 'none',
               flexShrink: 0,
             }} />
@@ -997,7 +997,7 @@ function PreferencesTab() {
       {/* Notifications (future) */}
       <div style={{ opacity: 0.4 }}>
         <SectionLabel>Notifications</SectionLabel>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginBottom: 12, marginTop: 0, lineHeight: 1.5 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)', marginBottom: 12, marginTop: 0, lineHeight: 1.5 }}>
           Push notifications coming soon. We'll alert you when games start and when you hit bingo lines.
         </p>
         {['Game start alerts', 'Bingo line alerts', 'Daily game reminders'].map((label) => (
@@ -1005,10 +1005,10 @@ function PreferencesTab() {
             key={label}
             style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+              padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)',
             }}
           >
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)' }}>{label}</span>
             <Toggle value={false} onChange={() => {}} disabled />
           </div>
         ))}
@@ -1018,15 +1018,15 @@ function PreferencesTab() {
       <div>
         <SectionLabel>About</SectionLabel>
         {[
-          { label: 'Version',           right: <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>0.1.0-beta</span> },
+          { label: 'Version',           right: <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--db-text-secondary)' }}>0.1.0-beta</span> },
           { label: 'How to Play',       right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
           { label: 'Contact Support',   right: <a href="mailto:ferrencesup@gmail.com" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>ferrencesup@gmail.com</a> },
           { label: 'Terms of Service',  right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
           { label: 'Privacy Policy',    right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
           ...(isAdmin ? [{ label: 'Admin: Featured Games', right: <Link to="/admin/featured" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>Manage →</Link> }] : []),
         ].map(({ label, right }) => (
-          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
+          <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)' }}>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)' }}>{label}</span>
             {right}
           </div>
         ))}
@@ -1039,13 +1039,13 @@ function PreferencesTab() {
           type="button"
           onClick={handleSignOut}
           style={{
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 8,
+            background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 8,
             fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
-            color: 'rgba(255,255,255,0.4)', padding: '8px 18px', cursor: 'pointer',
+            color: 'var(--db-text-muted)', padding: '8px 18px', cursor: 'pointer',
             transition: 'all 120ms ease',
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,45,45,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,45,45,0.3)'; e.currentTarget.style.color = '#ff5555' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--db-bg-elevated)'; e.currentTarget.style.borderColor = 'var(--db-border-default)'; e.currentTarget.style.color = 'var(--db-text-muted)' }}
         >
           Sign Out
         </button>
@@ -1060,7 +1060,7 @@ export default function SettingsPage() {
   const [tab, setTab] = useState('profile')
 
   return (
-    <div className="px-4 py-5 md:px-6 md:py-8" style={{ minHeight: '100%', background: '#0c0c14' }}>
+    <div className="px-4 py-5 md:px-6 md:py-8" style={{ minHeight: '100%', background: 'var(--db-bg-page)' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         {/* Header */}
         <h1 style={{
@@ -1075,7 +1075,7 @@ export default function SettingsPage() {
         </h1>
 
         {/* Tab bar */}
-        <div className="scrollbar-hide" style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 0 }}>
+        <div className="scrollbar-hide" style={{ display: 'flex', borderBottom: '1px solid var(--db-border-subtle)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 0 }}>
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -1090,8 +1090,8 @@ export default function SettingsPage() {
                 marginBottom: -1, flexShrink: 0,
                 transition: 'color 120ms ease',
               }}
-              onMouseEnter={(e) => { if (tab !== t.key) e.currentTarget.style.color = 'rgba(255,255,255,0.55)' }}
-              onMouseLeave={(e) => { if (tab !== t.key) e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
+              onMouseEnter={(e) => { if (tab !== t.key) e.currentTarget.style.color = 'var(--db-text-secondary)' }}
+              onMouseLeave={(e) => { if (tab !== t.key) e.currentTarget.style.color = 'var(--db-text-ghost)' }}
             >
               {t.label}
             </button>
@@ -1106,7 +1106,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Contribute footer */}
-        <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+        <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid var(--db-border-subtle)', textAlign: 'center' }}>
           <Link
             to="/contribute"
             style={{
@@ -1121,7 +1121,7 @@ export default function SettingsPage() {
             <DobberBallIcon size={14} />
             SUPPORT DOBBER
           </Link>
-          <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.2)', margin: '8px 0 0' }}>
+          <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-ghost)', margin: '8px 0 0' }}>
             Keep free-to-play sports bingo alive
           </p>
         </div>

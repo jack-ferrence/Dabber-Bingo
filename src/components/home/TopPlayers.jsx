@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { getFontFamily, getBadge } from '../../lib/fontMap'
 import BadgeEmoji from '../ui/BadgeEmoji.jsx'
 
-const RANK_COLORS = ['#ff6b35', 'rgba(255,255,255,0.7)', 'rgba(255,255,255,0.7)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.3)']
+const RANK_COLORS = ['#ff6b35', 'var(--db-text-primary)', 'var(--db-text-primary)', 'var(--db-text-ghost)', 'var(--db-text-ghost)']
 
 export default function TopPlayers() {
   const [players, setPlayers] = useState(null) // null = loading
@@ -81,7 +81,7 @@ export default function TopPlayers() {
           <div className="leaderboard-scroll" style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 2, WebkitOverflowScrolling: 'touch' }}>
             {playerRows.map(({ p, i, badge, name }) => (
               <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: i === 0 ? '#ff6b35' : 'rgba(255,255,255,0.4)' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: i === 0 ? '#ff6b35' : 'var(--db-text-muted)' }}>
                   {i + 1}
                 </span>
                 {badge && <BadgeEmoji emoji={badge.emoji} size={11} />}
