@@ -137,7 +137,7 @@ export default function LobbyPage() {
   // ── Section renderer ──
   function CardRow({ games, size, isJoinedSection = false }) {
     return (
-      <div className="no-scrollbar" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+      <div className="no-scrollbar card-row" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px 4px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
         {games.map((room) => (
           <DashboardCard
             key={room.id}
@@ -154,7 +154,7 @@ export default function LobbyPage() {
   }
 
   return (
-    <div style={{ paddingBottom: 20 }}>
+    <div style={{ paddingBottom: 20, maxWidth: 1200, margin: '0 auto' }}>
       {/* ── Header ── */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>

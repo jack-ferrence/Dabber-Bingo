@@ -399,31 +399,31 @@ function GameRoom({
               flexShrink: 0,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 800, letterSpacing: '0.02em', color: awayColor }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 2vw, 10px)' }}>
+              <span className="scoreboard-team" style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(13px, 3.5vw, 16px)', fontWeight: 800, letterSpacing: '0.02em', color: awayColor }}>
                 {awayAbbr}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-primary)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+              <span className="scoreboard-score" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'clamp(22px, 7vw, 30px)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-primary)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                 {room.away_score ?? 0}
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 64 }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.06em' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'clamp(48px, 14vw, 64px)' }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(9px, 2.5vw, 11px)', fontWeight: 700, color: '#ff6b35', letterSpacing: '0.06em' }}>
                 {room.game_status_detail || (room.game_period ? `Q${room.game_period}` : 'PRE')}
               </span>
               {room.game_clock && (
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--db-text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'clamp(9px, 2.5vw, 11px)', fontWeight: 600, color: 'var(--db-text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
                   {room.game_clock}
                 </span>
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 30, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-primary)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 2vw, 10px)' }}>
+              <span className="scoreboard-score" style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'clamp(22px, 7vw, 30px)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-primary)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                 {room.home_score ?? 0}
               </span>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 800, letterSpacing: '0.02em', color: homeColor }}>
+              <span className="scoreboard-team" style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(13px, 3.5vw, 16px)', fontWeight: 800, letterSpacing: '0.02em', color: homeColor }}>
                 {homeAbbr}
               </span>
             </div>
@@ -445,19 +445,19 @@ function GameRoom({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.02em', color: 'var(--db-text-ghost)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(12px, 3.5vw, 15px)', fontWeight: 800, letterSpacing: '0.02em', color: 'var(--db-text-ghost)' }}>
             {room.name?.split(' vs ')[0]?.trim()}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-muted)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'clamp(20px, 6vw, 26px)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-muted)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
             {room.away_score}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, color: 'var(--db-text-ghost)', letterSpacing: '0.06em' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(9px, 2.5vw, 11px)', fontWeight: 700, color: 'var(--db-text-ghost)', letterSpacing: '0.06em' }}>
             FINAL
           </span>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-muted)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'clamp(20px, 6vw, 26px)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--db-text-muted)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
             {room.home_score}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.02em', color: 'var(--db-text-ghost)' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(12px, 3.5vw, 15px)', fontWeight: 800, letterSpacing: '0.02em', color: 'var(--db-text-ghost)' }}>
             {room.name?.split(' vs ')[1]?.trim()}
           </span>
         </div>
@@ -858,7 +858,8 @@ function GameRoom({
               background: 'var(--db-bg-surface)',
               borderTop: '1px solid var(--db-border-default)',
               borderRadius: '14px 14px 0 0',
-              height: '60vh',
+              height: '60dvh',
+              maxHeight: 'calc(100dvh - 60px)',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
@@ -888,7 +889,7 @@ function GameRoom({
       {mobileLeaderboardSheet && (
         <div className="md:hidden">
           <div className="fixed inset-0 z-40" role="presentation" aria-hidden="true" style={{ background: 'var(--db-bg-overlay)' }} onClick={() => setMobileLeaderboardSheet(false)} />
-          <div className="fixed bottom-0 left-0 right-0 z-50 animate-slide-up" role="dialog" aria-modal="true" aria-label="Leaderboard" style={{ background: 'var(--db-bg-surface)', borderTop: '1px solid var(--db-border-default)', borderRadius: '14px 14px 0 0', height: '70vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-50 animate-slide-up" role="dialog" aria-modal="true" aria-label="Leaderboard" style={{ background: 'var(--db-bg-surface)', borderTop: '1px solid var(--db-border-default)', borderRadius: '14px 14px 0 0', height: '70dvh', maxHeight: 'calc(100dvh - 60px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px', flexShrink: 0 }}>
               <div style={{ width: 32, height: 3, background: 'var(--db-border-default)', borderRadius: 2 }} />
             </div>
@@ -915,7 +916,7 @@ function GameRoom({
       {mobileChatSheet && (
         <div className="md:hidden">
           <div className="fixed inset-0 z-40" role="presentation" aria-hidden="true" style={{ background: 'var(--db-bg-overlay)' }} onClick={() => setMobileChatSheet(false)} />
-          <div className="fixed bottom-0 left-0 right-0 z-50 animate-slide-up" role="dialog" aria-modal="true" aria-label="Chat" style={{ background: 'var(--db-bg-surface)', borderTop: '1px solid var(--db-border-default)', borderRadius: '14px 14px 0 0', height: '70vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-50 animate-slide-up" role="dialog" aria-modal="true" aria-label="Chat" style={{ background: 'var(--db-bg-surface)', borderTop: '1px solid var(--db-border-default)', borderRadius: '14px 14px 0 0', height: '70dvh', maxHeight: 'calc(100dvh - 60px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px', flexShrink: 0 }}>
               <div style={{ width: 32, height: 3, background: 'var(--db-border-default)', borderRadius: 2 }} />
             </div>

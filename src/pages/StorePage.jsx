@@ -168,9 +168,10 @@ export default function StorePage() {
           <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>No items available.</p>
         ) : (
           <div
+            className="store-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(140px, 45vw), 1fr))',
               gap: 12,
             }}
           >

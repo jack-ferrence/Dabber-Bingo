@@ -56,8 +56,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
     && msUntilStart < 2 * 60 * 60 * 1000
     && msUntilStart > 0
 
-  const widths = { large: 280, medium: 260, small: 240, tiny: 200 }
-  const cardWidth = widths[size] ?? 260
+  const cardWidth = undefined // responsive — controlled by CSS grid/flex parent
   const teamFontSize = size === 'large' ? 28 : size === 'medium' ? 25 : size === 'small' ? 22 : 18
   const scoreFontSize = size === 'large' ? 24 : size === 'medium' ? 20 : 18
   const baseOpacity = isFinished ? 0.2 : size === 'small' || size === 'tiny' ? 0.35 : 0.5
@@ -69,6 +68,8 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
   return (
     <div
       onClick={() => onOpenGame(room.id)}
+      className="dashboard-card"
+      data-size={size}
       style={{
         flexShrink: 0,
         width: cardWidth,
