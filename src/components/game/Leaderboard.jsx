@@ -85,20 +85,20 @@ const LeaderboardRow = memo(function LeaderboardRow({
           cursor: isMe ? 'default' : 'pointer',
           fontFamily: getFontFamily(nameFont),
           fontSize: 13, fontWeight: 600,
-          color: nameColor && nameColor !== 'rainbow' ? nameColor : isMe ? '#22c55e' : 'var(--db-text-primary)',
+          color: nameColor && nameColor !== 'rainbow' ? nameColor : isMe ? 'var(--db-success)' : 'var(--db-text-primary)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}
       >
         {badge && <BadgeEmoji emoji={badge.emoji} size={13} />}
         {username.length > 14 ? username.slice(0, 14) + '…' : username}
-        {isMe && <span style={{ marginLeft: 4, fontSize: 10, color: '#22c55e', opacity: 0.7 }}>(you)</span>}
+        {isMe && <span style={{ marginLeft: 4, fontSize: 10, color: 'var(--db-success)', opacity: 0.7 }}>(you)</span>}
       </button>
 
       {/* Stats */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <span style={{
           fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700,
-          color: linesCompleted > 0 ? '#ff6b35' : 'var(--db-text-ghost)',
+          color: linesCompleted > 0 ? 'var(--db-primary)' : 'var(--db-text-ghost)',
         }}>{linesCompleted}<span style={{ fontSize: 9, opacity: 0.5 }}>/12</span></span>
         <span style={{
           fontFamily: 'var(--db-font-mono)', fontSize: 11,

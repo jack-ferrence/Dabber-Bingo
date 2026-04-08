@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { useFocusTrap } from '../../hooks/useFocusTrap.js'
 
 export default function VerifyEmailModal({ email, onClose }) {
   const [status, setStatus] = useState(null) // null | 'sending' | 'sent' | 'error'
@@ -28,8 +29,13 @@ export default function VerifyEmailModal({ email, onClose }) {
     }, 1000)
   }
 
+  const trapRef = useFocusTrap(true, { onEscape: onClose })
+
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Verify your email"
       className="modal-overlay"
       style={{
         position: 'fixed', inset: 0, zIndex: 100,
@@ -40,16 +46,16 @@ export default function VerifyEmailModal({ email, onClose }) {
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="modal-panel-in" style={{ background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-default)', borderRadius: 14, maxWidth: 400, width: '100%', padding: 28, position: 'relative', boxShadow: '0 24px 60px rgba(0,0,0,0.6)' }}>
+      <div ref={trapRef} className="modal-panel-in" style={{ background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-default)', borderRadius: 14, maxWidth: 400, width: '100%', padding: 28, position: 'relative', boxShadow: '0 24px 60px rgba(0,0,0,0.6)' }}>
         {/* Close */}
         <button type="button" onClick={onClose}
-          style={{ position: 'absolute', top: 12, right: 14, background: 'none', border: 'none', color: 'var(--db-text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '2px 6px', borderRadius: 4, transition: 'color 120ms ease' }}
+          style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: 'var(--db-text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, transition: 'color 120ms ease' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
-        >✕</button>
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
+        aria-label="Close">✕</button>
 
         {/* Lock icon */}
-        <div style={{ fontSize: 28, marginBottom: 12, color: '#ff6b35' }}>🔒</div>
+        <div style={{ fontSize: 28, marginBottom: 12, color: 'var(--db-primary)' }}>🔒</div>
 
         <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.06em', color: 'var(--db-text-primary)', margin: '0 0 10px' }}>
           VERIFY YOUR EMAIL
@@ -67,7 +73,7 @@ export default function VerifyEmailModal({ email, onClose }) {
         {/* Primary button */}
         {status === 'sent' ? (
           <div style={{ marginBottom: 10 }}>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#22c55e', margin: '0 0 10px' }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--db-success)', margin: '0 0 10px' }}>
               ✓ Check your inbox
             </p>
             <button
@@ -84,7 +90,7 @@ export default function VerifyEmailModal({ email, onClose }) {
             type="button"
             onClick={handleSend}
             disabled={status === 'sending'}
-            style={{ width: '100%', background: status === 'sending' ? 'var(--db-bg-hover)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: status === 'sending' ? 'var(--db-text-ghost)' : '#fff', border: 'none', borderRadius: 8, fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', padding: '10px 0', cursor: status === 'sending' ? 'wait' : 'pointer', marginBottom: 10, boxShadow: status === 'sending' ? 'none' : '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 100ms ease' }}
+            style={{ width: '100%', background: status === 'sending' ? 'var(--db-bg-hover)' : 'var(--db-gradient-primary)', color: status === 'sending' ? 'var(--db-text-ghost)' : '#fff', border: 'none', borderRadius: 8, fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em', padding: '10px 0', cursor: status === 'sending' ? 'wait' : 'pointer', marginBottom: 10, boxShadow: status === 'sending' ? 'none' : '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 100ms ease' }}
             onMouseEnter={(e) => { if (status !== 'sending') e.currentTarget.style.opacity = '0.9' }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
           >

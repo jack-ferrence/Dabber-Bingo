@@ -94,7 +94,7 @@ export default function StorePage() {
               fontSize: 'clamp(28px, 4vw, 42px)',
               fontWeight: 400,
               letterSpacing: '0.08em',
-              color: '#ff6b35',
+              color: 'var(--db-primary)',
               lineHeight: 1,
               margin: 0,
             }}
@@ -103,7 +103,7 @@ export default function StorePage() {
           </h1>
           {dobsBalance !== null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.15)', borderRadius: 20, padding: '7px 16px' }}>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 20, fontWeight: 700, color: '#ff6b35', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--db-primary)', fontVariantNumeric: 'tabular-nums' }}>
                 {dobsBalance.toLocaleString()}
               </span>
               <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'rgba(255,107,53,0.6)', letterSpacing: '0.05em' }}>◈ Dobs</span>
@@ -128,7 +128,7 @@ export default function StorePage() {
             }}
           >
             <div>
-              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.08em', margin: '0 0 3px' }}>
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 800, color: 'var(--db-primary)', letterSpacing: '0.08em', margin: '0 0 3px' }}>
                 VERIFY YOUR EMAIL TO UNLOCK PURCHASES
               </p>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0 }}>
@@ -146,8 +146,8 @@ export default function StorePage() {
                 fontSize: 10,
                 fontWeight: 700,
                 letterSpacing: '0.06em',
-                color: '#ff6b35',
-                padding: '5px 14px',
+                color: 'var(--db-primary)',
+                padding: '10px 14px',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 transition: 'all 100ms ease',
@@ -165,7 +165,7 @@ export default function StorePage() {
         {loading ? (
           <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>Loading store...</p>
         ) : filtered.length === 0 ? (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>No items available.</p>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>Nothing here yet — new items are added regularly.</p>
         ) : (
           <div
             className="store-grid"

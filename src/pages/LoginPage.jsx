@@ -26,7 +26,7 @@ function LoginPage() {
         p_username: trimmed,
       })
       if (rpcError || !lookedUp) {
-        setError('No account found for that username.')
+        setError('We couldn\'t find an account with that username. Check the spelling or try your email instead.')
         setLoading(false)
         return
       }
@@ -81,7 +81,7 @@ function LoginPage() {
           marginBottom: 20,
         }}>
           LIVE<br />
-          <span style={{ color: '#ff6b35' }}>SPORTS</span><br />
+          <span style={{ color: 'var(--db-primary)' }}>SPORTS</span><br />
           BINGO
         </div>
         <p style={{
@@ -95,7 +95,7 @@ function LoginPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 40 }}>
           {['Free to play every day', 'Live real-time scoring', 'Win Dobs, win prizes'].map((f) => (
             <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff6b35', flexShrink: 0 }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--db-primary)', flexShrink: 0 }} />
               <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 500, color: 'var(--db-text-muted)' }}>
                 {f}
               </span>
@@ -105,7 +105,7 @@ function LoginPage() {
       </div>
 
       {/* Right: form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
+      <div className="auth-form-panel" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
         <div style={{ width: '100%', maxWidth: 380 }}>
 
           {/* Mobile logo */}
@@ -135,7 +135,7 @@ function LoginPage() {
             }}>
               WELCOME BACK
             </h1>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0 }}>
               Log in to your Dobber account
             </p>
           </div>
@@ -145,7 +145,7 @@ function LoginPage() {
             <div>
               <label
                 htmlFor="identifier"
-                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--db-text-ghost)' }}
+                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--db-text-muted)' }}
               >
                 Username or Email
               </label>
@@ -162,7 +162,7 @@ function LoginPage() {
                   background: 'var(--db-border-subtle)',
                   border: '1px solid var(--db-border-default)',
                   fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400,
-                  color: 'var(--db-text-primary)', outline: 'none', boxSizing: 'border-box',
+                  color: 'var(--db-text-primary)', boxSizing: 'border-box',
                   transition: 'border-color 140ms ease, background 140ms ease',
                 }}
                 onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(255,107,53,0.5)'; e.currentTarget.style.background = 'var(--db-border-default)' }}
@@ -173,7 +173,7 @@ function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--db-text-ghost)' }}
+                style={{ display: 'block', marginBottom: 6, fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--db-text-muted)' }}
               >
                 Password
               </label>
@@ -190,7 +190,7 @@ function LoginPage() {
                   background: 'var(--db-border-subtle)',
                   border: '1px solid var(--db-border-default)',
                   fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400,
-                  color: 'var(--db-text-primary)', outline: 'none', boxSizing: 'border-box',
+                  color: 'var(--db-text-primary)', boxSizing: 'border-box',
                   transition: 'border-color 140ms ease, background 140ms ease',
                 }}
                 onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(255,107,53,0.5)'; e.currentTarget.style.background = 'var(--db-border-default)' }}
@@ -199,7 +199,7 @@ function LoginPage() {
             </div>
 
             {error && (
-              <p role="alert" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff5555', margin: 0, padding: '8px 12px', background: 'rgba(255,45,45,0.08)', borderRadius: 6, border: '1px solid rgba(255,45,45,0.15)' }}>
+              <p role="alert" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-danger)', margin: 0, padding: '8px 12px', background: 'rgba(255,45,45,0.08)', borderRadius: 6, border: '1px solid rgba(255,45,45,0.15)' }}>
                 {error}
               </p>
             )}
@@ -209,7 +209,7 @@ function LoginPage() {
               disabled={loading}
               style={{
                 width: '100%', padding: '14px 0', borderRadius: 8, border: 'none',
-                background: loading ? 'var(--db-border-default)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                background: loading ? 'var(--db-border-default)' : 'var(--db-gradient-primary)',
                 color: loading ? 'var(--db-text-ghost)' : 'var(--db-text-on-primary)',
                 fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.1em',
                 cursor: loading ? 'not-allowed' : 'pointer',
@@ -224,13 +224,13 @@ function LoginPage() {
             </button>
           </form>
 
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', marginTop: 24, textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)', marginTop: 24, textAlign: 'center' }}>
             Don't have an account?{' '}
             <Link
               to="/register"
-              style={{ color: '#ff6b35', textDecoration: 'none', fontWeight: 600, transition: 'color 120ms' }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = '#ff8855' }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = '#ff6b35' }}
+              style={{ color: 'var(--db-primary)', textDecoration: 'none', fontWeight: 600, transition: 'color 120ms' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-primary-light)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-primary)' }}
             >
               Register →
             </Link>

@@ -13,9 +13,9 @@ export default function CategoryTabs({ tabs, activeTab, onTabChange }) {
             onClick={() => onTabChange(t.key)}
             style={{
               padding: '6px 0 10px', marginRight: 20,
-              borderBottom: isActive ? '2px solid #ff6b35' : '2px solid transparent',
+              borderBottom: isActive ? '2px solid var(--db-primary)' : '2px solid transparent',
               borderBottomStyle: 'solid', borderBottomWidth: 2,
-              borderBottomColor: isActive ? '#ff6b35' : 'transparent',
+              borderBottomColor: isActive ? 'var(--db-primary)' : 'transparent',
               color: isActive ? 'var(--db-text-primary)' : 'var(--db-text-ghost)',
               fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: isActive ? 600 : 500,
               letterSpacing: '0.04em', background: 'none', border: 'none',

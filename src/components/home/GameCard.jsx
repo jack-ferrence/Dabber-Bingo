@@ -96,7 +96,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
         <div style={{ position: 'absolute', top: 10, left: 14, zIndex: 2 }}>
           <span style={{
             fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 600,
-            color: '#22c55e', background: 'rgba(34,197,94,0.1)',
+            color: 'var(--db-success)', background: 'rgba(34,197,94,0.1)',
             border: '1px solid rgba(34,197,94,0.22)', borderRadius: 10, padding: '2px 8px',
           }}>
             ✓ IN
@@ -128,7 +128,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
               LIVE
             </span>
             {!isPlaying && (
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg, #ff7a45, #e05520)', padding: '2px 7px', borderRadius: 4 }}>NEW</span>
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 700, color: '#fff', background: 'var(--db-gradient-primary)', padding: '2px 7px', borderRadius: 4 }}>NEW</span>
             )}
           </>
         ) : isFinished ? (
@@ -162,7 +162,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
         <div>
           {isLive ? (
             <>
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: '#ff4444' }}>
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'var(--db-live)' }}>
                 ● In progress
               </span>
               <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', marginTop: 2 }}>
@@ -198,12 +198,12 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
         {/* Tap prompt */}
         <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
           {isLive && isPlaying && (
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 4px rgba(34,197,94,0.5)', marginRight: 4 }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--db-success)', display: 'inline-block', boxShadow: '0 0 4px rgba(34,197,94,0.5)', marginRight: 4 }} />
           )}
           {isFinished ? (
             <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'var(--db-text-muted)' }}>View →</span>
           ) : (
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 700, color: '#ff6b35' }}>{isLive && isPlaying ? 'Continue →' : 'Play →'}</span>
+            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 700, color: 'var(--db-primary)' }}>{isLive && isPlaying ? 'Continue →' : 'Play →'}</span>
           )}
         </div>
       </div>

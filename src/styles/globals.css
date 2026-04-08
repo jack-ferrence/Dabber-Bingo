@@ -20,13 +20,13 @@
   --color-text-muted:     var(--db-text-muted, #555577);
 
   --color-accent-green:  #22c55e;
-  --color-accent-gold:   #ff6b35;
+  --color-accent-gold:   var(--db-primary);
   --color-accent-red:    #ff2d2d;
 
   /* Game animation tokens — burnt orange */
-  --color-vegas-neon:   #ff6b35;
+  --color-vegas-neon:   var(--db-primary);
   --color-vegas-glow:   rgba(255, 107, 53, 0.20);
-  --color-vegas-gold:   #ff6b35;
+  --color-vegas-gold:   var(--db-primary);
   --color-vegas-border: var(--db-border-default, #2a2a44);
 
   --font-sans:    'JetBrains Mono', monospace;
@@ -452,13 +452,13 @@ html, body {
 .sidebar-game-item:hover,
 .sidebar-game-item:focus-visible {
   background: rgba(255, 107, 53, 0.06);
-  border-left-color: #ff6b35;
+  border-left-color: var(--db-primary);
   outline: none;
 }
 
 /* Global focus ring — orange */
 :focus-visible {
-  outline: 2px solid #ff6b35;
+  outline: 2px solid var(--db-primary);
   outline-offset: 2px;
 }
 
@@ -1018,4 +1018,62 @@ button[aria-label="Dismiss"]:hover {
   .bingo-grid button .sq-player    { font-size: 8px !important; }
   .bingo-grid button .sq-stat      { font-size: 9px !important; }
   .bingo-grid button .sq-stat-type { font-size: 7px !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   HORIZONTAL SCROLL IMPROVEMENTS
+   ══════════════════════════════════════════════════════════ */
+
+/* Overscroll containment on horizontal card rows */
+.card-row {
+  overscroll-behavior-x: contain;
+  scroll-padding-inline-start: 20px;
+}
+
+/* Fade hint on trailing edge of card rows (mobile only) */
+@media (max-width: 767px) {
+  .card-row {
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOGIN/REGISTER LANDSCAPE — scroll-friendly form layout
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 767px) and (orientation: landscape) {
+  /* Allow scrolling on auth pages in landscape */
+  .auth-form-panel {
+    align-items: flex-start !important;
+    padding-top: 16px !important;
+    padding-bottom: 32px !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SETTINGS PAGE TABS — horizontal scroll on small phones
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .settings-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .settings-tabs::-webkit-scrollbar { display: none; }
+  .settings-tabs button {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAME CARD — improved touch tap area on footer
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .dashboard-card {
+    /* Ensure entire card is the touch target, not just text */
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }

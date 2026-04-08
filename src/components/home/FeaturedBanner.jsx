@@ -20,7 +20,7 @@ function parseTeams(name) {
 function FeaturedCountdown({ date }) {
   const { days, hours, minutes, seconds, isExpired } = useCountdown(date)
   if (isExpired) {
-    return <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#ff6b35' }}>LIVE NOW</span>
+    return <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: 'var(--db-primary)' }}>LIVE NOW</span>
   }
   const parts = []
   if (days > 0) parts.push(`${days}d`)
@@ -127,7 +127,7 @@ export default function FeaturedBanner() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <span style={{
                   fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em',
-                  color: '#ff6b35', background: 'rgba(255,107,53,0.15)', padding: '3px 10px', borderRadius: 4,
+                  color: 'var(--db-primary)', background: 'rgba(255,107,53,0.15)', padding: '3px 10px', borderRadius: 4,
                 }}>⭐ FEATURED</span>
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-secondary)' }}>
                   {sport.toUpperCase()}
@@ -143,7 +143,7 @@ export default function FeaturedBanner() {
 
               {/* Subtitle / prize tagline */}
               {featured.subtitle && (
-                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#ff6b35', fontWeight: 600, margin: '0 0 12px' }}>
+                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-primary)', fontWeight: 600, margin: '0 0 12px' }}>
                   {featured.subtitle}
                 </p>
               )}
@@ -211,7 +211,7 @@ export default function FeaturedBanner() {
               background: entryResult.ok ? 'rgba(34,197,94,0.08)' : 'rgba(255,45,45,0.08)',
               border: `1px solid ${entryResult.ok ? 'rgba(34,197,94,0.2)' : 'rgba(255,45,45,0.2)'}`,
             }}>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: entryResult.ok ? '#22c55e' : '#ff4444' }}>{entryResult.msg}</span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: entryResult.ok ? 'var(--db-success)' : 'var(--db-live)' }}>{entryResult.msg}</span>
             </div>
           )}
 
@@ -222,14 +222,14 @@ export default function FeaturedBanner() {
               style={{
                 width: '100%', padding: '14px', borderRadius: 8,
                 border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.08)',
-                fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 700, letterSpacing: '0.03em', color: '#22c55e', cursor: 'pointer',
+                fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 700, letterSpacing: '0.03em', color: 'var(--db-success)', cursor: 'pointer',
               }}
             >✓ ENTERED{featured.room_id ? ' — TAP TO PLAY' : ''}</button>
           ) : (
             <button type="button" onClick={handleJoin} disabled={joining}
               style={{
                 width: '100%', padding: '14px', borderRadius: 8, border: 'none',
-                background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                background: 'var(--db-gradient-primary)',
                 fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.04em', color: '#fff',
                 cursor: joining ? 'wait' : 'pointer', opacity: joining ? 0.5 : 1,
                 boxShadow: '0 4px 16px rgba(255,107,53,0.3)',
@@ -244,7 +244,7 @@ export default function FeaturedBanner() {
             position: 'absolute', inset: 0, zIndex: 5, background: 'var(--db-bg-overlay)', borderRadius: 14,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           }}>
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#ff6b35', marginBottom: 6 }}>🏆 WINNER</span>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--db-primary)', marginBottom: 6 }}>🏆 WINNER</span>
             <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 28, fontWeight: 900, color: 'var(--db-text-primary)' }}>{featured.winner_username}</span>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', marginTop: 6 }}>Won {featured.prize_name}!</span>
           </div>

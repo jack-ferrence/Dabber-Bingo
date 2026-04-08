@@ -52,8 +52,8 @@ export default function ContributePage() {
 
   const handleContribute = async () => {
     if (!user) return
-    if (amountCents < 100) { setError('Minimum contribution is $1.'); return }
-    if (amountCents > 50000) { setError('Maximum contribution is $500.'); return }
+    if (amountCents < 100) { setError('The minimum is $1.'); return }
+    if (amountCents > 50000) { setError('The maximum is $500 per contribution.'); return }
     setError(null)
     setLoading(true)
     try {
@@ -63,7 +63,7 @@ export default function ContributePage() {
         body: JSON.stringify({ userId: user.id, amountCents }),
       })
       const json = await res.json()
-      if (!res.ok || !json.url) throw new Error(json.error || 'Could not create session')
+      if (!res.ok || !json.url) throw new Error(json.error || 'Something went wrong — please try again.')
       window.location.href = json.url
     } catch (err) {
       setError(err.message)
@@ -78,7 +78,7 @@ export default function ContributePage() {
         {/* Header */}
         <h1 style={{
           fontFamily: 'var(--db-font-display)', fontSize: 'clamp(28px, 5vw, 40px)',
-          fontWeight: 900, letterSpacing: '0.06em', color: '#ff6b35',
+          fontWeight: 900, letterSpacing: '0.06em', color: 'var(--db-primary)',
           margin: '0 0 6px', lineHeight: 1,
         }}>
           SUPPORT DOBBER
@@ -96,7 +96,7 @@ export default function ContributePage() {
             padding: '14px 16px', borderRadius: 8, marginBottom: 20,
             background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
           }}>
-            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 700, letterSpacing: '0.06em', color: '#22c55e', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--db-success)', margin: 0 }}>
               🎉 THANK YOU FOR SUPPORTING DOBBER!
             </p>
             <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', margin: '4px 0 0' }}>
@@ -123,7 +123,7 @@ export default function ContributePage() {
             background: 'rgba(255,107,53,0.1)', border: '1px solid rgba(255,107,53,0.3)',
           }}>
             <DobberBallIcon size={14} />
-            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: '#ff6b35' }}>
+            <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--db-primary)' }}>
               SUPPORTER
             </span>
           </div>
@@ -164,8 +164,8 @@ export default function ContributePage() {
             <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-text-secondary)', lineHeight: 1.7, margin: '0 0 14px' }}>
               To contribute, visit us in your browser:
             </p>
-            <div style={{ background: 'var(--db-bg-elevated)', borderLeft: '3px solid #ff6b35', borderRadius: 6, padding: '12px 16px' }}>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#ff6b35' }}>
+            <div style={{ background: 'var(--db-bg-elevated)', borderLeft: '3px solid var(--db-primary)', borderRadius: 6, padding: '12px 16px' }}>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--db-primary)' }}>
                 bingo-v04.netlify.app/contribute
               </span>
             </div>
@@ -182,7 +182,7 @@ export default function ContributePage() {
         }}>
           CHOOSE AMOUNT
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 8, marginBottom: 12 }}>
           {PRESETS.map((p) => {
             const active = !useCustom && selectedCents === p.cents
             return (
@@ -197,7 +197,7 @@ export default function ContributePage() {
                   transition: 'background 120ms, border-color 120ms',
                 }}
               >
-                <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, fontWeight: 900, letterSpacing: '0.02em', color: active ? '#ff6b35' : 'var(--db-text-primary)' }}>
+                <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 20, fontWeight: 900, letterSpacing: '0.02em', color: active ? 'var(--db-primary)' : 'var(--db-text-primary)' }}>
                   {p.label}
                 </div>
                 <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: active ? 'rgba(255,107,53,0.7)' : 'var(--db-text-ghost)', marginTop: 3 }}>
@@ -212,7 +212,7 @@ export default function ContributePage() {
         <div style={{ position: 'relative', marginBottom: 24 }}>
           <span style={{
             position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-            fontFamily: 'var(--db-font-mono)', fontSize: 14, color: useCustom ? '#ff6b35' : 'var(--db-text-ghost)',
+            fontFamily: 'var(--db-font-mono)', fontSize: 14, color: useCustom ? 'var(--db-primary)' : 'var(--db-text-ghost)',
             pointerEvents: 'none',
           }}>$</span>
           <input
@@ -220,6 +220,7 @@ export default function ContributePage() {
             min="1"
             max="500"
             step="1"
+            aria-label="Custom contribution amount"
             placeholder="Custom amount"
             value={customValue}
             onFocus={() => setUseCustom(true)}
@@ -229,7 +230,7 @@ export default function ContributePage() {
               background: 'var(--db-bg-surface)',
               border: useCustom ? '1.5px solid rgba(255,107,53,0.4)' : '1px solid var(--db-border-subtle)',
               fontFamily: 'var(--db-font-mono)', fontSize: 14, color: 'var(--db-text-primary)',
-              outline: 'none', boxSizing: 'border-box',
+              boxSizing: 'border-box',
               transition: 'border-color 120ms',
             }}
           />
@@ -238,7 +239,7 @@ export default function ContributePage() {
         {/* Error */}
         {error && (
           <p style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 12, color: '#ff4444',
+            fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-danger)',
             margin: '-16px 0 16px',
           }}>{error}</p>
         )}
@@ -252,7 +253,7 @@ export default function ContributePage() {
             width: '100%', padding: '15px', borderRadius: 8, border: 'none',
             background: loading || amountCents < 100
               ? 'rgba(255,107,53,0.25)'
-              : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+              : 'var(--db-gradient-primary)',
             fontFamily: 'var(--db-font-display)', fontSize: 16, fontWeight: 900,
             letterSpacing: '0.05em', color: loading || amountCents < 100 ? 'var(--db-text-muted)' : '#fff',
             cursor: loading || amountCents < 100 ? 'not-allowed' : 'pointer',

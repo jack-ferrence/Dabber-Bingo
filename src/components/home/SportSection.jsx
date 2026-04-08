@@ -130,7 +130,7 @@ function MobileGameList({ games, onOpenGame, myRoomIds }) {
   if (games.length === 0) {
     return (
       <div style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', padding: '12px 0' }}>
-        No games available. Check back later!
+        No games scheduled right now — new games are added daily.
       </div>
     )
   }
@@ -245,7 +245,7 @@ export default function SportSection({
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-1 mb-3 md:mb-5 px-1">
         <div className="flex items-center gap-3">
-          <div style={{ width: 3, height: 30, background: '#ff6b35', borderRadius: 2, flexShrink: 0 }} />
+          <div style={{ width: 3, height: 30, background: 'var(--db-primary)', borderRadius: 2, flexShrink: 0 }} />
           <h2
             style={{
               fontFamily: 'var(--db-font-display)',
@@ -261,7 +261,7 @@ export default function SportSection({
             <span
               style={{
                 background: 'rgba(34,197,94,0.12)',
-                color: '#22c55e',
+                color: 'var(--db-success)',
                 border: '1px solid rgba(34,197,94,0.25)',
                 fontFamily: 'var(--db-font-mono)',
                 fontSize: 9,

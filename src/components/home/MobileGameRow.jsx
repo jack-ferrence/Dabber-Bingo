@@ -58,8 +58,8 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
         <div style={{ marginTop: 3 }}>
           {isLive ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#ff2d2d', display: 'inline-block', animation: 'pulse-live 1.4s ease-in-out infinite', flexShrink: 0 }} />
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: '#ff4444', letterSpacing: '0.06em' }}>LIVE</span>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--db-live)', display: 'inline-block', animation: 'pulse-live 1.4s ease-in-out infinite', flexShrink: 0 }} />
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 9, color: 'var(--db-live)', letterSpacing: '0.06em' }}>LIVE</span>
               {room.game_clock && (
                 <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--db-text-secondary)', marginLeft: 2 }}>
                   {room.game_period ? `${room.sport === 'mlb' ? `Inn ${room.game_period}` : `Q${room.game_period}`} · ` : ''}{room.game_clock}
@@ -95,7 +95,7 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
         {isMyRoom ? (
           <span style={{
             fontFamily: 'var(--db-font-display)', fontSize: 12,
-            color: '#22c55e', background: 'rgba(34,197,94,0.08)',
+            color: 'var(--db-success)', background: 'rgba(34,197,94,0.08)',
             border: '1px solid rgba(34,197,94,0.18)', borderRadius: 10, padding: '3px 10px',
             whiteSpace: 'nowrap',
           }}>
@@ -104,7 +104,7 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
         ) : isFinished ? (
           <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'var(--db-text-ghost)' }}>View →</span>
         ) : isLive ? (
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 600, color: '#ff6b35' }}>Play →</span>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 600, color: 'var(--db-primary)' }}>Play →</span>
         ) : (
           <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 500, color: 'var(--db-text-ghost)' }}>Play →</span>
         )}

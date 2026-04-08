@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { getFontFamily, getBadge } from '../../lib/fontMap'
 import BadgeEmoji from '../ui/BadgeEmoji.jsx'
 
-const RANK_COLORS = ['#ff6b35', 'var(--db-text-primary)', 'var(--db-text-primary)', 'var(--db-text-ghost)', 'var(--db-text-ghost)']
+const RANK_COLORS = ['var(--db-primary)', 'var(--db-text-primary)', 'var(--db-text-primary)', 'var(--db-text-ghost)', 'var(--db-text-ghost)']
 
 export default function TopPlayers() {
   const [players, setPlayers] = useState(null) // null = loading
@@ -60,7 +60,7 @@ export default function TopPlayers() {
                   {badge && <BadgeEmoji emoji={badge.emoji} size={12} />}
                   {name}
                 </span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: '#ff6b35', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{(p.total_earned ?? 0).toLocaleString()} ◈</span>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--db-primary)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{(p.total_earned ?? 0).toLocaleString()} ◈</span>
               </div>
             ))}
           </div>
@@ -81,7 +81,7 @@ export default function TopPlayers() {
           <div className="leaderboard-scroll" style={{ display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 2, WebkitOverflowScrolling: 'touch' }}>
             {playerRows.map(({ p, i, badge, name }) => (
               <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: i === 0 ? '#ff6b35' : 'var(--db-text-muted)' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: i === 0 ? 'var(--db-primary)' : 'var(--db-text-muted)' }}>
                   {i + 1}
                 </span>
                 {badge && <BadgeEmoji emoji={badge.emoji} size={11} />}

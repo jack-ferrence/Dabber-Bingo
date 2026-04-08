@@ -16,13 +16,13 @@ function StampDaub({ animated }) {
       style={{ position: 'absolute', inset: 0 }}
       className={animated ? 'daub-anim-stamp' : ''}
     >
-      <circle cx="50" cy="50" r="32" stroke="#ff6b35" strokeWidth="3" fill="rgba(255,107,53,0.12)" opacity="0.85" />
+      <circle cx="50" cy="50" r="32" stroke="var(--db-primary)" strokeWidth="3" fill="rgba(255,107,53,0.12)" opacity="0.85" />
       <text
         x="50" y="57"
         textAnchor="middle"
         fontSize="22"
         fontWeight="800"
-        fill="#ff6b35"
+        fill="var(--db-primary)"
         opacity="0.7"
         fontFamily="monospace"
       >
@@ -41,8 +41,8 @@ function XDaub({ animated }) {
       style={{ position: 'absolute', inset: 0 }}
       className={animated ? 'daub-anim-x' : ''}
     >
-      <line x1="18" y1="18" x2="82" y2="82" stroke="#ff6b35" strokeWidth="3" strokeLinecap="round" opacity="0.65" />
-      <line x1="82" y1="18" x2="18" y2="82" stroke="#ff6b35" strokeWidth="3" strokeLinecap="round" opacity="0.65" />
+      <line x1="18" y1="18" x2="82" y2="82" stroke="var(--db-primary)" strokeWidth="3" strokeLinecap="round" opacity="0.65" />
+      <line x1="82" y1="18" x2="18" y2="82" stroke="var(--db-primary)" strokeWidth="3" strokeLinecap="round" opacity="0.65" />
     </svg>
   )
 }
@@ -98,9 +98,9 @@ function FireDaub({ animated }) {
     >
       <defs>
         <linearGradient id="fire-grad" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%"  stopColor="#ff6b35" stopOpacity="0.45" />
+          <stop offset="0%"  stopColor="var(--db-primary)" stopOpacity="0.45" />
           <stop offset="45%" stopColor="#ff4400" stopOpacity="0.18" />
-          <stop offset="75%" stopColor="#ff6b35" stopOpacity="0" />
+          <stop offset="75%" stopColor="var(--db-primary)" stopOpacity="0" />
         </linearGradient>
       </defs>
       {/* Background gradient wash */}
@@ -108,20 +108,20 @@ function FireDaub({ animated }) {
       {/* Three flame tongues */}
       <path
         d="M 50 98 C 34 88 24 72 28 56 C 32 44 42 48 50 38 C 58 48 68 44 72 56 C 76 72 66 88 50 98 Z"
-        fill="#ff6b35"
+        fill="var(--db-primary)"
         opacity="0.35"
         className="daub-fire-flicker"
       />
       <path
         d="M 38 98 C 26 86 22 70 28 60 C 32 52 38 56 38 48 C 42 58 36 70 40 82 C 41 87 39 93 38 98 Z"
-        fill="#ff6b35"
+        fill="var(--db-primary)"
         opacity="0.25"
         className="daub-fire-flicker"
         style={{ animationDelay: '0.3s' }}
       />
       <path
         d="M 62 98 C 74 86 78 70 72 60 C 68 52 62 56 62 48 C 58 58 64 70 60 82 C 59 87 61 93 62 98 Z"
-        fill="#ff6b35"
+        fill="var(--db-primary)"
         opacity="0.25"
         className="daub-fire-flicker"
         style={{ animationDelay: '0.6s' }}
@@ -145,7 +145,7 @@ function LightningDaub({ animated }) {
       {/* Jagged lightning bolt diagonally across the square */}
       <polyline
         points="70,10 45,45 58,45 30,90"
-        stroke="#ff6b35"
+        stroke="var(--db-primary)"
         strokeWidth="2.5"
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -166,10 +166,10 @@ function FingerprintDaub({ animated }) {
       className={animated ? 'daub-anim-fp' : ''}
     >
       {/* Concentric arcs with dasharray to suggest fingerprint ridges */}
-      <circle cx="54" cy="54" r="30" stroke="#ff6b35" strokeWidth="1.5" fill="none" strokeDasharray="58 25"  opacity="0.4" transform="rotate(-20 54 54)" />
-      <circle cx="54" cy="54" r="22" stroke="#ff6b35" strokeWidth="1.2" fill="none" strokeDasharray="46 18"  opacity="0.4" transform="rotate(-15 54 54)" />
-      <circle cx="54" cy="54" r="14" stroke="#ff6b35" strokeWidth="1"   fill="none" strokeDasharray="34 12"  opacity="0.4" transform="rotate(-10 54 54)" />
-      <circle cx="54" cy="54" r="7"  stroke="#ff6b35" strokeWidth="1"   fill="none" strokeDasharray="18 8"   opacity="0.4" />
+      <circle cx="54" cy="54" r="30" stroke="var(--db-primary)" strokeWidth="1.5" fill="none" strokeDasharray="58 25"  opacity="0.4" transform="rotate(-20 54 54)" />
+      <circle cx="54" cy="54" r="22" stroke="var(--db-primary)" strokeWidth="1.2" fill="none" strokeDasharray="46 18"  opacity="0.4" transform="rotate(-15 54 54)" />
+      <circle cx="54" cy="54" r="14" stroke="var(--db-primary)" strokeWidth="1"   fill="none" strokeDasharray="34 12"  opacity="0.4" transform="rotate(-10 54 54)" />
+      <circle cx="54" cy="54" r="7"  stroke="var(--db-primary)" strokeWidth="1"   fill="none" strokeDasharray="18 8"   opacity="0.4" />
     </svg>
   )
 }

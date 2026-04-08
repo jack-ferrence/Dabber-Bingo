@@ -5,7 +5,7 @@ export default function TermsPage() {
   return (
     <div style={{ minHeight: '100%', background: 'var(--db-bg-page)', padding: '24px 20px 80px' }}>
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
-        <h1 style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(24px, 5vw, 36px)', color: '#ff6b35', letterSpacing: '0.06em', marginBottom: 6 }}>TERMS OF SERVICE</h1>
+        <h1 style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(24px, 5vw, 36px)', color: 'var(--db-primary)', letterSpacing: '0.06em', marginBottom: 6 }}>TERMS OF SERVICE</h1>
         <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', marginBottom: 32 }}>Last updated: April 2026</p>
 
         <h2 style={sectionStyle}>ACCEPTANCE OF TERMS</h2>

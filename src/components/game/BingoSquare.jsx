@@ -88,11 +88,14 @@ const BingoSquare = memo(function BingoSquare({
 
   useEffect(() => {
     if (marked && !prevMarkedRef.current) {
-      setJustMarked(true)
       hapticLight()
-      const t = setTimeout(() => setJustMarked(false), 600)
-      prevMarkedRef.current = marked
-      return () => clearTimeout(t)
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!prefersReduced) {
+        setJustMarked(true)
+        const t = setTimeout(() => setJustMarked(false), 600)
+        prevMarkedRef.current = marked
+        return () => clearTimeout(t)
+      }
     }
     prevMarkedRef.current = marked
   }, [marked])
@@ -128,10 +131,11 @@ const BingoSquare = memo(function BingoSquare({
   if (isFree) {
     return (
       <button type="button" onClick={() => onClick?.(square)}
+        aria-label="Free square"
         className={`sq-free-glow ${isWinning ? 'sq-winning-square' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
           width: '100%', aspectRatio: '1', borderRadius: 6,
-          background: '#ff6b35', border: 'none', cursor: 'pointer',
+          background: 'var(--db-primary)', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 0 12px rgba(255,107,53,0.3)',
         }}>
@@ -154,7 +158,7 @@ const BingoSquare = memo(function BingoSquare({
         border: '1px solid rgba(255,107,53,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: '#ff6b35' }}>⟳</span>
+        <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: 'var(--db-primary)' }}>⟳</span>
       </div>
     )
   }
@@ -192,6 +196,7 @@ const BingoSquare = memo(function BingoSquare({
   // ══════════════════════════════════════════════
   return (
     <button type="button"
+      aria-label={`${playerLabel} ${statLabel}${marked ? ', marked' : ''}`}
       onClick={() => { if (longPressFired.current) return; onClick?.(square, index) }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -238,7 +243,7 @@ const BingoSquare = memo(function BingoSquare({
             style={{
               fontFamily: "'JetBrains Mono',monospace",
               fontWeight: 800, lineHeight: '18px',
-              color: marked ? '#ff6b35' : 'var(--db-text-primary)',
+              color: marked ? 'var(--db-primary)' : 'var(--db-text-primary)',
               textTransform: 'uppercase', whiteSpace: 'nowrap',
               display: 'inline-block', textAlign: 'left',
             }}>{playerLabel}</span>
@@ -273,7 +278,7 @@ const BingoSquare = memo(function BingoSquare({
             width: marked ? '100%' : `${progressPct}%`,
             height: '100%',
             background: marked
-              ? 'linear-gradient(90deg, #ff8855, #ff6b35)'
+              ? 'linear-gradient(90deg, var(--db-primary-light), var(--db-primary))'
               : `linear-gradient(90deg, ${hexToRgba(teamColor, 0.5)}, ${teamColor})`,
             transition: 'width 0.5s ease-out',
           }} />
@@ -292,7 +297,7 @@ const BingoSquare = memo(function BingoSquare({
       {!showProgress && marked && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 5,
-          background: '#ff6b35', opacity: 0.7,
+          background: 'var(--db-primary)', opacity: 0.7,
         }} />
       )}
 
@@ -300,7 +305,7 @@ const BingoSquare = memo(function BingoSquare({
       {square?.replaced_injury && (
         <span style={{
           position: 'absolute', top: 1, right: 3, zIndex: 2,
-          fontFamily: "'JetBrains Mono',monospace", fontSize: 7, color: '#ff6b35', opacity: 0.5,
+          fontFamily: "'JetBrains Mono',monospace", fontSize: 7, color: 'var(--db-primary)', opacity: 0.5,
         }}>♻</span>
       )}
     </button>

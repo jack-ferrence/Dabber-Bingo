@@ -12,10 +12,10 @@ const SPORTS = [
 
 const STATUS_COLORS = {
   draft: 'var(--db-text-secondary)',
-  active: '#00cc88',
-  live: '#ff2d2d',
+  active: 'var(--db-success)',
+  live: 'var(--db-live)',
   finished: 'var(--db-text-secondary)',
-  cancelled: '#ff6b35',
+  cancelled: 'var(--db-primary)',
 }
 
 // ── Image uploader ──────────────────────────────────────────────────────────
@@ -58,9 +58,9 @@ function ImageUploader({ label, value, onChange }) {
       </label>
       {preview ? (
         <div style={{ marginBottom: 8, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--db-border-default)', maxWidth: 320, position: 'relative' }}>
-          <img src={preview} alt="Preview" style={{ width: '100%', height: 'auto', display: 'block' }} />
+          <img src={preview} alt="Preview" loading="lazy" style={{ width: '100%', height: 'auto', display: 'block' }} />
           <button type="button" onClick={() => { setPreview(null); onChange(null) }}
-            style={{ position: 'absolute', top: 6, right: 6, background: 'var(--db-bg-overlay)', border: 'none', color: '#ff2d2d', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', padding: '4px 8px', borderRadius: 4 }}>
+            style={{ position: 'absolute', top: 6, right: 6, background: 'var(--db-bg-overlay)', border: 'none', color: 'var(--db-live)', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', padding: '4px 8px', borderRadius: 4 }}>
             REMOVE
           </button>
         </div>
@@ -72,7 +72,7 @@ function ImageUploader({ label, value, onChange }) {
           style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             gap: 8, width: '100%', maxWidth: 320, height: 120,
-            borderRadius: 8, border: `2px dashed ${dragging ? '#ff6b35' : 'var(--db-border-default)'}`,
+            borderRadius: 8, border: `2px dashed ${dragging ? 'var(--db-primary)' : 'var(--db-border-default)'}`,
             background: dragging ? 'rgba(255,107,53,0.06)' : 'var(--db-bg-surface)',
             color: 'var(--db-text-secondary)', fontFamily: 'var(--db-font-mono)', fontSize: 11,
             cursor: 'pointer', transition: 'border-color 150ms, background 150ms',
@@ -82,7 +82,7 @@ function ImageUploader({ label, value, onChange }) {
           <input type="file" accept="image/*" onChange={handleFileInput} style={{ display: 'none' }} />
         </label>
       )}
-      {err && <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#ff2d2d', marginTop: 4 }}>{err}</p>}
+      {err && <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-live)', marginTop: 4 }}>{err}</p>}
     </div>
   )
 }
@@ -103,7 +103,7 @@ function Field({ label, children, hint }) {
 const inputStyle = {
   width: '100%', padding: '10px 12px', borderRadius: 6,
   background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-default)', color: 'var(--db-text-primary)',
-  fontFamily: 'var(--db-font-mono)', fontSize: 13, outline: 'none',
+  fontFamily: 'var(--db-font-mono)', fontSize: 13,
   boxSizing: 'border-box',
 }
 
@@ -249,7 +249,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
             <button key={s.key} type="button" onClick={() => set('sport', s.key)}
               style={{
                 padding: '8px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
-                background: form.sport === s.key ? '#ff6b35' : 'var(--db-bg-elevated)',
+                background: form.sport === s.key ? 'var(--db-primary)' : 'var(--db-bg-elevated)',
                 color: form.sport === s.key ? 'var(--db-text-on-primary)' : 'var(--db-text-secondary)',
                 fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700,
               }}>
@@ -301,7 +301,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
             disabled={!espnInput || fetchingEspn}
             style={{
               padding: '8px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
-              background: espnInput ? '#ff6b35' : 'var(--db-border-default)',
+              background: espnInput ? 'var(--db-primary)' : 'var(--db-border-default)',
               color: espnInput ? 'var(--db-text-on-primary)' : 'var(--db-text-secondary)',
               fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 800,
               whiteSpace: 'nowrap', opacity: fetchingEspn ? 0.5 : 1,
@@ -317,7 +317,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
       </Field>
 
       <div style={{ borderTop: '1px solid var(--db-border-default)', marginTop: 20, paddingTop: 20 }}>
-        <h4 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.08em', marginBottom: 16 }}>
+        <h4 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--db-primary)', letterSpacing: '0.08em', marginBottom: 16 }}>
           PRIZE DETAILS
         </h4>
 
@@ -333,7 +333,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
       </div>
 
       <div style={{ borderTop: '1px solid var(--db-border-default)', marginTop: 20, paddingTop: 20 }}>
-        <h4 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.08em', marginBottom: 16 }}>
+        <h4 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--db-primary)', letterSpacing: '0.08em', marginBottom: 16 }}>
           ENTRY CONFIG
         </h4>
 
@@ -348,7 +348,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
 
         <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginTop: 8 }}>
           <input type="checkbox" checked={form.free_entry} onChange={(e) => set('free_entry', e.target.checked)}
-            style={{ width: 18, height: 18, accentColor: '#ff6b35' }} />
+            style={{ width: 18, height: 18, accentColor: 'var(--db-primary)' }} />
           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-primary)' }}>
             FREE ENTRY (marketing promo)
           </span>
@@ -364,7 +364,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
         <button type="button" onClick={handleSubmit} disabled={saving}
           style={{
             padding: '10px 24px', borderRadius: 6, border: 'none', cursor: 'pointer',
-            background: '#ff6b35', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)',
+            background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)',
             fontSize: 12, fontWeight: 800, letterSpacing: '0.06em',
             opacity: saving ? 0.5 : 1,
           }}>
@@ -394,7 +394,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
     }}>
       {game.prize_image_url && (
         <div style={{ width: 72, height: 72, borderRadius: 6, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--db-border-default)' }}>
-          <img src={game.prize_image_url} alt={game.prize_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={game.prize_image_url} alt={game.prize_name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       )}
 
@@ -411,7 +411,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
             {game.sport.toUpperCase()}
           </span>
           {game.free_entry && (
-            <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4, background: '#00cc8822', color: '#00cc88', fontFamily: 'var(--db-font-mono)' }}>
+            <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4, background: 'var(--db-success-bg)', color: 'var(--db-success)', fontFamily: 'var(--db-font-mono)' }}>
               FREE
             </span>
           )}
@@ -441,15 +441,15 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
             📅 {new Date(game.starts_at).toLocaleDateString()} {new Date(game.starts_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
           </span>
           {game.room_id && (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#00cc88' }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-success)' }}>
               ✓ Room linked
             </span>
           )}
         </div>
 
         {game.winner_username && (
-          <div style={{ marginTop: 8, padding: '6px 10px', borderRadius: 4, background: '#ff6b3515', border: '1px solid #ff6b3530' }}>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35', fontWeight: 700 }}>
+          <div style={{ marginTop: 8, padding: '6px 10px', borderRadius: 4, background: 'var(--db-primary)15', border: '1px solid var(--db-primary)30' }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-primary)', fontWeight: 700 }}>
               WINNER: {game.winner_username} {game.winner_claimed ? '✅ Claimed' : '⏳ Unclaimed'}
             </span>
           </div>
@@ -463,7 +463,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
 
           {game.status === 'draft' && (
             <button type="button" onClick={() => onStatusChange(game.id, 'active')}
-              style={{ padding: '6px 12px', borderRadius: 4, border: 'none', background: '#00cc88', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 800 }}>
+              style={{ padding: '6px 12px', borderRadius: 4, border: 'none', background: 'var(--db-success)', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 800 }}>
               PUBLISH
             </button>
           )}
@@ -475,7 +475,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
                 UNPUBLISH
               </button>
               <button type="button" onClick={() => onStatusChange(game.id, 'cancelled')}
-                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #ff2d2d', background: 'transparent', color: '#ff2d2d', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 700 }}>
+                style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #ff2d2d', background: 'transparent', color: 'var(--db-live)', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 700 }}>
                 CANCEL
               </button>
             </>
@@ -483,7 +483,7 @@ function FeaturedGameCard({ game, onEdit, onStatusChange, onAwardWinner, userId 
 
           {(game.status === 'live' || game.status === 'finished') && !game.winner_user_id && (
             <button type="button" onClick={() => onAwardWinner(game.id)}
-              style={{ padding: '6px 12px', borderRadius: 4, border: 'none', background: '#ff6b35', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 800 }}>
+              style={{ padding: '6px 12px', borderRadius: 4, border: 'none', background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)', fontSize: 10, cursor: 'pointer', fontWeight: 800 }}>
               AWARD WINNER
             </button>
           )}
@@ -600,7 +600,7 @@ export default function AdminFeaturedPage() {
           <button type="button" onClick={() => setEditing('new')}
             style={{
               padding: '10px 20px', borderRadius: 6, border: 'none', cursor: 'pointer',
-              background: '#ff6b35', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)',
+              background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', fontFamily: 'var(--db-font-mono)',
               fontSize: 11, fontWeight: 800, letterSpacing: '0.06em',
             }}>
             + NEW GAME
@@ -622,7 +622,7 @@ export default function AdminFeaturedPage() {
               <button key={f} type="button" onClick={() => setFilter(f)}
                 style={{
                   padding: '6px 14px', borderRadius: 16, border: 'none', cursor: 'pointer',
-                  background: filter === f ? '#ff6b35' : 'var(--db-bg-elevated)',
+                  background: filter === f ? 'var(--db-primary)' : 'var(--db-bg-elevated)',
                   color: filter === f ? 'var(--db-text-on-primary)' : 'var(--db-text-secondary)',
                   fontFamily: 'var(--db-font-mono)', fontSize: 10, fontWeight: 700,
                   letterSpacing: '0.06em', textTransform: 'uppercase',

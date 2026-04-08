@@ -34,18 +34,17 @@ export default function SportTabs({ onTabClick }) {
             fontWeight: 600,
             padding: '8px 16px',
             cursor: sport.active ? 'pointer' : 'default',
-            color: sport.active ? '#ff6b35' : 'var(--db-text-ghost)',
+            color: sport.active ? 'var(--db-primary)' : 'var(--db-text-ghost)',
             background: 'none',
             borderTop: 'none',
             borderLeft: 'none',
             borderRight: 'none',
-            borderBottom: sport.active ? '2px solid #ff6b35' : '2px solid transparent',
+            borderBottom: sport.active ? '2px solid var(--db-primary)' : '2px solid transparent',
             flexShrink: 0,
             transition: 'color 100ms ease',
-            outline: 'none',
           }}
-          onMouseEnter={(e) => { if (sport.active) e.currentTarget.style.color = '#ff8855' }}
-          onMouseLeave={(e) => { if (sport.active) e.currentTarget.style.color = '#ff6b35' }}
+          onMouseEnter={(e) => { if (sport.active) e.currentTarget.style.color = 'var(--db-primary-light)' }}
+          onMouseLeave={(e) => { if (sport.active) e.currentTarget.style.color = 'var(--db-primary)' }}
         >
           {sport.label}
           {!sport.active && (

@@ -1,7 +1,7 @@
-import { useEffect } from 'react'
+import { useFocusTrap } from '../../hooks/useFocusTrap.js'
 
 const TIER_COLORS = {
-  1: '#22c55e',
+  1: 'var(--db-success)',
   2: '#eab308',
   3: '#ef4444',
 }
@@ -49,7 +49,7 @@ function MiniSquare({ square, index }) {
       )}
 
       {isFree ? (
-        <span style={{ fontSize: 9, fontWeight: 800, color: '#ff6b35', fontFamily: 'var(--db-font-display)', letterSpacing: '0.05em' }}>
+        <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--db-primary)', fontFamily: 'var(--db-font-display)', letterSpacing: '0.05em' }}>
           FREE
         </span>
       ) : (
@@ -57,7 +57,7 @@ function MiniSquare({ square, index }) {
           <span style={{ fontSize: 7, color: 'var(--db-text-ghost)', fontFamily: 'var(--db-font-ui)', lineHeight: 1, textAlign: 'center', overflow: 'hidden', maxWidth: '100%', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {namePart}
           </span>
-          <span style={{ fontSize: 7, fontWeight: 700, color: isMarked ? '#ff6b35' : 'var(--db-text-secondary)', fontFamily: 'var(--db-font-mono)', lineHeight: 1, textAlign: 'center', overflow: 'hidden', maxWidth: '100%', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+          <span style={{ fontSize: 7, fontWeight: 700, color: isMarked ? 'var(--db-primary)' : 'var(--db-text-secondary)', fontFamily: 'var(--db-font-mono)', lineHeight: 1, textAlign: 'center', overflow: 'hidden', maxWidth: '100%', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
             {statPart}
           </span>
         </>
@@ -75,18 +75,15 @@ export default function CardViewerModal({
   linesCompleted = 0,
   loading,
 }) {
-  // Dismiss on Escape
-  useEffect(() => {
-    if (!isOpen) return
-    const handler = (e) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [isOpen, onClose])
+  const trapRef = useFocusTrap(isOpen, { onEscape: onClose })
 
   if (!isOpen) return null
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${playerName}'s bingo card`}
       style={{
         position: 'fixed',
         inset: 0,
@@ -101,6 +98,7 @@ export default function CardViewerModal({
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
+        ref={trapRef}
         style={{
           position: 'relative',
           width: '100%',
@@ -120,9 +118,9 @@ export default function CardViewerModal({
           <button
             type="button"
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '2px 6px', flexShrink: 0, borderRadius: 4, transition: 'color 120ms ease' }}
+            style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, borderRadius: 4, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
             aria-label="Close"
           >✕</button>
         </div>

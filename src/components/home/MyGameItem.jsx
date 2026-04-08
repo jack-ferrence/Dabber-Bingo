@@ -57,7 +57,7 @@ export default function MyGameItem({ room }) {
               style={{
                 fontSize: 10,
                 fontWeight: 700,
-                color: '#ff6b35',
+                color: 'var(--db-primary)',
                 background: 'rgba(255,107,53,0.10)',
                 padding: '1px 6px',
                 borderRadius: 4,

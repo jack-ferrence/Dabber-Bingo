@@ -1,22 +1,25 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, lazy, Suspense } from 'react'
 import { Routes, Route, Link, Navigate, useMatch } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import { useNetworkStatus } from './hooks/useNetworkStatus.js'
 import { useProfile } from './hooks/useProfile.js'
+import { lazyRetry } from './lib/lazyRetry.js'
 import SplashScreen from './components/ui/SplashScreen.jsx'
 import DobberLogo from './components/ui/DobberLogo.jsx'
-import LobbyPage from './pages/LobbyPage.jsx'
-import GamePage from './pages/GamePage.jsx'
-import LoginPage from './pages/LoginPage.jsx'
-import RegisterPage from './pages/RegisterPage.jsx'
-import StorePage from './pages/StorePage.jsx'
-import SettingsPage from './pages/SettingsPage.jsx'
 import ProtectedRoute from './pages/ProtectedRoute.jsx'
 import AppShell from './components/layout/AppShell.jsx'
-import AdminFeaturedPage from './pages/AdminFeaturedPage.jsx'
-import ContributePage from './pages/ContributePage.jsx'
-import PrivacyPage from './pages/PrivacyPage.jsx'
-import TermsPage from './pages/TermsPage.jsx'
+
+// Route-level code splitting — each page loads on demand
+const LobbyPage = lazy(() => lazyRetry(() => import('./pages/LobbyPage.jsx')))
+const GamePage = lazy(() => lazyRetry(() => import('./pages/GamePage.jsx')))
+const LoginPage = lazy(() => lazyRetry(() => import('./pages/LoginPage.jsx')))
+const RegisterPage = lazy(() => lazyRetry(() => import('./pages/RegisterPage.jsx')))
+const StorePage = lazy(() => lazyRetry(() => import('./pages/StorePage.jsx')))
+const SettingsPage = lazy(() => lazyRetry(() => import('./pages/SettingsPage.jsx')))
+const AdminFeaturedPage = lazy(() => lazyRetry(() => import('./pages/AdminFeaturedPage.jsx')))
+const ContributePage = lazy(() => lazyRetry(() => import('./pages/ContributePage.jsx')))
+const PrivacyPage = lazy(() => lazyRetry(() => import('./pages/PrivacyPage.jsx')))
+const TermsPage = lazy(() => lazyRetry(() => import('./pages/TermsPage.jsx')))
 
 function OfflineBanner() {
   return (
@@ -37,6 +40,12 @@ function OfflineBanner() {
     </div>
   )
 }
+
+const RouteFallback = () => (
+  <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'var(--db-text-secondary)' }}>Loading...</span>
+  </div>
+)
 
 function App() {
   const { user, loading } = useAuth()
@@ -93,9 +102,11 @@ function App() {
         </header>
 
         <main className="flex-1 overflow-hidden">
-          <Routes>
-            <Route path="/room/:roomId" element={<GamePage />} />
-          </Routes>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/room/:roomId" element={<GamePage />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     )
@@ -104,6 +115,7 @@ function App() {
   return (
     <AppShell>
       {!isOnline && <OfflineBanner />}
+      <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -125,6 +137,7 @@ function App() {
           }
         />
       </Routes>
+      </Suspense>
     </AppShell>
   )
 }

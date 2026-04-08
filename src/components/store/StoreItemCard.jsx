@@ -46,7 +46,7 @@ function SkinPreview({ skinClass }) {
           : { background: 'var(--db-bg-page)', border: '1px solid rgba(255,107,53,0.35)' }
       case 'retro':
         return isMarked
-          ? { background: '#2a1a10', border: '1px solid #ff6b35' }
+          ? { background: '#2a1a10', border: '1px solid var(--db-primary)' }
           : {
               background: 'var(--db-bg-page)',
               border: '1px solid var(--db-bg-active)',
@@ -110,7 +110,7 @@ function DaubPreview({ daubStyle }) {
           position: 'relative', overflow: 'hidden',
         }}>
           {marked && daubStyle === 'classic' && (
-            <span style={{ fontSize: 8, color: '#ff6b35', position: 'absolute', right: 2, top: 1 }}>✓</span>
+            <span style={{ fontSize: 8, color: 'var(--db-primary)', position: 'absolute', right: 2, top: 1 }}>✓</span>
           )}
           {marked && daubStyle !== 'classic' && (
             <DaubOverlay style={daubStyle} size={28} animated={false} />
@@ -240,7 +240,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
           {item.name}
         </p>
         {item.description && (
-          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0, lineHeight: 1.4 }}>
+          <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0, lineHeight: 1.4 }}>
             {item.description}
           </p>
         )}
@@ -248,7 +248,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
 
       {/* Error */}
       {err && (
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff5555', padding: '0 12px 6px', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-danger)', padding: '0 12px 6px', margin: 0 }}>
           {err}
         </p>
       )}
@@ -256,19 +256,19 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
       {/* Actions */}
       <div style={{ padding: '8px 12px 12px', display: 'flex', flexDirection: 'column', gap: 5 }}>
         {toast ? (
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: '#22c55e' }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--db-success)' }}>
             ✓ {toast}
           </span>
         ) : confirming ? (
           <div>
             <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: '0 0 8px' }}>
-              Buy <strong style={{ color: 'var(--db-text-primary)', fontWeight: 600 }}>{item.name}</strong> for <strong style={{ color: '#ff6b35' }}>{price} ◈</strong>?
+              Buy <strong style={{ color: 'var(--db-text-primary)', fontWeight: 600 }}>{item.name}</strong> for <strong style={{ color: 'var(--db-primary)' }}>{price} ◈</strong>?
             </p>
             <div style={{ display: 'flex', gap: 6 }}>
               <button
                 type="button"
                 onClick={handleConfirmPurchase}
-                style={{ flex: 1, background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, padding: '6px 0', cursor: 'pointer' }}
+                style={{ flex: 1, background: 'var(--db-gradient-primary)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, padding: '6px 0', cursor: 'pointer' }}
               >
                 Confirm
               </button>
@@ -289,7 +289,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                 href="/contribute"
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  width: '100%', background: 'rgba(255,107,53,0.08)', color: '#ff6b35',
+                  width: '100%', background: 'rgba(255,107,53,0.08)', color: 'var(--db-primary)',
                   border: '1px solid rgba(255,107,53,0.25)', borderRadius: 6,
                   fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
                   padding: '7px 0', textDecoration: 'none', transition: 'background 100ms ease',
@@ -313,7 +313,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                   background: !canBuy
                     ? 'var(--db-border-subtle)'
                     : canAfford
-                      ? 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)'
+                      ? 'var(--db-gradient-primary)'
                       : 'var(--db-border-subtle)',
                   color: !canBuy
                     ? 'var(--db-text-ghost)'
@@ -335,7 +335,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
             )}
 
             {(owned || isFree) && item.category === 'chat_emote' ? (
-              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: '#22c55e' }}>
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'var(--db-success)' }}>
                 ✓ Use in chat
               </span>
             ) : (owned || isFree) ? (
@@ -347,7 +347,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                 {/* Equip row */}
                 {equipped ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
-                    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: '#ff6b35' }}>
+                    <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, color: 'var(--db-primary)' }}>
                       Equipped ✓
                     </span>
                     {item.category === 'badge' && (
@@ -367,7 +367,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
                     onClick={doEquip}
                     disabled={equipping}
                     style={{ width: '100%', background: 'var(--db-border-subtle)', color: 'var(--db-text-muted)', border: '1px solid var(--db-border-subtle)', borderRadius: 6, fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, padding: '6px 0', cursor: equipping ? 'wait' : 'pointer', transition: 'all 100ms ease' }}
-                    onMouseEnter={(e) => { if (!equipping) { e.currentTarget.style.borderColor = 'rgba(255,107,53,0.4)'; e.currentTarget.style.color = '#ff6b35'; e.currentTarget.style.background = 'rgba(255,107,53,0.08)' } }}
+                    onMouseEnter={(e) => { if (!equipping) { e.currentTarget.style.borderColor = 'rgba(255,107,53,0.4)'; e.currentTarget.style.color = 'var(--db-primary)'; e.currentTarget.style.background = 'rgba(255,107,53,0.08)' } }}
                     onMouseLeave={(e) => { if (!equipping) { e.currentTarget.style.borderColor = 'var(--db-border-subtle)'; e.currentTarget.style.color = 'var(--db-text-muted)'; e.currentTarget.style.background = 'var(--db-border-subtle)' } }}
                   >
                     {equipping ? '…' : 'Equip'}

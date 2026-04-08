@@ -37,7 +37,7 @@ const LineMiniGrid = memo(function LineMiniGrid({ lineIndices, lineNumber, onTap
               height: 6,
               borderRadius: 1.5,
               background: lineSet.has(i)
-                ? '#ff6b35'
+                ? 'var(--db-primary)'
                 : 'var(--db-bg-hover)',
               boxShadow: lineSet.has(i)
                 ? '0 0 3px rgba(255,107,53,0.4)'
@@ -50,7 +50,7 @@ const LineMiniGrid = memo(function LineMiniGrid({ lineIndices, lineNumber, onTap
         fontFamily: "'JetBrains Mono',monospace",
         fontSize: 8,
         fontWeight: 700,
-        color: '#ff6b35',
+        color: 'var(--db-primary)',
         opacity: 0.6,
         letterSpacing: '0.04em',
       }}>

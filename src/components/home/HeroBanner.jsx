@@ -27,7 +27,7 @@ export default function HeroBanner() {
 
       <div className="relative z-10 max-w-lg">
         <p
-          style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.18em', color: '#ff6b35', marginBottom: 12 }}
+          style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.18em', color: 'var(--db-primary)', marginBottom: 12 }}
         >
           NBA BINGO — FREE TO PLAY
         </p>
@@ -58,7 +58,7 @@ export default function HeroBanner() {
             gap: 8,
             borderRadius: 8,
             padding: '11px 24px',
-            background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+            background: 'var(--db-gradient-primary)',
             color: '#fff',
             border: 'none',
             fontFamily: 'var(--db-font-display)',

@@ -47,6 +47,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       external: ['@sentry/node'],
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-sentry': ['@sentry/react'],
+        },
+      },
     },
   },
 })

@@ -354,7 +354,7 @@ function GameRoom({
                 <button
                   type="button"
                   onClick={onStartGame}
-                  style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, padding: '4px 12px', fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'background 100ms ease' }}
+                  style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--db-success)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 6, padding: '4px 12px', fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'background 100ms ease' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,197,94,0.25)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(34,197,94,0.15)' }}
                 >
@@ -409,7 +409,7 @@ function GameRoom({
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 'clamp(48px, 14vw, 64px)' }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(9px, 2.5vw, 11px)', fontWeight: 700, color: '#ff6b35', letterSpacing: '0.06em' }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(9px, 2.5vw, 11px)', fontWeight: 700, color: 'var(--db-primary)', letterSpacing: '0.06em' }}>
                 {room.game_status_detail || (room.game_period ? `Q${room.game_period}` : 'PRE')}
               </span>
               {room.game_clock && (
@@ -483,11 +483,11 @@ function GameRoom({
           textAlign: 'center',
           flexShrink: 0,
         }}>
-          <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.08em', color: '#ff6b35', margin: '0 0 1px' }}>
-            LATE JOIN — CASUAL MODE
+          <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.08em', color: 'var(--db-primary)', margin: '0 0 1px' }}>
+            JOINED LATE
           </p>
           <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 400, color: 'var(--db-text-secondary)', margin: 0 }}>
-            You&apos;ll earn Dobs for squares &amp; lines, but you won&apos;t appear on the leaderboard or qualify for prizes.
+            You&apos;ll still earn Dobs for marking squares and completing lines, but late joins aren&apos;t eligible for the leaderboard.
           </p>
         </div>
       )}
@@ -502,15 +502,15 @@ function GameRoom({
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '40px 0' }}>
               <span style={{ fontSize: 28 }}>🏁</span>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--db-text-muted)', letterSpacing: '0.08em' }}>
-                GAME FINISHED
+                GAME OVER
               </span>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-muted)', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
-                This game has ended. You didn&apos;t have a card for this game.
+                This game has ended. Head back to the lobby to find a new one.
               </span>
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                style={{ marginTop: 8, background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '10px 20px', cursor: 'pointer' }}
+                style={{ marginTop: 8, background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '10px 20px', cursor: 'pointer' }}
               >
                 BACK TO LOBBY
               </button>
@@ -544,19 +544,19 @@ function GameRoom({
               {room?.status === 'lobby' && (
                 <div style={{ width: '100%', maxWidth: 512 }}>
                   {swapError && (
-                    <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#ff2d2d', marginBottom: 4, textAlign: 'center' }}>
+                    <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-live)', marginBottom: 4, textAlign: 'center' }}>
                       {swapError}
                     </p>
                   )}
                   {swapCount < 2 ? (
                     <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', textAlign: 'center' }}>
                       {swapCount === 0
-                        ? 'Hold a square to swap · 2 remaining'
-                        : 'Hold a square to swap · 1 remaining'}
+                        ? 'Long-press any square to swap it · 2 swaps left'
+                        : 'Long-press any square to swap it · 1 swap left'}
                     </p>
                   ) : (
                     <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', textAlign: 'center' }}>
-                      Max swaps reached (2/2)
+                      Both swaps used — your card is locked in
                     </p>
                   )}
                 </div>
@@ -566,12 +566,13 @@ function GameRoom({
               {room?.status === 'lobby' && !storePromoDismissed && (
                 <div className="hidden md:flex" style={{ width: '100%', maxWidth: 512, alignItems: 'center', justifyContent: 'space-between', background: 'var(--db-border-subtle)', border: '1px solid var(--db-border-default)', borderRadius: 6, padding: '8px 16px' }}>
                   <Link to="/store" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-text-ghost)', textDecoration: 'none', letterSpacing: '0.04em' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = '#ff6b35' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-primary)' }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
                   >
                     Customize your look in the Dobs Store →
                   </Link>
                   <button type="button" onClick={handleDismissStorePromo}
+                    aria-label="Dismiss"
                     style={{ background: 'none', border: 'none', color: 'var(--db-text-ghost)', cursor: 'pointer', fontFamily: 'var(--db-font-ui)', fontSize: 14, padding: '0 0 0 12px', lineHeight: 1 }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
@@ -624,7 +625,7 @@ function GameRoom({
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 16px',
                   }}>
-                    <span style={{ fontSize: 24, color: '#22c55e' }}>✓</span>
+                    <span style={{ fontSize: 24, color: 'var(--db-success)' }}>✓</span>
                   </div>
 
                   <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, fontWeight: 900, letterSpacing: '0.04em', color: 'var(--db-text-primary)', margin: '0 0 10px', lineHeight: 1 }}>
@@ -636,36 +637,36 @@ function GameRoom({
                     <>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 12 }}>
                         <div className="db-spinner" />
-                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: '#ff6b35', margin: 0 }}>
-                          Checking for player props...
+                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--db-primary)', margin: 0 }}>
+                          Building your card...
                         </p>
                       </div>
                       <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
-                        Not enough player props have been posted for this matchup yet. We&apos;re checking every minute — your card will generate automatically once they appear.
+                        We&apos;re waiting for player stats to be published for this game. Your card will appear automatically — we&apos;re checking every minute.
                       </p>
                     </>
                   ) : error === 'no_props_available' ? (
                     <>
                       <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-muted)', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
-                        Player props aren&apos;t available for this matchup. This sometimes happens with smaller-market games.
+                        Player stats aren&apos;t available for this game. This sometimes happens with smaller matchups — try a different game instead.
                       </p>
                       <button
                         type="button"
                         onClick={() => navigate('/')}
-                        style={{ background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                        style={{ background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
                       >
                         BACK TO LOBBY
                       </button>
                     </>
                   ) : error ? (
                     <>
-                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff6b35', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
+                      <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-primary)', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
                         {error}
                       </p>
                       <button
                         type="button"
                         onClick={() => navigate('/')}
-                        style={{ background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                        style={{ background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
                       >
                         BACK TO LOBBY
                       </button>
@@ -674,15 +675,15 @@ function GameRoom({
                     <>
                       <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
                         {room?.odds_status === 'insufficient'
-                          ? 'Waiting for player props to be posted for this game...'
+                          ? 'Waiting for player stats to be published for this game...'
                           : room?.sport === 'mlb'
-                            ? 'Your card will be generated once MLB lineups are posted — usually about an hour before first pitch.'
-                            : 'Waiting for player props to load. This usually takes a few minutes.'}
+                            ? 'Your card will be ready once lineups are posted — usually about an hour before first pitch.'
+                            : 'Your card is being prepared. This usually takes a few minutes before game time.'}
                       </p>
                       <button
                         type="button"
                         onClick={() => navigate('/')}
-                        style={{ background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                        style={{ background: 'var(--db-primary)', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
                       >
                         BACK TO LOBBY
                       </button>
@@ -693,12 +694,12 @@ function GameRoom({
                   {error !== 'no_props_available' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 12 }}>
                       {room?.starts_at && (
-                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)', margin: 0 }}>
+                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', margin: 0 }}>
                           Game starts {new Date(room.starts_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                         </p>
                       )}
                       {room?.participant_count > 0 && (
-                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)', margin: 0 }}>
+                        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', margin: 0 }}>
                           {room.participant_count} player{room.participant_count === 1 ? '' : 's'} joined
                         </p>
                       )}
@@ -709,9 +710,9 @@ function GameRoom({
                     <button
                       type="button"
                       onClick={onRetryCard}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)', marginTop: 10, textDecoration: 'underline' }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', marginTop: 10, padding: '10px 0', textDecoration: 'underline' }}
                     >
-                      Props are available — tap to generate card
+                      Your card is ready — tap to generate
                     </button>
                   )}
                 </div>
@@ -774,7 +775,7 @@ function GameRoom({
         borderTop: '1px solid var(--db-border-subtle)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 22, fontWeight: 800, color: '#ff6b35', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 22, fontWeight: 800, color: 'var(--db-primary)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
             {markedCount}<span style={{ fontSize: 14, color: 'var(--db-text-ghost)' }}>/25</span>
           </span>
           <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>
@@ -895,7 +896,7 @@ function GameRoom({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px', flexShrink: 0 }}>
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.1em', color: 'var(--db-text-secondary)' }}>STANDINGS</span>
-              <button type="button" onClick={() => setMobileLeaderboardSheet(false)} style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 18, cursor: 'pointer', padding: '4px 8px', lineHeight: 1 }}>✕</button>
+              <button type="button" onClick={() => setMobileLeaderboardSheet(false)} aria-label="Close" style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 18, cursor: 'pointer', padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
               <Suspense fallback={<PanelFallback />}>
@@ -922,7 +923,7 @@ function GameRoom({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px', flexShrink: 0 }}>
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.1em', color: 'var(--db-text-secondary)' }}>CHAT</span>
-              <button type="button" onClick={() => setMobileChatSheet(false)} style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 18, cursor: 'pointer', padding: '4px 8px', lineHeight: 1 }}>✕</button>
+              <button type="button" onClick={() => setMobileChatSheet(false)} aria-label="Close" style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 18, cursor: 'pointer', padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px', paddingBottom: 'env(safe-area-inset-bottom, 0px)', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <Suspense fallback={<PanelFallback />}>
@@ -985,7 +986,7 @@ function GameRoom({
               </h2>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-text-ghost)', marginTop: 8 }}>
                 {dobsSummary.isLateJoin
-                  ? 'Casual mode — late join'
+                  ? 'Late join — not ranked'
                   : dobsSummary.myRank > 0 && dobsSummary.totalPlayers > 0
                     ? `${dobsSummary.ordinal(dobsSummary.myRank)} of ${dobsSummary.totalPlayers} player${dobsSummary.totalPlayers === 1 ? '' : 's'}`
                     : 'Final results'}
@@ -1007,12 +1008,12 @@ function GameRoom({
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8, marginBottom: 8, borderBottom: '1px solid var(--db-border-subtle)' }}>
                   <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)' }}>{label}</span>
-                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: '#ff6b35' }}>+{value} ◈</span>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--db-primary)' }}>+{value} ◈</span>
                 </div>
               ))}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 }}>
                 <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: 'var(--db-text-primary)' }}>TOTAL</span>
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 18, fontWeight: 700, color: '#ff6b35' }}>+{dobsSummary.total} ◈</span>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--db-primary)' }}>+{dobsSummary.total} ◈</span>
               </div>
             </div>
 
@@ -1043,7 +1044,7 @@ function GameRoom({
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                style={{ flex: 1, fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.04em', padding: '11px 0', borderRadius: 8, background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 120ms ease' }}
+                style={{ flex: 1, fontFamily: 'var(--db-font-display)', fontSize: 15, fontWeight: 800, letterSpacing: '0.04em', padding: '11px 0', borderRadius: 8, background: 'var(--db-gradient-primary)', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 120ms ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9' }}
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
               >

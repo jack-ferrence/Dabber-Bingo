@@ -63,7 +63,7 @@ export default function Navbar({ onMenuClick }) {
                   className="flex items-center md:hidden"
                   style={{ gap: 4, textDecoration: 'none' }}
                 >
-                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.03em' }}>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 800, color: 'var(--db-primary)', letterSpacing: '0.03em' }}>
                     {dobsBalance.toLocaleString()} ◈
                   </span>
                 </Link>
@@ -85,8 +85,8 @@ export default function Navbar({ onMenuClick }) {
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.14)'; e.currentTarget.style.borderColor = 'rgba(255,107,53,0.35)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,107,53,0.2)' }}
                 >
-                  <span style={{ color: '#ff6b35', fontSize: 12, lineHeight: 1 }}>◆</span>
-                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 800, color: '#ff6b35', letterSpacing: '0.02em' }}>
+                  <span style={{ color: 'var(--db-primary)', fontSize: 12, lineHeight: 1 }}>◆</span>
+                  <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 800, color: 'var(--db-primary)', letterSpacing: '0.02em' }}>
                     {dobsBalance.toLocaleString()}
                   </span>
                   <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 600, color: 'rgba(255,107,53,0.55)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
@@ -103,12 +103,12 @@ export default function Navbar({ onMenuClick }) {
               style={{
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
                 letterSpacing: '0.02em', textDecoration: 'none',
-                color: isStore ? '#ff6b35' : 'var(--db-text-ghost)',
+                color: isStore ? 'var(--db-primary)' : 'var(--db-text-ghost)',
                 gap: 4,
                 transition: 'color 120ms ease',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-primary)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = isStore ? '#ff6b35' : 'var(--db-text-ghost)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isStore ? 'var(--db-primary)' : 'var(--db-text-ghost)' }}
             >
               Store
             </Link>
@@ -124,7 +124,7 @@ export default function Navbar({ onMenuClick }) {
                 <span
                   className="flex h-7 w-7 items-center justify-center text-xs font-bold flex-shrink-0"
                   style={{
-                    background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                    background: 'var(--db-gradient-primary)',
                     color: '#fff',
                     borderRadius: 4,
                     fontFamily: 'var(--db-font-ui)',
@@ -201,7 +201,7 @@ export default function Navbar({ onMenuClick }) {
               to="/register"
               style={{
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 700,
-                color: '#fff', background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                color: '#fff', background: 'var(--db-gradient-primary)',
                 borderRadius: 6, padding: '6px 14px',
                 textDecoration: 'none', letterSpacing: '0.01em',
                 boxShadow: '0 2px 8px rgba(255,107,53,0.3)',

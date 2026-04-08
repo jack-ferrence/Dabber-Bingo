@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase.js'
+import { useFocusTrap } from '../../hooks/useFocusTrap.js'
 
 const MAX_SWAPS = 2
 
@@ -86,13 +87,13 @@ function SwapModal({
 
     if (data && !data.success) {
       if (data.reason === 'insufficient_dabs') {
-        setError(`Not enough Dabs! Need ${cost}, have ${data.balance ?? 0}.`)
+        setError(`You need ${cost} Dobs for this swap, but you only have ${data.balance ?? 0}. Earn more by playing games.`)
       } else if (data.reason === 'max_swaps_reached') {
-        setError(`Max swaps reached (${MAX_SWAPS}/${MAX_SWAPS})!`)
+        setError('You\'ve used both swaps for this game.')
       } else if (data.reason === 'game_already_started') {
-        setError('Too late — game is already live!')
+        setError('This game is already live — swaps are only available in the lobby.')
       } else {
-        setError(data.reason || 'Swap failed. Please try again.')
+        setError(data.reason || 'Something went wrong with the swap. Try again.')
       }
       return
     }
@@ -100,6 +101,8 @@ function SwapModal({
     onSwapComplete(newSquare, squareIndex, data?.new_balance)
     handleClose()
   }
+
+  const trapRef = useFocusTrap(isOpen, { onEscape: handleClose })
 
   if (!isOpen) return null
 
@@ -126,6 +129,7 @@ function SwapModal({
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
       <div
+        ref={trapRef}
         className="modal-panel-in"
         style={{
           background: 'var(--db-bg-surface)',
@@ -142,15 +146,15 @@ function SwapModal({
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.08em', color: '#ff6b35' }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.08em', color: 'var(--db-primary)' }}>
             SWAP SQUARE
           </span>
           <button
             type="button"
             onClick={handleClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--db-text-muted)', fontSize: 16, padding: '2px 6px', lineHeight: 1, borderRadius: 4, transition: 'color 120ms ease' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--db-text-muted)', fontSize: 16, padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, borderRadius: 4, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
             aria-label="Cancel"
           >
             ✕
@@ -208,7 +212,7 @@ function SwapModal({
                 {selected.display_text}
               </span>
               {selected.american_odds != null && (
-                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35' }}>
+                <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-primary)' }}>
                   {oddsLabel(selected.american_odds)}
                   {selected.implied_prob != null && (
                     <span style={{ marginLeft: 6, fontSize: 9, color: 'var(--db-text-ghost)' }}>
@@ -220,7 +224,7 @@ function SwapModal({
             </div>
 
             {error && (
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: '#ff5555', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-danger)', margin: 0 }}>
                 {error}
               </p>
             )}
@@ -232,7 +236,7 @@ function SwapModal({
               style={{
                 width: '100%',
                 padding: '10px 16px',
-                background: loading ? 'var(--db-bg-hover)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                background: loading ? 'var(--db-bg-hover)' : 'var(--db-gradient-primary)',
                 color: loading ? 'var(--db-text-ghost)' : '#fff',
                 border: 'none',
                 borderRadius: 8,
@@ -280,7 +284,7 @@ function SwapModal({
 
             {candidates.length === 0 ? (
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)', textAlign: 'center', padding: '12px 0' }}>
-                No similar props available
+                No alternative player stats available for this square
               </p>
             ) : (
               candidates.map((candidate, i) => (
@@ -305,7 +309,7 @@ function SwapModal({
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                     {candidate.american_odds != null && (
-                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35' }}>
+                      <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-primary)' }}>
                         {oddsLabel(candidate.american_odds)}
                       </span>
                     )}
@@ -337,7 +341,7 @@ function SwapModal({
               fontFamily: 'var(--db-font-ui)',
               fontSize: 11,
               fontWeight: 500,
-              padding: '5px 14px',
+              padding: '10px 14px',
               cursor: 'pointer',
               transition: 'background 100ms ease, color 100ms ease',
             }}

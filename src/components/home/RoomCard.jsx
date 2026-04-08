@@ -6,7 +6,7 @@ function StatusBadge({ status }) {
         style={{
           background: 'rgba(255,45,45,0.10)',
           border: '1px solid rgba(255,45,45,0.22)',
-          color: '#ff2d2d',
+          color: 'var(--db-live)',
           fontFamily: 'var(--db-font-display)',
           fontSize: 9.5,
           letterSpacing: '0.10em',
@@ -19,7 +19,7 @@ function StatusBadge({ status }) {
             width: 5,
             height: 5,
             borderRadius: '50%',
-            background: '#ff2d2d',
+            background: 'var(--db-live)',
             display: 'inline-block',
             animation: 'pulse-live 1.4s ease-in-out infinite',
             flexShrink: 0,
@@ -35,7 +35,7 @@ function StatusBadge({ status }) {
         style={{
           background: 'rgba(255,107,53,0.08)',
           border: '1px solid rgba(255,107,53,0.18)',
-          color: '#ff6b35',
+          color: 'var(--db-primary)',
           fontFamily: 'var(--db-font-display)',
           fontSize: 9.5,
           letterSpacing: '0.10em',
@@ -72,7 +72,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
   const isLobby = room.status === 'lobby'
   const isFinished = room.status === 'finished'
 
-  const accentColor = isMyRoom ? '#22c55e' : isLive ? '#ff2d2d' : '#ff6b35'
+  const accentColor = isMyRoom ? 'var(--db-success)' : isLive ? 'var(--db-live)' : 'var(--db-primary)'
   const showAccent = isLive || isLobby || isMyRoom
 
   return (
@@ -114,7 +114,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
               style={{
                 background: 'rgba(34,197,94,0.10)',
                 border: '1px solid rgba(34,197,94,0.25)',
-                color: '#22c55e',
+                color: 'var(--db-success)',
                 fontFamily: 'var(--db-font-display)',
                 fontSize: 10,
                 fontWeight: 700,
@@ -161,7 +161,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
               className="inline-flex items-center justify-center rounded-lg text-sm font-bold transition-all"
               style={{
                 border: '1px solid rgba(255,107,53,0.30)',
-                color: '#ff6b35',
+                color: 'var(--db-primary)',
                 background: 'rgba(255,107,53,0.06)',
                 fontFamily: 'var(--db-font-ui)',
                 padding: '6px 16px',
@@ -180,7 +180,7 @@ export default function RoomCard({ room, onJoin, onContinue, isMyRoom, joining }
               disabled={joining}
               className="inline-flex items-center justify-center rounded-lg font-bold transition-all disabled:cursor-not-allowed disabled:opacity-55"
               style={{
-                background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                background: 'var(--db-gradient-primary)',
                 color: '#fff',
                 fontFamily: 'var(--db-font-ui)',
                 padding: '6px 16px',

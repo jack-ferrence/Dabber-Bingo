@@ -249,7 +249,7 @@ function GamePage() {
             .maybeSingle()
 
           if (!existingEntry) {
-            setError('This is a Featured Game — enter from the lobby banner first.')
+            setError('This is a Featured Game. Head back to the lobby and tap the Featured banner to enter.')
             setLoadingCard(false)
             return
           }
@@ -379,7 +379,10 @@ function GamePage() {
   if (!room) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center" style={{ background: 'var(--db-bg-page)' }}>
-        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#ff2d2d' }}>Room not found.</span>
+        <div style={{ textAlign: 'center', maxWidth: 280 }}>
+          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.04em', color: 'var(--db-text-primary)', display: 'block', marginBottom: 8 }}>ROOM NOT FOUND</span>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)', display: 'block', lineHeight: 1.5 }}>This game may have been removed or the link is incorrect.</span>
+        </div>
       </div>
     )
   }

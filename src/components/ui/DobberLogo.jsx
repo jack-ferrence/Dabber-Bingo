@@ -8,7 +8,7 @@ export default function DobberLogo({ size = 24 }) {
         </linearGradient>
         <linearGradient id="db-ring" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ffaa44"/>
-          <stop offset="50%" stopColor="#ff6b35"/>
+          <stop offset="50%" stopColor="var(--db-primary)"/>
           <stop offset="100%" stopColor="#b8400e"/>
         </linearGradient>
       </defs>

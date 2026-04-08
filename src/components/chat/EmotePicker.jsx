@@ -35,7 +35,7 @@ export default function EmotePicker({ userId, onQuickReact }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         title="Emotes"
-        style={{ background: 'none', border: 'none', cursor: 'pointer', color: open ? '#ff6b35' : 'var(--db-text-ghost)', fontSize: 14, padding: '4px 6px', borderRadius: 4, lineHeight: 1, transition: 'color 100ms ease' }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: open ? 'var(--db-primary)' : 'var(--db-text-ghost)', fontSize: 14, padding: '10px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, lineHeight: 1, transition: 'color 100ms ease' }}
         onMouseEnter={(e) => { if (!open) e.currentTarget.style.color = 'var(--db-text-secondary)' }}
         onMouseLeave={(e) => { if (!open) e.currentTarget.style.color = 'var(--db-text-ghost)' }}
       >
@@ -48,7 +48,7 @@ export default function EmotePicker({ userId, onQuickReact }) {
             <div style={{ padding: '4px 2px' }}>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-ghost)', margin: '0 0 6px' }}>No emotes owned.</p>
               <Link to="/store?tab=chat_emote"
-                style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}
+                style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-primary)', textDecoration: 'none' }}
                 onClick={() => setOpen(false)}
               >
                 Get emotes in the Store →

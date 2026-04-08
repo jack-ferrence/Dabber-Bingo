@@ -49,14 +49,17 @@ function BingoBoard({
     prevLineCountRef.current = newCount
 
     if (newCount > prevCount && newCount > 0) {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       const newLines = winningLines.slice(prevCount)
       const indices = new Set()
       for (const line of newLines) {
         for (const idx of line) indices.add(idx)
       }
 
-      setFlashIndices(indices)
-      setTimeout(() => setFlashIndices(new Set()), 500)
+      if (!prefersReduced) {
+        setFlashIndices(indices)
+        setTimeout(() => setFlashIndices(new Set()), 500)
+      }
 
       const lineNum = newCount
       setToast({ id: Date.now(), lineNum, exiting: false })
@@ -115,7 +118,7 @@ function BingoBoard({
         </div>
 
         {/* 5×5 Grid */}
-        <div className="grid grid-cols-5 bingo-grid" style={{ gap: 6 }}>
+        <div className="grid grid-cols-5 bingo-grid" style={{ gap: 6, contain: 'layout style' }}>
           {flat.slice(0, 25).map((square, index) => (
             <BingoSquare
               key={square?.id ?? index}
@@ -169,7 +172,7 @@ function BingoBoard({
                 fontSize: 60,
                 fontWeight: 900,
                 letterSpacing: '0.04em',
-                color: '#ff6b35',
+                color: 'var(--db-primary)',
                 lineHeight: 0.95,
                 animation: 'db-bingo 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
                 textShadow: '0 0 40px rgba(255,107,53,0.5)',
@@ -199,7 +202,7 @@ function BingoBoard({
               letterSpacing: '0.06em',
               padding: '11px 32px',
               borderRadius: 6,
-              background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+              background: 'var(--db-gradient-primary)',
               color: '#fff',
               border: 'none',
               cursor: 'pointer',
@@ -242,7 +245,7 @@ function BingoBoard({
                 />
               ))}
             </div>
-            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.1em', color: '#ff6b35', lineHeight: 1 }}>
+            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.1em', color: 'var(--db-primary)', lineHeight: 1 }}>
               BINGO!
             </p>
             <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', marginTop: 2, fontWeight: 500 }}>

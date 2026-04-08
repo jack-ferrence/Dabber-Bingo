@@ -29,7 +29,7 @@ function FallbackUI() {
           onClick={() => { window.location.href = '/' }}
           style={{
             marginTop: 20, width: '100%',
-            background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+            background: 'var(--db-gradient-primary)',
             color: '#fff', border: 'none', borderRadius: 8,
             padding: '10px 20px', fontFamily: 'var(--db-font-display)', fontSize: 13,
             letterSpacing: '0.06em', cursor: 'pointer',

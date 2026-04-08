@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useCountdown } from '../hooks/useCountdown.js'
+import { useFocusTrap } from '../hooks/useFocusTrap.js'
 
 function GameCountdown({ date }) {
   const { total, hours, minutes, seconds, isExpired } = useCountdown(date)
@@ -23,6 +24,14 @@ function GameBrowserPage() {
   const [customName, setCustomName] = useState('')
   const [createError, setCreateError] = useState('')
   const [createLoading, setCreateLoading] = useState(false)
+
+  const closeCreateModal = () => {
+    if (createLoading) return
+    setCreatingGameId(null)
+    setCustomName('')
+    setCreateError('')
+  }
+  const createTrapRef = useFocusTrap(!!creatingGameId, { onEscape: closeCreateModal })
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -153,7 +162,7 @@ function GameBrowserPage() {
           style={{
             background: 'rgba(255,45,45,0.08)',
             border: '1px solid rgba(255,45,45,0.3)',
-            color: '#ff2d2d',
+            color: 'var(--db-live)',
           }}
         >
           {error}
@@ -166,8 +175,8 @@ function GameBrowserPage() {
         </div>
       ) : games.length === 0 ? (
         <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 text-center">
-          <p className="text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>No NBA games scheduled today.</p>
-          <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>Check back on a game day.</p>
+          <p className="text-sm" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>No games on the schedule today.</p>
+          <p className="text-xs" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>Games are typically available on NBA and MLB game days.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 card-stagger-wrap">
@@ -180,7 +189,7 @@ function GameBrowserPage() {
               {game.isLive && (
                 <span
                   className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-                  style={{ background: 'rgba(255,45,45,0.15)', color: '#ff2d2d', border: '1px solid rgba(255,45,45,0.3)' }}
+                  style={{ background: 'rgba(255,45,45,0.15)', color: 'var(--db-live)', border: '1px solid rgba(255,45,45,0.3)' }}
                 >
                   <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
                   Live
@@ -219,7 +228,7 @@ function GameBrowserPage() {
                       setCustomName(`${game.away.abbr} @ ${game.home.abbr}`)
                     }}
                     className="rounded-md px-3 py-1.5 text-xs font-bold transition"
-                    style={{ background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', fontFamily: 'var(--db-font-ui)', boxShadow: '0 2px 8px rgba(255,107,53,0.3)', transition: 'opacity 100ms ease' }}
+                    style={{ background: 'var(--db-gradient-primary)', color: '#fff', border: 'none', fontFamily: 'var(--db-font-ui)', boxShadow: '0 2px 8px rgba(255,107,53,0.3)', transition: 'opacity 100ms ease' }}
                     onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
                     onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
                   >
@@ -233,10 +242,12 @@ function GameBrowserPage() {
       )}
 
       {creatingGameId && (
-        <div className="modal-overlay fixed inset-0 z-30 flex items-center justify-center px-4" style={{ background: 'var(--db-bg-overlay)' }}>
+        <div className="modal-overlay fixed inset-0 z-30 flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label="Create room" style={{ background: 'var(--db-bg-overlay)' }} onClick={closeCreateModal}>
           <div
+            ref={createTrapRef}
             className="modal-panel-in w-full max-w-md p-6"
             style={{ background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-default)', borderRadius: 14, boxShadow: '0 24px 60px rgba(0,0,0,0.6)' }}
+            onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--db-text-primary)' }}>
               Create Room
@@ -252,7 +263,7 @@ function GameBrowserPage() {
                 style={{
                   background: 'rgba(255,45,45,0.08)',
                   border: '1px solid rgba(255,45,45,0.3)',
-                  color: '#ff2d2d',
+                  color: 'var(--db-live)',
                 }}
               >
                 {createError}
@@ -291,7 +302,7 @@ function GameBrowserPage() {
                     fontFamily: 'var(--db-font-ui)',
                     transition: 'border-color 120ms ease',
                   }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = '#ff6b35' }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--db-primary)' }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--db-border-default)' }}
                   placeholder="My Bingo Room"
                 />
@@ -300,13 +311,7 @@ function GameBrowserPage() {
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    if (!createLoading) {
-                      setCreatingGameId(null)
-                      setCustomName('')
-                      setCreateError('')
-                    }
-                  }}
+                  onClick={closeCreateModal}
                   className="rounded-md px-3 py-1.5 text-xs font-medium transition"
                   style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)', background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-default)', borderRadius: 6, transition: 'background 100ms, color 100ms' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--db-bg-hover)'; e.currentTarget.style.color = 'var(--db-text-primary)' }}
@@ -317,8 +322,8 @@ function GameBrowserPage() {
                 <button
                   type="submit"
                   disabled={createLoading}
-                  className="rounded-md px-4 py-1.5 text-xs font-bold transition hover:bg-[#ff8855] disabled:cursor-not-allowed disabled:opacity-70"
-                  style={{ background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-ui)', boxShadow: '0 2px 8px rgba(255,107,53,0.3)', transition: 'opacity 100ms ease' }}
+                  className="rounded-md px-4 py-1.5 text-xs font-bold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                  style={{ background: 'var(--db-gradient-primary)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-ui)', boxShadow: '0 2px 8px rgba(255,107,53,0.3)', transition: 'opacity 100ms ease' }}
                   onMouseEnter={(e) => { if (!createLoading) e.currentTarget.style.opacity = '0.9' }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
                 >
@@ -341,6 +346,7 @@ function TeamRow({ team, showScore }) {
           <img
             src={team.logo}
             alt={team.abbr}
+            loading="lazy"
             className="h-7 w-7 object-contain"
           />
         )}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
+import { useFocusTrap } from '../../hooks/useFocusTrap.js'
 
 const inputStyle = {
   width: '100%',
@@ -11,7 +12,6 @@ const inputStyle = {
   fontFamily: 'var(--db-font-ui)',
   fontSize: 13,
   color: 'var(--db-text-primary)',
-  outline: 'none',
   boxSizing: 'border-box',
   transition: 'border-color 120ms ease',
 }
@@ -25,7 +25,7 @@ function StepIndicator({ number, label, done, active }) {
       <div style={{
         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: done ? '#22c55e' : active ? '#ff6b35' : 'var(--db-bg-hover)',
+        background: done ? 'var(--db-success)' : active ? 'var(--db-primary)' : 'var(--db-bg-hover)',
         color: done || active ? '#fff' : 'var(--db-text-ghost)',
         fontFamily: 'var(--db-font-display)', fontSize: 12,
       }}>
@@ -33,7 +33,7 @@ function StepIndicator({ number, label, done, active }) {
       </div>
       <span style={{
         fontFamily: 'var(--db-font-display)', fontSize: 12,
-        color: done ? '#22c55e' : active ? 'var(--db-text-primary)' : 'var(--db-text-ghost)',
+        color: done ? 'var(--db-success)' : active ? 'var(--db-text-primary)' : 'var(--db-text-ghost)',
         letterSpacing: '0.06em',
         textDecoration: done ? 'line-through' : 'none',
       }}>
@@ -115,6 +115,8 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
   const allVerified = emailVerified && phoneVerified
   const activeStep = !emailVerified ? 1 : !phoneVerified ? 2 : 0
 
+  const trapRef = useFocusTrap(!loading, { onEscape: onClose })
+
   if (loading) {
     return (
       <div className="modal-overlay" style={{ position: 'fixed', inset: 0, zIndex: 999, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
@@ -127,11 +129,15 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Verify identity"
       className="modal-overlay"
       style={{ position: 'fixed', inset: 0, zIndex: 999, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
       onClick={onClose}
     >
       <div
+        ref={trapRef}
         className="modal-panel-in"
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -149,15 +155,15 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
             <h3 style={{ fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.06em', color: 'var(--db-text-primary)', margin: 0 }}>
               VERIFY IDENTITY
             </h3>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-ghost)', margin: '4px 0 0' }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: '4px 0 0' }}>
               Required for featured game entry
             </p>
           </div>
           <button type="button" onClick={onClose}
-            style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 16, cursor: 'pointer', padding: '2px 6px', borderRadius: 4, transition: 'color 120ms ease' }}
+            style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 16, cursor: 'pointer', padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
-          >✕</button>
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
+          aria-label="Close">✕</button>
         </div>
 
         {/* Why message */}
@@ -166,7 +172,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
           borderRadius: 6, padding: '10px 14px', marginBottom: 20,
         }}>
           <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0, lineHeight: 1.6 }}>
-            Featured games award real prizes. To prevent multi-accounting, we require email and phone verification. Each phone number can only be linked to one account.
+            Featured games have real prizes, so we need to verify each player is a real person. This takes about a minute.
           </p>
         </div>
 
@@ -182,13 +188,13 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
                 Step 1: Verify your email
               </p>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 400, color: 'var(--db-text-muted)', margin: '0 0 12px', lineHeight: 1.6 }}>
-                Check your inbox for a verification link from Dobber. Email: <span style={{ color: '#ff6b35' }}>{user?.email}</span>
+                Check your inbox for a verification link from Dobber. Email: <span style={{ color: 'var(--db-primary)' }}>{user?.email}</span>
               </p>
               <button type="button" onClick={handleResendEmail}
                 style={{
                   padding: '8px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
-                  background: emailResent ? 'rgba(34,197,94,0.1)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
-                  color: emailResent ? '#22c55e' : '#fff',
+                  background: emailResent ? 'rgba(34,197,94,0.1)' : 'var(--db-gradient-primary)',
+                  color: emailResent ? 'var(--db-success)' : '#fff',
                   fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.06em',
                   transition: 'opacity 100ms ease',
                 }}
@@ -213,17 +219,18 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
               <div style={{ display: 'flex', gap: 8 }}>
                 <input
                   type="tel"
+                  aria-label="Phone number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="(555) 123-4567"
                   style={{ ...inputStyle, flex: 1 }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = '#ff6b35' }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--db-primary)' }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--db-border-default)' }}
                 />
                 <button type="button" onClick={handleSubmitPhone} disabled={phoneSubmitting}
                   style={{
                     padding: '0 16px', borderRadius: 6, border: 'none', cursor: phoneSubmitting ? 'wait' : 'pointer',
-                    background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', flexShrink: 0,
+                    background: 'var(--db-gradient-primary)', color: '#fff', flexShrink: 0,
                     fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.06em',
                     opacity: phoneSubmitting ? 0.5 : 1, transition: 'opacity 100ms ease',
                   }}>
@@ -232,7 +239,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
               </div>
 
               {phoneError && (
-                <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff4444', marginTop: 6 }}>
+                <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-live)', marginTop: 6 }}>
                   {phoneError}
                 </p>
               )}
@@ -242,7 +249,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
           {/* Success state */}
           {phoneSuccess && (
             <div style={{ textAlign: 'center', padding: '12px 0' }}>
-              <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#22c55e', margin: '0 0 4px' }}>
+              <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: 'var(--db-success)', margin: '0 0 4px' }}>
                 ✓ PHONE VERIFIED
               </p>
             </div>
@@ -251,7 +258,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
           {/* All done */}
           {allVerified && !phoneSuccess && (
             <div style={{ textAlign: 'center', padding: '12px 0' }}>
-              <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: '#22c55e', margin: '0 0 8px' }}>
+              <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.06em', color: 'var(--db-success)', margin: '0 0 8px' }}>
                 ✓ FULLY VERIFIED
               </p>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>
@@ -267,7 +274,7 @@ export default function VerifyIdentityModal({ onClose, onVerified }) {
             <button type="button" onClick={onVerified || onClose}
               style={{
                 flex: 1, padding: '10px 0', borderRadius: 8, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff',
+                background: 'var(--db-gradient-primary)', color: '#fff',
                 fontFamily: 'var(--db-font-display)', fontSize: 13, letterSpacing: '0.06em',
                 boxShadow: '0 4px 14px rgba(255,107,53,0.35)', transition: 'opacity 100ms ease',
               }}

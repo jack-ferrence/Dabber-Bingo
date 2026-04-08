@@ -68,7 +68,7 @@ function SidebarContent({ onClose }) {
       <div className="flex-1 overflow-y-auto scrollbar-thin py-4">
         <p
           className="px-5 mb-2"
-          style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: '#ff6b35' }}
+          style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: 'var(--db-primary)' }}
         >
           YOUR GAMES
         </p>
@@ -84,7 +84,7 @@ function SidebarContent({ onClose }) {
                 <Link
                   to="/login"
                   onClick={() => onClose?.()}
-                  style={{ color: '#ff6b35' }}
+                  style={{ color: 'var(--db-primary)' }}
                 >
                   Log in
                 </Link>{' '}
@@ -124,7 +124,7 @@ function SidebarContent({ onClose }) {
           <div className="flex items-center gap-3 pb-3 mb-1" style={{ borderBottom: '1px solid var(--db-border-subtle)' }}>
             <span
               className="flex h-7 w-7 flex-shrink-0 items-center justify-center text-xs font-bold"
-              style={{ background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)', color: '#fff', borderRadius: 4, fontFamily: 'var(--db-font-ui)', fontWeight: 800, boxShadow: '0 2px 8px rgba(255,107,53,0.35)' }}
+              style={{ background: 'var(--db-gradient-primary)', color: '#fff', borderRadius: 4, fontFamily: 'var(--db-font-ui)', fontWeight: 800, boxShadow: '0 2px 8px rgba(255,107,53,0.35)' }}
             >
               {initials}
             </span>
@@ -198,7 +198,7 @@ export default function Sidebar({ open, onClose }) {
               className="flex h-12 flex-shrink-0 items-center justify-between px-5"
               style={{ borderBottom: '1px solid var(--db-border-subtle)' }}
             >
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: '#ff6b35' }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: 'var(--db-primary)' }}>
                 YOUR GAMES
               </span>
               <button

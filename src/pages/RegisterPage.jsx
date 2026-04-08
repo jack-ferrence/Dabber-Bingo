@@ -8,7 +8,7 @@ const fieldStyle = {
   background: 'var(--db-border-subtle)',
   border: '1px solid var(--db-border-default)',
   fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400,
-  color: 'var(--db-text-primary)', outline: 'none', boxSizing: 'border-box',
+  color: 'var(--db-text-primary)', boxSizing: 'border-box',
   transition: 'border-color 140ms ease, background 140ms ease',
 }
 
@@ -16,7 +16,7 @@ const labelStyle = {
   display: 'block', marginBottom: 6,
   fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 600,
   letterSpacing: '0.06em', textTransform: 'uppercase',
-  color: 'var(--db-text-ghost)',
+  color: 'var(--db-text-muted)',
 }
 
 function RegisterPage() {
@@ -104,7 +104,7 @@ function RegisterPage() {
         <DobberLogo size={52} style={{ marginBottom: 48 }} />
         <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 64, letterSpacing: '0.04em', color: 'var(--db-text-primary)', lineHeight: 0.92, marginBottom: 20 }}>
           START<br />
-          <span style={{ color: '#ff6b35' }}>PLAYING</span><br />
+          <span style={{ color: 'var(--db-primary)' }}>PLAYING</span><br />
           TODAY
         </div>
         <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 14, fontWeight: 400, color: 'var(--db-text-ghost)', lineHeight: 1.6, maxWidth: 280 }}>
@@ -112,14 +112,14 @@ function RegisterPage() {
         </p>
         <p style={{ marginTop: 32, fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: '#ff6b35', textDecoration: 'none', fontWeight: 600 }}>
+          <Link to="/login" style={{ color: 'var(--db-primary)', textDecoration: 'none', fontWeight: 600 }}>
             Log in →
           </Link>
         </p>
       </div>
 
       {/* Right: form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
+      <div className="auth-form-panel" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
         <div style={{ width: '100%', maxWidth: 380 }}>
 
           {/* Mobile logo */}
@@ -140,7 +140,7 @@ function RegisterPage() {
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)', lineHeight: 1.7, margin: '0 0 8px' }}>
                 We sent a verification link to
               </p>
-              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: '#ff6b35', margin: '0 0 28px', fontWeight: 600 }}>
+              <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-primary)', margin: '0 0 28px', fontWeight: 600 }}>
                 {email}
               </p>
               <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)', margin: '0 0 28px' }}>
@@ -150,7 +150,7 @@ function RegisterPage() {
                 to="/login"
                 style={{
                   fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.1em',
-                  color: '#fff', background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                  color: '#fff', background: 'var(--db-gradient-primary)',
                   borderRadius: 6, padding: '10px 28px', textDecoration: 'none', display: 'inline-block',
                   boxShadow: '0 4px 16px rgba(255,107,53,0.35)',
                 }}
@@ -164,7 +164,7 @@ function RegisterPage() {
                 <h1 style={{ fontFamily: 'var(--db-font-display)', fontSize: 32, letterSpacing: '0.06em', color: 'var(--db-text-primary)', lineHeight: 1, margin: '0 0 8px' }}>
                   CREATE ACCOUNT
                 </h1>
-                <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0 }}>
+                <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0 }}>
                   It's free. No credit card needed.
                 </p>
               </div>
@@ -180,13 +180,13 @@ function RegisterPage() {
                     maxLength={20}
                     value={username}
                     onChange={handleUsernameChange}
-                    placeholder="pick a handle"
+                    placeholder="Pick a username"
                     style={{ ...fieldStyle, borderColor: usernameError ? 'rgba(255,45,45,0.4)' : 'var(--db-border-default)' }}
                     onFocus={onFocus}
                     onBlur={(e) => onBlur(e, usernameError)}
                   />
                   {usernameError && (
-                    <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: '#ff5555', marginTop: 5, fontWeight: 500 }}>
+                    <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-danger)', marginTop: 5, fontWeight: 500 }}>
                       {usernameError}
                     </p>
                   )}
@@ -225,13 +225,13 @@ function RegisterPage() {
                 </div>
 
                 <div style={{ background: 'rgba(255,107,53,0.05)', border: '1px solid rgba(255,107,53,0.12)', borderRadius: 6, padding: '10px 14px' }}>
-                  <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0, lineHeight: 1.6 }}>
+                  <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)', margin: 0, lineHeight: 1.6 }}>
                     A verification email will be sent after sign up.
                   </p>
                 </div>
 
                 {error && (
-                  <p role="alert" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff5555', margin: 0, padding: '8px 12px', background: 'rgba(255,45,45,0.08)', borderRadius: 6, border: '1px solid rgba(255,45,45,0.15)' }}>
+                  <p role="alert" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-danger)', margin: 0, padding: '8px 12px', background: 'rgba(255,45,45,0.08)', borderRadius: 6, border: '1px solid rgba(255,45,45,0.15)' }}>
                     {error}
                   </p>
                 )}
@@ -241,7 +241,7 @@ function RegisterPage() {
                   disabled={loading}
                   style={{
                     width: '100%', padding: '14px 0', borderRadius: 8, border: 'none',
-                    background: loading ? 'var(--db-border-default)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                    background: loading ? 'var(--db-border-default)' : 'var(--db-gradient-primary)',
                     color: loading ? 'var(--db-text-ghost)' : 'var(--db-text-on-primary)',
                     fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.1em',
                     cursor: loading ? 'not-allowed' : 'pointer',
@@ -256,13 +256,13 @@ function RegisterPage() {
                 </button>
               </form>
 
-              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', marginTop: 24, textAlign: 'center' }}>
+              <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)', marginTop: 24, textAlign: 'center' }}>
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  style={{ color: '#ff6b35', textDecoration: 'none', fontWeight: 600, transition: 'color 120ms' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = '#ff8855' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = '#ff6b35' }}
+                  style={{ color: 'var(--db-primary)', textDecoration: 'none', fontWeight: 600, transition: 'color 120ms' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-primary-light)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-primary)' }}
                 >
                   Sign in →
                 </Link>
