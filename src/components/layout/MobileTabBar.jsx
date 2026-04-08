@@ -119,9 +119,9 @@ export default function MobileTabBar() {
             </span>
             <span style={{
               fontFamily: 'var(--db-font-ui)',
-              fontSize: 9.5,
-              fontWeight: isActive ? 700 : 500,
-              letterSpacing: '0.03em',
+              fontSize: 'var(--db-text-2xs)',
+              fontWeight: isActive ? 'var(--db-weight-bold)' : 'var(--db-weight-medium)',
+              letterSpacing: 'var(--db-tracking-normal)',
               color: isActive ? 'var(--db-primary)' : 'var(--db-text-muted)',
               transition: 'color 120ms ease',
             }}>

@@ -72,20 +72,20 @@ function RecentEvents({ gameId }) {
 
   return (
     <div>
-      <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--db-text-muted)' }}>
+      <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xs)', letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)' }}>
         RECENT EVENTS
       </h2>
       <ul className="mt-2 space-y-1.5 overflow-hidden">
         {events.length === 0 ? (
-          <li style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-muted)' }}>No events yet.</li>
+          <li style={{ fontFamily: 'var(--db-font-ui)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)' }}>No events yet.</li>
         ) : (
           events.map((ev) => (
             <li
               key={ev.id}
               className="animate-in-from-top"
-              style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)', borderRadius: 6, padding: '6px 10px', fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-primary)' }}
+              style={{ background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)', borderRadius: 6, padding: '6px 10px', fontFamily: 'var(--db-font-ui)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-primary)' }}
             >
-              <span style={{ fontWeight: 600, color: 'var(--db-primary)' }}>
+              <span style={{ fontWeight: 'var(--db-weight-semibold)', color: 'var(--db-primary)' }}>
                 {PLAYER_NAMES[ev.player_id] ?? ev.player_id}
               </span>
               <span style={{ color: 'var(--db-text-muted)' }}> — </span>

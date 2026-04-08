@@ -115,9 +115,9 @@ const BingoSquare = memo(function BingoSquare({
           animationDelay: `${dealDelay}ms`,
         }}>
         <span style={{
-          fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 20, fontWeight: 400, color: 'var(--db-free-text)',
-          letterSpacing: '0.08em',
+          fontFamily: 'var(--db-font-display)',
+          fontSize: 'var(--db-text-xl)', fontWeight: 'var(--db-weight-normal)', color: 'var(--db-free-text)',
+          letterSpacing: 'var(--db-tracking-wider)',
         }}>FREE</span>
       </button>
     )
@@ -133,7 +133,7 @@ const BingoSquare = memo(function BingoSquare({
         border: '1px solid rgba(255,107,53,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: 'var(--db-primary)' }}>⟳</span>
+        <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-md)', color: 'var(--db-primary)' }}>⟳</span>
       </div>
     )
   }
@@ -198,18 +198,18 @@ const BingoSquare = memo(function BingoSquare({
         width: '100%', minWidth: 0, gap: 2,
       }}>
         <span className="sq-player" style={{
-          fontFamily: "'JetBrains Mono',monospace",
-          fontWeight: 800, lineHeight: 1.1,
-          color: marked ? 'var(--db-primary)' : '#eeeef6',
+          fontFamily: 'var(--db-font-mono)',
+          fontWeight: 'var(--db-weight-extrabold)', lineHeight: 'var(--db-leading-tight)',
+          color: marked ? 'var(--db-primary)' : 'var(--db-text-bright)',
           textTransform: 'uppercase', whiteSpace: 'nowrap',
           overflow: 'hidden', textOverflow: 'ellipsis',
           minWidth: 0, flex: 1,
         }}>{playerLabel}</span>
         <span style={{
-          fontFamily: "'JetBrains Mono',monospace",
-          fontWeight: 600, lineHeight: 1, flexShrink: 0,
-          color: marked ? 'rgba(255,107,53,0.45)' : '#7a7a96',
-          letterSpacing: '0.02em',
+          fontFamily: 'var(--db-font-mono)',
+          fontWeight: 'var(--db-weight-semibold)', lineHeight: 'var(--db-leading-none)', flexShrink: 0,
+          color: marked ? 'rgba(255,107,53,0.45)' : 'var(--db-text-muted)',
+          letterSpacing: 'var(--db-tracking-normal)',
         }} className="sq-team">{teamAbbr}</span>
       </div>
 
@@ -218,17 +218,17 @@ const BingoSquare = memo(function BingoSquare({
         display: 'flex', alignItems: 'baseline', gap: 3, marginTop: 2,
       }}>
         <span className="sq-stat" style={{
-          fontFamily: "'JetBrains Mono',monospace",
-          fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'var(--db-primary)' : '#eeeef6',
-          lineHeight: 1.1,
+          fontFamily: 'var(--db-font-mono)',
+          fontWeight: 'var(--db-weight-bold)', whiteSpace: 'nowrap',
+          color: marked ? 'var(--db-primary)' : 'var(--db-text-bright)',
+          lineHeight: 'var(--db-leading-tight)',
         }}>{statNum}</span>
         {statType && (
           <span className="sq-stat-type" style={{
-            fontFamily: "'JetBrains Mono',monospace",
-            fontWeight: 600, whiteSpace: 'nowrap',
-            color: marked ? 'rgba(255,107,53,0.45)' : '#7a7a96',
-            lineHeight: 1,
+            fontFamily: 'var(--db-font-mono)',
+            fontWeight: 'var(--db-weight-semibold)', whiteSpace: 'nowrap',
+            color: marked ? 'rgba(255,107,53,0.45)' : 'var(--db-text-muted)',
+            lineHeight: 'var(--db-leading-none)',
           }}>{statType}</span>
         )}
       </div>
@@ -237,8 +237,8 @@ const BingoSquare = memo(function BingoSquare({
       {jerseyNum && (
         <span className="sq-jersey" style={{
           position: 'absolute', bottom: showProgress ? 6 : 4, right: 4,
-          fontFamily: "'Bebas Neue',sans-serif",
-          fontWeight: 400, lineHeight: 1,
+          fontFamily: 'var(--db-font-display)',
+          fontWeight: 'var(--db-weight-normal)', lineHeight: 'var(--db-leading-none)',
           color: marked ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.4)',
           textShadow: `0 0 4px ${marked ? 'rgba(255,107,53,0.4)' : hexToRgba(teamColor, 0.5)}, 0 0 8px ${marked ? 'rgba(255,107,53,0.2)' : hexToRgba(teamColor, 0.3)}`,
           pointerEvents: 'none',
@@ -282,7 +282,7 @@ const BingoSquare = memo(function BingoSquare({
       {square?.replaced_injury && (
         <span style={{
           position: 'absolute', top: 1, right: 3, zIndex: 2,
-          fontFamily: "'JetBrains Mono',monospace", fontSize: 7, color: 'var(--db-primary)', opacity: 0.5,
+          fontFamily: 'var(--db-font-mono)', fontSize: '0.4375rem', color: 'var(--db-primary)', opacity: 0.5,
         }}>♻</span>
       )}
     </button>

@@ -58,22 +58,45 @@
   --db-free-text:        #0c0c14;
   --db-win-glow:         rgba(255, 107, 53, 0.30);
 
-  /* ── Typography ── */
+  /* ── Typography — Font Families ── */
   --db-font-display:     'Bebas Neue', 'Oswald', sans-serif;
   --db-font-heading:     'Bebas Neue', 'Oswald', sans-serif;
   --db-font-body:        'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
   --db-font-ui:          'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
   --db-font-mono:        'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
 
-  /* ── Font Sizes ── */
-  --db-text-xs:    10px;
-  --db-text-sm:    11px;
-  --db-text-base:  13px;
-  --db-text-md:    14px;
-  --db-text-lg:    16px;
-  --db-text-xl:    20px;
-  --db-text-2xl:   24px;
-  --db-text-3xl:   32px;
+  /* ── Font Sizes (rem — 1.25 ratio, clear hierarchy) ── */
+  --db-text-2xs:   0.5625rem;   /*  9px — micro labels */
+  --db-text-xs:    0.625rem;    /* 10px — captions, badges */
+  --db-text-sm:    0.6875rem;   /* 11px — secondary text */
+  --db-text-base:  0.8125rem;   /* 13px — body/UI default */
+  --db-text-md:    0.875rem;    /* 14px — emphasized body */
+  --db-text-lg:    1rem;        /* 16px — subheadings */
+  --db-text-xl:    1.25rem;     /* 20px — section headings */
+  --db-text-2xl:   1.5rem;      /* 24px — page headings */
+  --db-text-3xl:   1.875rem;    /* 30px — hero display */
+  --db-text-4xl:   2.625rem;    /* 42px — splash/title */
+
+  /* ── Font Weights (semantic roles) ── */
+  --db-weight-normal:    400;   /* Bebas Neue body, relaxed labels */
+  --db-weight-medium:    500;   /* secondary emphasis */
+  --db-weight-semibold:  600;   /* labels, tags, secondary data */
+  --db-weight-bold:      700;   /* headings, primary data, CTAs */
+  --db-weight-extrabold: 800;   /* player names, hero numbers */
+
+  /* ── Letter Spacing (tighter for large, wider for small/uppercase) ── */
+  --db-tracking-tight:   0.01em;  /* large display text */
+  --db-tracking-normal:  0.02em;  /* body text */
+  --db-tracking-wide:    0.06em;  /* buttons, labels */
+  --db-tracking-wider:   0.08em;  /* display headings, Bebas Neue */
+  --db-tracking-widest:  0.12em;  /* all-caps micro labels */
+
+  /* ── Line Heights ── */
+  --db-leading-none:     1;       /* single-line labels, display */
+  --db-leading-tight:    1.15;    /* headings, compact UI */
+  --db-leading-snug:     1.3;     /* card text, short blocks */
+  --db-leading-normal:   1.5;     /* body text */
+  --db-leading-relaxed:  1.7;     /* long-form reading */
 
   /* ── Spacing & Radius ── */
   --db-radius-xs:   2px;

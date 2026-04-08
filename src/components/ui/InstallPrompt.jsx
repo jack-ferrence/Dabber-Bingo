@@ -67,10 +67,10 @@ export default function InstallPrompt() {
       <img src="/icon-192.png" alt="Dobber" width={40} height={40} style={{ borderRadius: 8, flexShrink: 0 }} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.08em', color: 'var(--db-text-primary)', margin: '0 0 2px' }}>
+        <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-sm)', letterSpacing: 'var(--db-tracking-wider)', color: 'var(--db-text-primary)', margin: '0 0 2px' }}>
           ADD DOBBER TO HOME SCREEN
         </p>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, fontWeight: 400, color: 'var(--db-text-ghost)', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 'var(--db-text-xs)', fontWeight: 'var(--db-weight-normal)', color: 'var(--db-text-ghost)', margin: 0 }}>
           {isIos ? 'Tap Share ↑ then "Add to Home Screen"' : 'Install for the full app experience'}
         </p>
       </div>
@@ -79,7 +79,7 @@ export default function InstallPrompt() {
         <button
           type="button"
           onClick={handleInstall}
-          style={{ background: 'var(--db-gradient-primary)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.06em', padding: '7px 14px', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
+          style={{ background: 'var(--db-gradient-primary)', color: '#fff', border: 'none', borderRadius: 6, fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-sm)', letterSpacing: 'var(--db-tracking-wide)', padding: '7px 14px', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
         >
           INSTALL
         </button>
@@ -89,7 +89,7 @@ export default function InstallPrompt() {
         type="button"
         onClick={handleDismiss}
         aria-label="Dismiss"
-        style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 16, cursor: 'pointer', padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1, transition: 'color 120ms ease' }}
+        style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 'var(--db-text-lg)', cursor: 'pointer', padding: '12px', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 'var(--db-leading-none)', transition: 'color 120ms ease' }}
         onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
         onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-muted)' }}
       >

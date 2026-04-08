@@ -177,13 +177,13 @@ export default function LobbyPage() {
       {/* ── Header ── */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-          <h1 className="lobby-title" style={{ fontFamily: 'var(--db-font-display)', fontSize: 30, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--db-text-primary)', lineHeight: 1, margin: 0 }}>
+          <h1 className="lobby-title" style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)', fontWeight: 'var(--db-weight-normal)', letterSpacing: 'var(--db-tracking-wide)', color: 'var(--db-text-primary)', lineHeight: 'var(--db-leading-none)', margin: 0 }}>
             GAMES
           </h1>
           {liveCount > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(255,45,45,0.1)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 6, padding: '4px 10px' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--db-live)', animation: 'pulse-live 1.4s ease-in-out infinite' }} />
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 13, fontWeight: 400, letterSpacing: '0.06em', color: 'var(--db-live)' }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-base)', fontWeight: 'var(--db-weight-normal)', letterSpacing: 'var(--db-tracking-wide)', color: 'var(--db-live)' }}>
                 {liveCount} LIVE
               </span>
             </div>
@@ -208,8 +208,8 @@ export default function LobbyPage() {
                 borderTop: 'none', borderLeft: 'none', borderRight: 'none',
                 borderBottom: `2px solid ${isActive ? 'var(--db-primary)' : 'transparent'}`,
                 color: isActive ? 'var(--db-text-primary)' : 'var(--db-text-ghost)',
-                fontFamily: 'var(--db-font-mono)', fontSize: 13,
-                fontWeight: isActive ? 600 : 500, letterSpacing: '0.02em',
+                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)',
+                fontWeight: isActive ? 'var(--db-weight-semibold)' : 'var(--db-weight-medium)', letterSpacing: 'var(--db-tracking-normal)',
                 transition: 'color 120ms ease',
               }}
             >
@@ -232,7 +232,7 @@ export default function LobbyPage() {
 
       {/* Error */}
       {error && (
-        <div style={{ margin: '12px 20px', padding: '10px 14px', background: 'rgba(255,45,45,0.08)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 8, fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-live)' }}>
+        <div style={{ margin: '12px 20px', padding: '10px 14px', background: 'rgba(255,45,45,0.08)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 8, fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-live)' }}>
           {error}
         </div>
       )}
@@ -253,8 +253,8 @@ export default function LobbyPage() {
         <div style={{ paddingTop: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Your games</h2>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--db-success)', background: 'rgba(34,197,94,0.1)', padding: '2px 8px', borderRadius: 4 }}>
+              <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)', fontWeight: 'var(--db-weight-semibold)', color: 'var(--db-text-secondary)', margin: 0 }}>Your games</h2>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', fontWeight: 'var(--db-weight-bold)', color: 'var(--db-success)', background: 'rgba(34,197,94,0.1)', padding: '2px 8px', borderRadius: 4 }}>
                 {sections.myGames.length} active
               </span>
             </div>
@@ -269,9 +269,9 @@ export default function LobbyPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--db-live)', animation: 'pulse-live 1.4s ease-in-out infinite' }} />
-              <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Live now</h2>
+              <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)', fontWeight: 'var(--db-weight-semibold)', color: 'var(--db-text-secondary)', margin: 0 }}>Live now</h2>
             </div>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.liveNotJoined.length} games</span>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)' }}>{sections.liveNotJoined.length} games</span>
           </div>
           <CardRow games={sections.liveNotJoined} size="live" />
         </div>
@@ -281,8 +281,8 @@ export default function LobbyPage() {
       {!loading && sections.todayLobby.length > 0 && (
         <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
-            <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Tonight</h2>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.todayLobby.length} games</span>
+            <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)', fontWeight: 'var(--db-weight-semibold)', color: 'var(--db-text-secondary)', margin: 0 }}>Tonight</h2>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)' }}>{sections.todayLobby.length} games</span>
           </div>
           <CardRow games={sections.todayLobby} size="standard" />
         </div>
@@ -292,8 +292,8 @@ export default function LobbyPage() {
       {!loading && sections.allTodayDone && sections.finished.length > 0 && (
         <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
-            <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Today's results</h2>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.finished.length} games</span>
+            <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)', fontWeight: 'var(--db-weight-semibold)', color: 'var(--db-text-secondary)', margin: 0 }}>Today's results</h2>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)' }}>{sections.finished.length} games</span>
           </div>
           <CardRow games={sections.finished} size="standard" />
         </div>
@@ -303,8 +303,8 @@ export default function LobbyPage() {
       {!loading && sections.tomorrowLobby.length > 0 && (
         <div style={{ paddingTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 12 }}>
-            <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Tomorrow</h2>
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.tomorrowLobby.length} games</span>
+            <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)', fontWeight: 'var(--db-weight-semibold)', color: 'var(--db-text-secondary)', margin: 0 }}>Tomorrow</h2>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)' }}>{sections.tomorrowLobby.length} games</span>
           </div>
           <CardRow games={sections.tomorrowLobby} size="standard" />
         </div>

@@ -106,10 +106,10 @@ function BingoBoard({
               style={{
                 textAlign: 'center',
                 fontFamily: 'var(--db-font-display)',
-                fontSize: 15,
-                letterSpacing: '0.12em',
+                fontSize: 'var(--db-text-lg)',
+                letterSpacing: 'var(--db-tracking-widest)',
                 color: 'rgba(255,107,53,0.55)',
-                lineHeight: 1,
+                lineHeight: 'var(--db-leading-none)',
                 paddingBottom: 3,
                 animation: 'sq-deal-in 250ms cubic-bezier(0.25, 1, 0.5, 1) both',
                 animationDelay: `${i * 40}ms`,
@@ -173,9 +173,9 @@ function BingoBoard({
             <div
               style={{
                 fontFamily: 'var(--db-font-display)',
-                fontSize: 60,
+                fontSize: '3.75rem',
                 fontWeight: 900,
-                letterSpacing: '0.04em',
+                letterSpacing: 'var(--db-tracking-normal)',
                 color: 'var(--db-primary)',
                 lineHeight: 0.95,
                 animation: 'db-bingo 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -186,9 +186,9 @@ function BingoBoard({
             </div>
             <div style={{
               fontFamily: 'var(--db-font-display)',
-              fontSize: 16,
-              fontWeight: 700,
-              letterSpacing: '0.12em',
+              fontSize: 'var(--db-text-lg)',
+              fontWeight: 'var(--db-weight-bold)',
+              letterSpacing: 'var(--db-tracking-widest)',
               color: 'var(--db-text-ghost)',
               marginTop: 4,
             }}>
@@ -201,9 +201,9 @@ function BingoBoard({
             style={{
               marginTop: 28,
               fontFamily: 'var(--db-font-display)',
-              fontSize: 16,
-              fontWeight: 700,
-              letterSpacing: '0.06em',
+              fontSize: 'var(--db-text-lg)',
+              fontWeight: 'var(--db-weight-bold)',
+              letterSpacing: 'var(--db-tracking-wide)',
               padding: '11px 32px',
               borderRadius: 6,
               background: 'var(--db-gradient-primary)',
@@ -215,7 +215,7 @@ function BingoBoard({
           >
             {roomStatus === 'finished' ? 'VIEW CARD' : 'KEEP PLAYING'}
           </button>
-          <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-muted)', letterSpacing: '0.02em' }}>
+          <p style={{ marginTop: 12, fontFamily: 'var(--db-font-ui)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)', letterSpacing: 'var(--db-tracking-normal)' }}>
             tap anywhere to dismiss
           </p>
         </div>
@@ -249,10 +249,10 @@ function BingoBoard({
                 />
               ))}
             </div>
-            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.1em', color: 'var(--db-primary)', lineHeight: 1 }}>
+            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: '1.125rem', letterSpacing: '0.1em', color: 'var(--db-primary)', lineHeight: 'var(--db-leading-none)' }}>
               BINGO!
             </p>
-            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', marginTop: 2, fontWeight: 500 }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 'var(--db-text-xs)', color: 'var(--db-text-muted)', marginTop: 2, fontWeight: 'var(--db-weight-medium)' }}>
               Line {toast.lineNum} completed
             </p>
           </div>

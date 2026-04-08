@@ -78,17 +78,17 @@ export default function SplashScreen({ onFinished }) {
 
         {/* Wordmark */}
         <span style={{
-          fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
-          fontSize: 42, fontWeight: 400, color: '#fff', marginTop: 24,
-          letterSpacing: '0.12em',
+          fontFamily: 'var(--db-font-display)',
+          fontSize: 'var(--db-text-4xl)', fontWeight: 'var(--db-weight-normal)', color: '#fff', marginTop: 24,
+          letterSpacing: 'var(--db-tracking-widest)',
           animation: 'splash-title-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 1100ms both',
         }}>DOBBER</span>
 
         {/* Tagline */}
         <span style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11, color: 'rgba(255,255,255,0.5)',
-          marginTop: 4, letterSpacing: '0.08em',
+          fontFamily: 'var(--db-font-mono)',
+          fontSize: 'var(--db-text-sm)', color: 'rgba(255,255,255,0.5)',
+          marginTop: 4, letterSpacing: 'var(--db-tracking-wider)',
           animation: 'splash-tagline-in 300ms ease-out 1500ms both',
         }}>FREE SPORTS BINGO</span>
       </div>
