@@ -29,8 +29,8 @@
   --color-vegas-gold:   #ff6b35;
   --color-vegas-border: var(--db-border-default, #2a2a44);
 
-  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  --font-sans:    'JetBrains Mono', monospace;
+  --font-display: 'Bebas Neue', 'Oswald', sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 }
 
@@ -41,7 +41,7 @@ html {
 body {
   background-color: var(--db-bg-page);
   color: var(--db-text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -305,7 +305,7 @@ html, body {
   flex-shrink: 0;
   width: 244px;
   min-height: 156px;
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
   background: var(--db-bg-surface);
   border: 1px solid var(--db-border-subtle);
@@ -842,7 +842,7 @@ button[aria-label="Dismiss"]:hover {
 /* Board fills available height better on mobile */
 @media (max-width: 767px) {
   .bingo-grid {
-    gap: 3px !important;
+    gap: 4px !important;
   }
   .bingo-grid button {
     border-radius: 6px !important;

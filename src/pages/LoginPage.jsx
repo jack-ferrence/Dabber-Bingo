@@ -208,10 +208,10 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
-                width: '100%', padding: '12px 0', borderRadius: 8, border: 'none',
+                width: '100%', padding: '14px 0', borderRadius: 8, border: 'none',
                 background: loading ? 'var(--db-border-default)' : 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
-                color: loading ? 'var(--db-text-ghost)' : '#fff',
-                fontFamily: 'var(--db-font-display)', fontSize: 18, letterSpacing: '0.1em',
+                color: loading ? 'var(--db-text-ghost)' : 'var(--db-text-on-primary)',
+                fontFamily: 'var(--db-font-display)', fontSize: 16, letterSpacing: '0.1em',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 boxShadow: loading ? 'none' : '0 4px 16px rgba(255,107,53,0.35)',
                 transition: 'opacity 120ms ease, box-shadow 120ms ease',
@@ -220,19 +220,19 @@ function LoginPage() {
               onMouseEnter={(e) => { if (!loading) e.currentTarget.style.opacity = '0.9' }}
               onMouseLeave={(e) => { if (!loading) e.currentTarget.style.opacity = '1' }}
             >
-              {loading ? 'LOGGING IN…' : 'LOG IN'}
+              {loading ? 'SIGNING IN…' : 'SIGN IN'}
             </button>
           </form>
 
           <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)', marginTop: 24, textAlign: 'center' }}>
-            No account?{' '}
+            Don't have an account?{' '}
             <Link
               to="/register"
               style={{ color: '#ff6b35', textDecoration: 'none', fontWeight: 600, transition: 'color 120ms' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = '#ff8855' }}
               onMouseLeave={(e) => { e.currentTarget.style.color = '#ff6b35' }}
             >
-              Create one free →
+              Register →
             </Link>
           </p>
         </div>

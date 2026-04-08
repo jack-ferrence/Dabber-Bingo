@@ -92,14 +92,14 @@ export default function StorePage() {
             style={{
               fontFamily: 'var(--db-font-display)',
               fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 800,
+              fontWeight: 400,
               letterSpacing: '0.08em',
               color: '#ff6b35',
               lineHeight: 1,
               margin: 0,
             }}
           >
-            DOBS STORE
+            STORE
           </h1>
           {dobsBalance !== null && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.15)', borderRadius: 20, padding: '7px 16px' }}>

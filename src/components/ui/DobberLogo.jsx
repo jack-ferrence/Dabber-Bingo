@@ -14,7 +14,7 @@ export default function DobberLogo({ size = 24 }) {
       </defs>
       <circle cx="256" cy="256" r="240" fill="url(#db-ball)"/>
       <circle cx="256" cy="256" r="142" fill="none" stroke="url(#db-ring)" strokeWidth="20"/>
-      <text x="256" y="256" textAnchor="middle" fontFamily="'Outfit',sans-serif" fontSize="182" fontWeight="900" fill="#1a1a2e" dominantBaseline="central">D</text>
+      <text x="256" y="256" textAnchor="middle" fontFamily="'Bebas Neue','Oswald',sans-serif" fontSize="182" fontWeight="400" fill="#1a1a2e" dominantBaseline="central">D</text>
     </svg>
   )
 }

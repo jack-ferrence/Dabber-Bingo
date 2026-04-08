@@ -38,7 +38,7 @@ export default function SplashScreen({ onFinished }) {
           <circle cx="275" cy="275" r="220" fill="rgba(12,12,20,0.12)"/>
           <circle cx="256" cy="256" r="220" fill="url(#sb)"/>
           <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sr)" strokeWidth="22"/>
-          <text x="256" y="256" textAnchor="middle" fontFamily="'Outfit',sans-serif" fontSize="165" fontWeight="900" fill="#1a1a2e" dominantBaseline="central">D</text>
+          <text x="256" y="256" textAnchor="middle" fontFamily="'Bebas Neue','Oswald',sans-serif" fontSize="165" fontWeight="400" fill="#1a1a2e" dominantBaseline="central">D</text>
         </svg>
       </div>
 
@@ -50,9 +50,9 @@ export default function SplashScreen({ onFinished }) {
 
       {/* Wordmark */}
       <span className="splash-wordmark" style={{
-        fontFamily: "'Outfit', sans-serif",
-        fontSize: 38, fontWeight: 900, color: '#fff', marginTop: 24,
-        letterSpacing: '0.08em',
+        fontFamily: "'Bebas Neue', 'Oswald', sans-serif",
+        fontSize: 42, fontWeight: 400, color: '#fff', marginTop: 24,
+        letterSpacing: '0.12em',
       }}>DOBBER</span>
 
       {/* Tagline */}

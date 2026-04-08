@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { useProfile } from '../../hooks/useProfile.js'
@@ -7,9 +7,8 @@ import MyGameItem from '../home/MyGameItem.jsx'
 import DobberBallIcon from '../ui/DobberBallIcon.jsx'
 
 function SidebarContent({ onClose }) {
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const { username: profileUsername } = useProfile()
-  const navigate = useNavigate()
   const [myRooms, setMyRooms] = useState([])
 
   useEffect(() => {
@@ -54,12 +53,6 @@ function SidebarContent({ onClose }) {
     load()
   }, [user])
 
-  const handleSignOut = async () => {
-    await signOut()
-    onClose?.()
-    navigate('/login')
-  }
-
   const displayName = user
     ? (profileUsername ?? (user.is_anonymous ? `Guest_${user.id.slice(0, 6)}` : (user.email ?? 'Player')))
     : null
@@ -77,7 +70,7 @@ function SidebarContent({ onClose }) {
           className="px-5 mb-2"
           style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: '#ff6b35' }}
         >
-          MY GAMES
+          YOUR GAMES
         </p>
 
         {!user ? (
@@ -145,43 +138,13 @@ function SidebarContent({ onClose }) {
           <Link
             to="/settings"
             onClick={() => onClose?.()}
-            className="flex items-center gap-2 text-xs"
+            className="text-xs"
             style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)', textDecoration: 'none', transition: 'color 120ms ease' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
             Settings
           </Link>
-        )}
-        <Link
-          to="/"
-          onClick={() => onClose?.()}
-          className="flex items-center gap-2 text-xs"
-          style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)', textDecoration: 'none', transition: 'color 120ms ease' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          How to Play
-        </Link>
-
-        {user && (
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="block text-xs"
-            style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#ff4444' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
-          >
-            Sign out
-          </button>
         )}
 
         <Link
@@ -204,10 +167,8 @@ function SidebarContent({ onClose }) {
 
 export default function Sidebar({ open, onClose }) {
   const sidebarStyle = {
-    background: 'var(--db-bg-overlay)',
+    background: 'var(--db-bg-surface)',
     borderRight: '1px solid var(--db-border-subtle)',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
   }
 
   return (
@@ -238,7 +199,7 @@ export default function Sidebar({ open, onClose }) {
               style={{ borderBottom: '1px solid var(--db-border-subtle)' }}
             >
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.18em', color: '#ff6b35' }}>
-                MY GAMES
+                YOUR GAMES
               </span>
               <button
                 type="button"

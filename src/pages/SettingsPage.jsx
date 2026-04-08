@@ -1094,7 +1094,7 @@ export default function SettingsPage() {
               onClick={() => setTab(t.key)}
               style={{
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
-                color: tab === t.key ? '#ff6b35' : 'var(--db-text-muted)',
+                color: tab === t.key ? '#ff6b35' : 'var(--db-text-ghost)',
                 padding: '10px 18px', cursor: 'pointer',
                 background: 'none', border: 'none',
                 borderBottom: tab === t.key ? '2px solid #ff6b35' : '2px solid transparent',

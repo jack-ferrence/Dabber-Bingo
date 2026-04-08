@@ -33,7 +33,7 @@ export default function Navbar({ onMenuClick }) {
           to="/"
           style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}
         >
-          <DobberLogo size={28} />
+          <DobberLogo size={22} />
           <span
             className="navbar-wordmark"
             style={{
@@ -126,7 +126,7 @@ export default function Navbar({ onMenuClick }) {
                   style={{
                     background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
                     color: '#fff',
-                    borderRadius: '50%',
+                    borderRadius: 4,
                     fontFamily: 'var(--db-font-ui)',
                     fontWeight: 800,
                     fontSize: 11,

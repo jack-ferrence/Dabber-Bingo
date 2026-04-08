@@ -137,7 +137,7 @@ const BingoSquare = memo(function BingoSquare({
         }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 20, fontWeight: 700, color: 'var(--db-free-text)',
+          fontSize: 20, fontWeight: 400, color: 'var(--db-free-text)',
           letterSpacing: '0.08em',
         }}>FREE</span>
       </button>
@@ -221,7 +221,7 @@ const BingoSquare = memo(function BingoSquare({
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
           fontSize: jerseyNum ? 26 : 14,
-          fontWeight: 700, lineHeight: 1,
+          fontWeight: 400, lineHeight: 1,
           color: numTextColor,
           letterSpacing: jerseyNum ? 0 : '0.04em',
         }}>{numberDisplay}</span>
@@ -266,7 +266,7 @@ const BingoSquare = memo(function BingoSquare({
       {/* ── Progress bar (bottom, full width) ── */}
       {showProgress && (
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 5,
           background: 'var(--db-bg-elevated)',
         }}>
           <div style={{
@@ -283,7 +283,7 @@ const BingoSquare = memo(function BingoSquare({
       {/* Static team-color bar when no progress tracking */}
       {!showProgress && !marked && (
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 5,
           background: teamColor, opacity: 0.35,
         }} />
       )}
@@ -291,7 +291,7 @@ const BingoSquare = memo(function BingoSquare({
       {/* Marked: orange bottom bar */}
       {!showProgress && marked && (
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 5,
           background: '#ff6b35', opacity: 0.7,
         }} />
       )}
