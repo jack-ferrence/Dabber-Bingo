@@ -913,17 +913,26 @@ button[aria-label="Dismiss"]:hover {
   box-shadow: 0 0 10px rgba(255,107,53,0.15) !important;
 }
 
-/* Mark pop animation */
-@keyframes sq-mark-pop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.04); }
-  100% { transform: scale(1); }
+/* ── Board entrance: staggered deal-in ── */
+@keyframes sq-deal-in {
+  from { opacity: 0; transform: scale(0.92) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-.sq-just-marked {
-  animation: sq-mark-pop 300ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+.sq-cell {
+  animation: sq-deal-in 280ms cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
-/* Bingo line flash */
+/* ── Mark pop: scale + glow flash ── */
+@keyframes sq-mark-pop {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+  40%  { transform: scale(1.06); box-shadow: 0 0 14px 3px rgba(255,107,53,0.3); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,107,53,0); }
+}
+.sq-just-marked {
+  animation: sq-mark-pop 400ms cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+/* ── Bingo line flash ── */
 @keyframes sq-line-glow {
   0%   { box-shadow: 0 0 0 0 rgba(255,107,53,0); }
   50%  { box-shadow: 0 0 16px 4px rgba(255,107,53,0.4); }
@@ -931,6 +940,19 @@ button[aria-label="Dismiss"]:hover {
 }
 .sq-line-flash {
   animation: sq-line-glow 800ms ease-out forwards !important;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .sq-cell,
+  .sq-just-marked,
+  .sq-line-flash,
+  .sq-free-glow,
+  .bingo-header-letter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* ── Bingo mini-map entrance animation ── */

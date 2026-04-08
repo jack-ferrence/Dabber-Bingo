@@ -38,6 +38,7 @@ const BingoSquare = memo(function BingoSquare({
   currentValue = 0,
   opponentAbbr = '',
   isHighlighted = false,
+  dealDelay = 0,
 }) {
   const isFree = index === 12
   const marked = square?.marked === true
@@ -105,12 +106,13 @@ const BingoSquare = memo(function BingoSquare({
     return (
       <button type="button" onClick={() => onClick?.(square)}
         aria-label="Free square"
-        className={`sq-free-glow ${isWinning ? 'sq-winning-square' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
+        className={`sq-cell sq-free-glow ${isWinning ? 'sq-winning-square' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
           width: '100%', aspectRatio: '1', borderRadius: 6,
           background: 'var(--db-primary)', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 0 12px rgba(255,107,53,0.3)',
+          animationDelay: `${dealDelay}ms`,
         }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
@@ -185,6 +187,7 @@ const BingoSquare = memo(function BingoSquare({
           : shadow,
         cursor: 'pointer',
         padding: '3px 4px 7px 5px',
+        animationDelay: `${dealDelay}ms`,
         transition: 'border-color 150ms, box-shadow 150ms, background 150ms, transform 150ms',
         transform: justMarked ? 'scale(1.03)' : isHighlighted ? 'scale(1.05)' : 'scale(1)',
       }}

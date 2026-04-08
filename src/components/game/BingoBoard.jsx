@@ -99,9 +99,10 @@ function BingoBoard({
       >
         {/* B·I·N·G·O column headers */}
         <div className="grid grid-cols-5 mb-2" style={{ gap: 5 }}>
-          {HEADER_LETTERS.map((letter) => (
+          {HEADER_LETTERS.map((letter, i) => (
             <div
               key={letter}
+              className="bingo-header-letter"
               style={{
                 textAlign: 'center',
                 fontFamily: 'var(--db-font-display)',
@@ -110,6 +111,8 @@ function BingoBoard({
                 color: 'rgba(255,107,53,0.55)',
                 lineHeight: 1,
                 paddingBottom: 3,
+                animation: 'sq-deal-in 250ms cubic-bezier(0.25, 1, 0.5, 1) both',
+                animationDelay: `${i * 40}ms`,
               }}
             >
               {letter}
@@ -124,6 +127,7 @@ function BingoBoard({
               key={square?.id ?? index}
               square={square}
               index={index}
+              dealDelay={index * 30}
               isWinning={winSet.has(square?.id)}
               isLineFlash={flashIndices.has(index)}
               onClick={onSquareClick}
