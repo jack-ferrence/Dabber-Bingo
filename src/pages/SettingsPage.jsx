@@ -1030,7 +1030,7 @@ function PreferencesTab() {
       <div>
         <SectionLabel>About</SectionLabel>
         {[
-          { label: 'Version',           right: <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--db-text-secondary)' }}>0.1.0-beta</span> },
+          { label: 'Version',           right: <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--db-text-secondary)' }}>1.0.0-beta</span> },
           { label: 'How to Play',       right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-primary)', textDecoration: 'none' }}>View →</Link> },
           { label: 'Contact Support',   right: <a href="mailto:ferrencesup@gmail.com" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-primary)', textDecoration: 'none' }}>ferrencesup@gmail.com</a> },
           { label: 'Terms of Service',  right: <Link to="/terms"   style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: 'var(--db-primary)', textDecoration: 'none' }}>View →</Link> },

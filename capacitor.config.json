@@ -5,7 +5,7 @@
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": true,
-      "launchShowDuration": 2000,
+      "launchShowDuration": 500,
       "backgroundColor": "#0c0c14",
       "showSpinner": false,
       "splashFullScreen": true,

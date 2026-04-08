@@ -12,7 +12,7 @@ export default function TermsPage() {
         <p style={bodyStyle}>By using Dobber, you agree to these terms. If you do not agree, do not use the app.</p>
 
         <h2 style={sectionStyle}>DESCRIPTION OF SERVICE</h2>
-        <p style={bodyStyle}>Dobber is a free-to-play sports bingo game. Players receive bingo cards with real player stat lines that auto-mark during live games. Dobber is NOT a gambling application — no real money is wagered at any time.</p>
+        <p style={bodyStyle}>Dobber is a free-to-play sports bingo game. Players receive bingo cards with real player stat lines that auto-mark during live games. Dobber is NOT a gambling application — no real money is spent or at risk at any time.</p>
 
         <h2 style={sectionStyle}>VIRTUAL CURRENCY (DOBS)</h2>
         <ul style={bodyStyle}>

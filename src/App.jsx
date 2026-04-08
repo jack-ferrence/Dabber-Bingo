@@ -4,6 +4,7 @@ import { useAuth } from './hooks/useAuth.jsx'
 import { useNetworkStatus } from './hooks/useNetworkStatus.js'
 import { useProfile } from './hooks/useProfile.js'
 import { lazyRetry } from './lib/lazyRetry.js'
+import { isIOS } from './lib/platform.js'
 import SplashScreen from './components/ui/SplashScreen.jsx'
 import DobberLogo from './components/ui/DobberLogo.jsx'
 import ProtectedRoute from './pages/ProtectedRoute.jsx'
@@ -126,7 +127,7 @@ function App() {
           <Route path="/store" element={<StorePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/admin/featured" element={<AdminFeaturedPage />} />
-          <Route path="/contribute" element={<ContributePage />} />
+          {!isIOS() && <Route path="/contribute" element={<ContributePage />} />}
         </Route>
         <Route
           path="*"

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { getFontFamily, getBadge, EMOTE_MAP } from '../../lib/fontMap'
 import DaubOverlay from '../game/DaubOverlay.jsx'
 import DobberBallIcon from '../ui/DobberBallIcon.jsx'
+import { isIOS } from '../../lib/platform.js'
 
 // ── Previews ─────────────────────────────────────────────────────────────────
 
@@ -283,23 +284,35 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
           </div>
         ) : (
           <>
-            {/* Supporter-only: show link to contribute page */}
+            {/* Supporter-only: show link to contribute page (or browser URL on iOS) */}
             {!owned && isSupporterOnly && (
-              <a
-                href="/contribute"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  width: '100%', background: 'rgba(255,107,53,0.08)', color: 'var(--db-primary)',
-                  border: '1px solid rgba(255,107,53,0.25)', borderRadius: 6,
-                  fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
-                  padding: '7px 0', textDecoration: 'none', transition: 'background 100ms ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.15)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.08)' }}
-              >
-                <DobberBallIcon size={12} />
-                Support Dobber
-              </a>
+              isIOS() ? (
+                <span style={{
+                  display: 'block', width: '100%', textAlign: 'center',
+                  fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)',
+                  padding: '7px 4px', lineHeight: 1.4,
+                }}>
+                  Supporter exclusive — visit<br />
+                  <span style={{ color: 'var(--db-primary)', fontSize: 10 }}>bingo-v04.netlify.app/contribute</span>
+                  <br />in Safari
+                </span>
+              ) : (
+                <a
+                  href="/contribute"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    width: '100%', background: 'rgba(255,107,53,0.08)', color: 'var(--db-primary)',
+                    border: '1px solid rgba(255,107,53,0.25)', borderRadius: 6,
+                    fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
+                    padding: '7px 0', textDecoration: 'none', transition: 'background 100ms ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.15)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,107,53,0.08)' }}
+                >
+                  <DobberBallIcon size={12} />
+                  Support Dobber
+                </a>
+              )
             )}
 
             {/* Purchase row */}
