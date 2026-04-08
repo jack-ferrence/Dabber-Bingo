@@ -70,8 +70,7 @@ export default function MobileTabBar() {
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         display: 'flex',
         justifyContent: 'space-around',
-        alignItems: 'center',
-        height: 56,
+        alignItems: 'stretch',
       }}
     >
       {TABS.map((tab) => {
