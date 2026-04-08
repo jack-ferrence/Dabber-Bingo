@@ -15,8 +15,10 @@ export function useHomeData() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const initialLoadDone = useRef(false)
+
   const load = useCallback(async () => {
-    setLoading(true)
+    if (!initialLoadDone.current) setLoading(true)
     setError(null)
 
     try {
@@ -85,6 +87,7 @@ export function useHomeData() {
     }
 
     setLoading(false)
+    initialLoadDone.current = true
   }, [user])
 
   useEffect(() => {
