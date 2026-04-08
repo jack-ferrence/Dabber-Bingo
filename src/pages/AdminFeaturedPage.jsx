@@ -5,7 +5,6 @@ import { useAuth } from '../hooks/useAuth.jsx'
 
 const SPORTS = [
   { key: 'nba', label: 'NBA', icon: '🏀' },
-  { key: 'ncaa', label: 'NCAA', icon: '🏆' },
   { key: 'mlb', label: 'MLB', icon: '⚾' },
   { key: 'nfl', label: 'NFL', icon: '🏈' },
 ]

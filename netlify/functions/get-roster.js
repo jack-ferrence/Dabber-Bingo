@@ -69,12 +69,23 @@ function parseBoxscorePlayers(summaryData) {
  * Response shape: { team: {...}, athletes: [{ id, displayName, position, ... }] }
  * Athletes are flat — NOT wrapped in { athlete: {...} }.
  */
+function flattenAthletes(rosterData) {
+  const raw = rosterData.athletes ?? []
+  if (raw.length === 0) return []
+  // MLB returns position groups: [{ position: "Pitchers", items: [...] }]
+  // NBA returns flat athletes: [{ id, displayName, jersey, ... }]
+  if (raw[0]?.items) {
+    return raw.flatMap((group) => group.items ?? [])
+  }
+  return raw
+}
+
 function parseTeamRoster(rosterData) {
   const teamName = rosterData.team?.displayName ?? ''
   const teamAbbr = rosterData.team?.abbreviation ?? ''
   const players = []
 
-  for (const athlete of rosterData.athletes ?? []) {
+  for (const athlete of flattenAthletes(rosterData)) {
     if (!athlete?.id) continue
     players.push({
       id: String(athlete.id),

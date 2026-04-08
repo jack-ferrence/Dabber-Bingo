@@ -382,7 +382,10 @@ export async function fetchRoster(gameId, sport) {
       if (!teamId) continue
       try {
         const rosterData = await fetchJson(`${teamsUrl}/${teamId}/roster`)
-        for (const a of (rosterData.athletes ?? [])) {
+        // MLB returns position groups: [{ position, items: [...] }]; NBA returns flat
+        const rawAthletes = rosterData.athletes ?? []
+        const athletes = (rawAthletes[0]?.items) ? rawAthletes.flatMap(g => g.items ?? []) : rawAthletes
+        for (const a of athletes) {
           if (!a?.id) continue
           players.push({ id: String(a.id), name: a.displayName ?? '', lastName: getLastName(a.displayName ?? ''), team: teamName, teamAbbr, jersey: a.jersey ?? '' })
         }

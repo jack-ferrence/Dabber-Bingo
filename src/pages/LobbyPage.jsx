@@ -7,6 +7,8 @@ import { useHomeData } from '../hooks/useHomeData.js'
 import DashboardCard from '../components/home/DashboardCard.jsx'
 import TopPlayers from '../components/home/TopPlayers.jsx'
 import FeaturedBanner from '../components/home/FeaturedBanner.jsx'
+import FavoriteTeamsPicker from '../components/home/FavoriteTeamsPicker.jsx'
+import { useProfile } from '../hooks/useProfile.js'
 
 function localDateStr(d) {
   const dt = new Date(d)
@@ -27,13 +29,21 @@ const SPORTS = [
   { key: 'all', label: 'All' },
   { key: 'nba', label: 'NBA' },
   { key: 'mlb', label: 'MLB' },
-  { key: 'ncaa', label: 'NCAA' },
 ]
+
+function roomHasFavorite(room, favoriteTeams) {
+  const sport = room.sport ?? 'nba'
+  const favs = favoriteTeams?.[sport]
+  if (!favs?.length) return false
+  const parts = (room.name ?? '').split(' vs ')
+  return parts.some((p) => favs.includes(p.trim()))
+}
 
 export default function LobbyPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { allRooms, myRooms, loading, error } = useHomeData()
+  const { favoriteTeams } = useProfile()
   const [activeSport, setActiveSport] = useState('all')
   const [finishedRanks, setFinishedRanks] = useState({})
 
@@ -115,13 +125,22 @@ export default function LobbyPage() {
       }
     }
 
-    myGamesToday.sort((a, b) => (b.status === 'live' ? 1 : 0) - (a.status === 'live' ? 1 : 0) || new Date(a.starts_at) - new Date(b.starts_at))
-    myGamesTomorrow.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
-    liveNotJoined.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
-    todayLobby.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
-    tomorrowLobby.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
-    finishedJoined.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at))
-    finishedOther.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at))
+    // Favorites-first comparator: favorite games sort before non-favorites
+    const favFirst = (a, b) => {
+      const af = roomHasFavorite(a, favoriteTeams) ? 1 : 0
+      const bf = roomHasFavorite(b, favoriteTeams) ? 1 : 0
+      return bf - af
+    }
+    const byTimeAsc = (a, b) => new Date(a.starts_at) - new Date(b.starts_at)
+    const byTimeDesc = (a, b) => new Date(b.starts_at) - new Date(a.starts_at)
+
+    myGamesToday.sort((a, b) => (b.status === 'live' ? 1 : 0) - (a.status === 'live' ? 1 : 0) || favFirst(a, b) || byTimeAsc(a, b))
+    myGamesTomorrow.sort((a, b) => favFirst(a, b) || byTimeAsc(a, b))
+    liveNotJoined.sort((a, b) => favFirst(a, b) || byTimeAsc(a, b))
+    todayLobby.sort((a, b) => favFirst(a, b) || byTimeAsc(a, b))
+    tomorrowLobby.sort((a, b) => favFirst(a, b) || byTimeAsc(a, b))
+    finishedJoined.sort((a, b) => favFirst(a, b) || byTimeDesc(a, b))
+    finishedOther.sort((a, b) => favFirst(a, b) || byTimeDesc(a, b))
 
     const myGames = [...myGamesToday, ...myGamesTomorrow]
     const finished = [...finishedJoined, ...finishedOther].slice(0, 10)
@@ -130,7 +149,7 @@ export default function LobbyPage() {
       myGamesToday.every(g => g.status !== 'live' && g.status !== 'lobby')
 
     return { myGames, liveNotJoined, todayLobby, tomorrowLobby, finished, allTodayDone }
-  }, [filtered, myRoomIds])
+  }, [filtered, myRoomIds, favoriteTeams])
 
   const liveCount = allRooms.filter((r) => r.status === 'live').length
 
@@ -199,6 +218,9 @@ export default function LobbyPage() {
           )
         })}
       </div>
+
+      {/* ── Favorite teams picker ── */}
+      {activeSport !== 'all' && <FavoriteTeamsPicker sport={activeSport} />}
 
       {/* ── Featured banner ── */}
       <FeaturedBanner />

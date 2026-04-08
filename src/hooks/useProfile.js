@@ -28,7 +28,7 @@ export function useProfile() {
     const load = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('dabs_balance, username, name_color, name_font, equipped_badge, board_skin, daub_style')
+        .select('dabs_balance, username, name_color, name_font, equipped_badge, board_skin, daub_style, favorite_teams')
         .eq('id', user.id)
         .maybeSingle()
       if (!cancelled && data) {
@@ -66,5 +66,6 @@ export function useProfile() {
     equippedBadge: profile?.equipped_badge ?? null,
     boardSkin:     profile?.board_skin     ?? 'default',
     daubStyle:     profile?.daub_style     ?? 'classic',
+    favoriteTeams: profile?.favorite_teams ?? {},
   }
 }

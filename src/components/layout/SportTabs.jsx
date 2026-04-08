@@ -1,6 +1,6 @@
 const SPORTS = [
   { key: 'nba',    label: 'NBA',    active: true },
-  { key: 'ncaa',   label: 'NCAA',   active: true },
+  { key: 'mlb',    label: 'MLB',    active: true },
   { key: 'nhl',    label: 'NHL',    active: false },
   { key: 'nfl',    label: 'NFL',    active: false },
   { key: 'soccer', label: 'Soccer', active: false },
