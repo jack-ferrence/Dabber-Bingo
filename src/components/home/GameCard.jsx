@@ -67,6 +67,7 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
     >
       {/* Dual team-color gradient wash */}
       <div
+        className="game-card-gradient"
         style={{
           position: 'absolute',
           inset: 0,

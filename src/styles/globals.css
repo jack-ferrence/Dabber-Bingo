@@ -7,28 +7,27 @@
 }
 
 @theme {
-  --color-bg-primary:   #0c0c14;
-  --color-bg-secondary: #12121e;
-  --color-bg-card:      #1a1a2e;
-  --color-bg-hover:     #22223a;
+  --color-bg-primary:   var(--db-bg-page, #0c0c14);
+  --color-bg-secondary: var(--db-bg-surface, #12121e);
+  --color-bg-card:      var(--db-bg-elevated, #1a1a2e);
+  --color-bg-hover:     var(--db-bg-hover, #22223a);
 
-  --color-border-subtle: #1a1a2e;
-  --color-border-active: #2a2a44;
+  --color-border-subtle: var(--db-border-subtle, #1a1a2e);
+  --color-border-active: var(--db-border-default, #2a2a44);
 
-  --color-text-primary:   #e0e0f0;
-  --color-text-secondary: #8888aa;
-  --color-text-muted:     #555577;
+  --color-text-primary:   var(--db-text-primary, #e0e0f0);
+  --color-text-secondary: var(--db-text-secondary, #8888aa);
+  --color-text-muted:     var(--db-text-muted, #555577);
 
   --color-accent-green:  #22c55e;
   --color-accent-gold:   #ff6b35;
   --color-accent-red:    #ff2d2d;
-  --color-accent-purple: #ff6b35;
 
   /* Game animation tokens — burnt orange */
   --color-vegas-neon:   #ff6b35;
   --color-vegas-glow:   rgba(255, 107, 53, 0.20);
   --color-vegas-gold:   #ff6b35;
-  --color-vegas-border: #2a2a44;
+  --color-vegas-border: var(--db-border-default, #2a2a44);
 
   --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Outfit', sans-serif;
@@ -293,9 +292,9 @@ html, body {
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* Glassmorphism card surface (retained for legacy uses) */
+/* Glassmorphism card surface */
 .glass-card {
-  background: rgba(22,22,34,0.8);
+  background: var(--db-bg-elevated);
   border: 1px solid var(--db-border-subtle);
   backdrop-filter: blur(8px);
 }
@@ -314,11 +313,11 @@ html, body {
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  box-shadow: var(--db-shadow-md, 0 2px 12px rgba(0,0,0,0.3));
 }
 .game-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--team-glow, rgba(255, 107, 53, 0.15));
+  box-shadow: var(--db-shadow-lg, 0 8px 32px rgba(0,0,0,0.4)), 0 0 0 1px var(--team-glow, rgba(255, 107, 53, 0.15));
   border-color: var(--db-border-default);
 }
 

@@ -45,13 +45,13 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
       {/* Left: teams + status */}
       <div style={{ minWidth: 0, flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'var(--db-text-ghost)' : awayColor }}>
+          <span className="team-color-text" style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'var(--db-text-ghost)' : awayColor }}>
             {away}
           </span>
-          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 400, color: 'var(--db-text-ghost)' }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 400, color: 'var(--db-text-secondary)' }}>
             vs
           </span>
-          <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'var(--db-text-ghost)' : homeColor }}>
+          <span className="team-color-text" style={{ fontFamily: 'var(--db-font-display)', fontSize: 22, letterSpacing: '0.03em', color: isFinished ? 'var(--db-text-ghost)' : homeColor }}>
             {home}
           </span>
         </div>

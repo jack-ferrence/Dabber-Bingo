@@ -60,7 +60,8 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
   const cardWidth = widths[size] ?? 260
   const teamFontSize = size === 'large' ? 28 : size === 'medium' ? 25 : size === 'small' ? 22 : 18
   const scoreFontSize = size === 'large' ? 24 : size === 'medium' ? 20 : 18
-  const gradientOpacity = isFinished ? 0.2 : size === 'small' || size === 'tiny' ? 0.35 : 0.5
+  const baseOpacity = isFinished ? 0.2 : size === 'small' || size === 'tiny' ? 0.35 : 0.5
+  const gradientOpacity = baseOpacity
 
   const clockLabel = isLive ? getClock(room) : ''
   const hasScore = room.away_score != null && room.home_score != null
@@ -81,7 +82,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
     >
       <div
         style={{
-          background: `linear-gradient(145deg, ${hexToRgba(awayColor, gradientOpacity)} 0%, var(--db-bg-page) 50%, ${hexToRgba(homeColor, gradientOpacity)} 100%)`,
+          background: `linear-gradient(145deg, ${hexToRgba(awayColor, gradientOpacity)} 0%, var(--db-bg-surface) 50%, ${hexToRgba(homeColor, gradientOpacity)} 100%)`,
           padding: size === 'tiny' ? '12px 14px 10px' : '16px 18px 14px',
           minHeight: size === 'large' ? 150 : size === 'medium' ? 135 : size === 'small' ? 115 : 95,
           display: 'flex',
@@ -89,8 +90,17 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           justifyContent: 'space-between',
           border: '1px solid var(--db-border-subtle)',
           borderRadius: 14,
+          boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Team color accent strips */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+          background: `linear-gradient(to right, ${awayColor}, ${homeColor})`,
+          opacity: isFinished ? 0.3 : 0.7,
+        }} />
         {/* Top row: status + joined badge */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: size === 'tiny' ? 6 : 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
