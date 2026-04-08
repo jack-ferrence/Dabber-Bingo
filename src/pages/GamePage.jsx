@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useRoomChannel } from '../hooks/useRoomChannel.js'
+import { usePushNotifications } from '../hooks/usePushNotifications.js'
+import { isNative } from '../lib/platform.js'
 import GameRoom from '../components/game/GameRoom.jsx'
 import { generateOddsBasedCard } from '../game/oddsCardGenerator.js'
 
@@ -11,6 +13,7 @@ const MIN_PROPS_FOR_CARD = 24
 function GamePage() {
   const { roomId } = useParams()
   const { user, loading: authLoading } = useAuth()
+  const { requestPermission } = usePushNotifications(user)
 
   const [room, setRoom] = useState(null)
   const [card, setCard] = useState(null)
@@ -286,6 +289,12 @@ function GamePage() {
             if (debug) console.log('[GamePage] odds-based card saved', savedCard.id)
             setIsLateJoin(lateJoin)
             setCard(savedCard)
+
+            // Request push permission on first game join (native only)
+            if (isNative() && !localStorage.getItem('dobber-push-asked')) {
+              localStorage.setItem('dobber-push-asked', '1')
+              requestPermission()
+            }
             // Catch up late-join card with existing stats
             if (lateJoin && room.game_id) {
               supabase.rpc('catch_up_card', { p_card_id: savedCard.id, p_game_id: room.game_id })

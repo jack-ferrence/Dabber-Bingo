@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
+import { hapticLight } from '../../lib/haptics.js'
 import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS, getSmartTeamColor } from '../../constants/teamColors.js'
 
 function getTeamColor(abbr, sport) {
@@ -88,6 +89,7 @@ const BingoSquare = memo(function BingoSquare({
   useEffect(() => {
     if (marked && !prevMarkedRef.current) {
       setJustMarked(true)
+      hapticLight()
       const t = setTimeout(() => setJustMarked(false), 600)
       prevMarkedRef.current = marked
       return () => clearTimeout(t)

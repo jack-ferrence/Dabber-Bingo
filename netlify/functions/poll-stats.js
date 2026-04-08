@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/node'
 import { createClient } from '@supabase/supabase-js'
 import { getStatsForGame, fetchLiveEspnGames } from '../../src/lib/statsProvider.js'
 import { fetchRoster } from './lib/odds-utils.js'
+import { notifyGamePlayers, notifyUsers } from './lib/push-utils.js'
 
 const LOCK_KEY = 'poll-stats'
 const LOCK_TTL_SECONDS = 50
@@ -193,6 +194,17 @@ export async function handler() {
                   console.warn(`poll-stats: jersey backfill failed for ${room.game_id}:`, e.message)
                 }
               }
+
+              // Send game start push notification (non-blocking)
+              try {
+                await notifyGamePlayers(supabase, room.id, {
+                  title: 'Game Starting!',
+                  body: 'Your game is now live!',
+                  data: { roomId: room.id, type: 'game_start' },
+                }, { prefField: 'notify_game_start' })
+              } catch (pushErr) {
+                console.warn('poll-stats: game start push failed:', pushErr.message)
+              }
             }
           }
         }
@@ -318,6 +330,47 @@ export async function handler() {
         } else {
           totalCardsMarked += Number(cardsUpdated) || 0
         }
+      }
+
+      // Bingo line notifications — check for cards with new lines in this game
+      try {
+        const { data: roomsForGame } = await supabase
+          .from('rooms')
+          .select('id, name')
+          .eq('game_id', gameId)
+          .eq('status', 'live')
+
+        for (const rm of (roomsForGame ?? [])) {
+          const { data: cardsWithLines } = await supabase
+            .from('cards')
+            .select('user_id, lines_completed, notified_lines')
+            .eq('room_id', rm.id)
+            .gt('lines_completed', 0)
+
+          const toNotify = (cardsWithLines ?? []).filter(c =>
+            c.lines_completed > (c.notified_lines ?? 0)
+          )
+
+          if (toNotify.length > 0) {
+            const userIds = toNotify.map(c => c.user_id)
+            await notifyUsers(supabase, userIds, {
+              title: 'BINGO!',
+              body: `You hit ${toNotify[0].lines_completed === 1 ? 'a line' : 'a new line'}!`,
+              data: { roomId: rm.id, type: 'bingo_line' },
+            })
+
+            // Update notified_lines so we don't re-send
+            for (const c of toNotify) {
+              await supabase
+                .from('cards')
+                .update({ notified_lines: c.lines_completed })
+                .eq('room_id', rm.id)
+                .eq('user_id', c.user_id)
+            }
+          }
+        }
+      } catch (pushErr) {
+        console.warn('poll-stats: bingo push failed:', pushErr.message)
       }
     }
 
@@ -527,6 +580,35 @@ export async function handler() {
             } else if (awardResult?.reason) {
               log.push(`Featured game ${linkedFg.id} award skipped: ${awardResult.reason}`)
             }
+          }
+
+          // Send finish + placement push notifications (non-blocking)
+          try {
+            const { data: topCards } = await supabase
+              .from('cards')
+              .select('user_id, lines_completed, squares_marked, late_join')
+              .eq('room_id', room.id)
+              .eq('late_join', false)
+              .order('lines_completed', { ascending: false })
+              .order('squares_marked', { ascending: false })
+              .limit(5)
+
+            if (topCards?.length) {
+              const placements = topCards.map((card, idx) => ({
+                userId: card.user_id,
+                title: idx === 0 ? '1st Place!' : idx === 1 ? '2nd Place!' : idx === 2 ? '3rd Place!' : `#${idx + 1} Finish!`,
+                body: 'Game is over. Check your results!',
+                data: { roomId: room.id, type: 'game_finish', rank: idx + 1 },
+              }))
+
+              await Promise.allSettled(
+                placements.map(p =>
+                  notifyUsers(supabase, [p.userId], { title: p.title, body: p.body, data: p.data })
+                )
+              )
+            }
+          } catch (pushErr) {
+            console.warn('poll-stats: finish push failed:', pushErr.message)
           }
         }
       }

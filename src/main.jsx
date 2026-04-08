@@ -22,6 +22,14 @@ window.addEventListener('error', (e) => {
   window.location.reload()
 })
 
+import { isNative } from './lib/platform.js'
+if (isNative()) {
+  import('@capacitor/status-bar').then(({ StatusBar, Style }) => {
+    StatusBar.setStyle({ style: Style.Dark }).catch(() => {})
+    StatusBar.setBackgroundColor({ color: '#0c0c14' }).catch(() => {})
+  }).catch(() => {})
+}
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'

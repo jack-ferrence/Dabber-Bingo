@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
+import { isIOS, isNative } from '../lib/platform.js'
+import { usePushNotifications } from '../hooks/usePushNotifications.js'
 import { useProfile } from '../hooks/useProfile.js'
 import { getFontFamily, getBadge } from '../lib/fontMap'
 import DaubOverlay from '../components/game/DaubOverlay.jsx'
@@ -884,17 +886,37 @@ function PreferencesTab() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { theme: currentTheme, setTheme } = useTheme()
+  const { permissionStatus, requestPermission } = usePushNotifications(user)
   const [soundEffects,    setSoundEffects]    = useState(() => getPref('sound_effects', true))
   const [markAnimations,  setMarkAnimations]  = useState(() => getPref('mark_animations', true))
   const [autoScroll,      setAutoScroll]      = useState(() => getPref('auto_scroll_stats', true))
   const [defaultSport,    setDefaultSport]    = useState(() => getPref('default_sport', 'all'))
   const [isAdmin,         setIsAdmin]         = useState(false)
 
+  // Notification prefs (persisted in profiles)
+  const [notifyGameStart, setNotifyGameStart] = useState(true)
+  const [notifyBingoLine, setNotifyBingoLine] = useState(true)
+  const [notifyDaily,     setNotifyDaily]     = useState(false)
+  const [notifsLoaded,    setNotifsLoaded]    = useState(false)
+
   useEffect(() => {
     if (!user) return
-    supabase.from('profiles').select('is_admin').eq('id', user.id).single()
-      .then(({ data }) => { if (data?.is_admin) setIsAdmin(true) })
+    supabase.from('profiles').select('is_admin, notify_game_start, notify_bingo_line, notify_daily').eq('id', user.id).single()
+      .then(({ data }) => {
+        if (data?.is_admin) setIsAdmin(true)
+        if (data) {
+          setNotifyGameStart(data.notify_game_start ?? true)
+          setNotifyBingoLine(data.notify_bingo_line ?? true)
+          setNotifyDaily(data.notify_daily ?? false)
+        }
+        setNotifsLoaded(true)
+      })
   }, [user])
+
+  const handleNotifToggle = async (field, setter, value) => {
+    setter(value)
+    await supabase.from('profiles').update({ [field]: value }).eq('id', user.id)
+  }
 
   const handleToggle = (key, setter) => (val) => {
     setter(val)
@@ -994,24 +1016,46 @@ function PreferencesTab() {
         ))}
       </div>
 
-      {/* Notifications (future) */}
-      <div style={{ opacity: 0.4 }}>
+      {/* Notifications */}
+      <div>
         <SectionLabel>Notifications</SectionLabel>
-        <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)', marginBottom: 12, marginTop: 0, lineHeight: 1.5 }}>
-          Push notifications coming soon. We'll alert you when games start and when you hit bingo lines.
-        </p>
-        {['Game start alerts', 'Bingo line alerts', 'Daily game reminders'].map((label) => (
-          <div
-            key={label}
-            style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)',
-            }}
-          >
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-ghost)' }}>{label}</span>
-            <Toggle value={false} onChange={() => {}} disabled />
+        {isNative() ? (
+          permissionStatus === 'denied' ? (
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)', lineHeight: 1.5, margin: '0 0 12px' }}>
+              Notifications are turned off. Enable them in your iPhone Settings → Dobber.
+            </p>
+          ) : permissionStatus === 'granted' ? (
+            <>
+              <PrefRow label="Game start alerts" control={<Toggle value={notifyGameStart} onChange={(v) => handleNotifToggle('notify_game_start', setNotifyGameStart, v)} />} />
+              <PrefRow label="Bingo line alerts" control={<Toggle value={notifyBingoLine} onChange={(v) => handleNotifToggle('notify_bingo_line', setNotifyBingoLine, v)} />} />
+              <PrefRow label="Daily game reminders" control={<Toggle value={notifyDaily} onChange={(v) => handleNotifToggle('notify_daily', setNotifyDaily, v)} />} />
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={requestPermission}
+              style={{
+                width: '100%', padding: '12px 0', borderRadius: 8, border: 'none',
+                background: 'linear-gradient(135deg, #ff7a45 0%, #e05520 100%)',
+                fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 900,
+                letterSpacing: '0.06em', color: '#fff', cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(255,107,53,0.35)',
+                marginTop: 4,
+              }}
+            >
+              ENABLE NOTIFICATIONS
+            </button>
+          )
+        ) : (
+          <div style={{ opacity: 0.4 }}>
+            <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 400, color: 'var(--db-text-muted)', marginBottom: 12, marginTop: 0, lineHeight: 1.5 }}>
+              Push notifications are available in the Dobber iOS app.
+            </p>
+            <PrefRow label="Game start alerts" control={<Toggle value={false} onChange={() => {}} disabled />} />
+            <PrefRow label="Bingo line alerts" control={<Toggle value={false} onChange={() => {}} disabled />} />
+            <PrefRow label="Daily game reminders" control={<Toggle value={false} onChange={() => {}} disabled />} />
           </div>
-        ))}
+        )}
       </div>
 
       {/* About */}
@@ -1021,8 +1065,9 @@ function PreferencesTab() {
           { label: 'Version',           right: <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--db-text-secondary)' }}>0.1.0-beta</span> },
           { label: 'How to Play',       right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
           { label: 'Contact Support',   right: <a href="mailto:ferrencesup@gmail.com" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>ferrencesup@gmail.com</a> },
-          { label: 'Terms of Service',  right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
-          { label: 'Privacy Policy',    right: <Link to="/"    style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
+          { label: 'Terms of Service',  right: <Link to="/terms"   style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
+          { label: 'Privacy Policy',    right: <Link to="/privacy" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>View →</Link> },
+          ...(isIOS() ? [{ label: 'Support Dobber', right: <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: '#ff6b35' }}>bingo-v04.netlify.app/contribute</span> }] : []),
           ...(isAdmin ? [{ label: 'Admin: Featured Games', right: <Link to="/admin/featured" style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 500, color: '#ff6b35', textDecoration: 'none' }}>Manage →</Link> }] : []),
         ].map(({ label, right }) => (
           <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)' }}>
@@ -1107,20 +1152,35 @@ export default function SettingsPage() {
 
         {/* Contribute footer */}
         <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid var(--db-border-subtle)', textAlign: 'center' }}>
-          <Link
-            to="/contribute"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '10px 22px', borderRadius: 8, textDecoration: 'none',
+          {isIOS() ? (
+            <div style={{
+              display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              padding: '10px 22px', borderRadius: 8,
               background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.2)',
-              fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700,
-              letterSpacing: '0.06em', color: '#ff6b35',
-              transition: 'background 120ms, border-color 120ms',
-            }}
-          >
-            <DobberBallIcon size={14} />
-            SUPPORT DOBBER
-          </Link>
+            }}>
+              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: '#ff6b35' }}>
+                Support Dobber
+              </span>
+              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: '#ff6b35' }}>
+                bingo-v04.netlify.app/contribute
+              </span>
+            </div>
+          ) : (
+            <Link
+              to="/contribute"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '10px 22px', borderRadius: 8, textDecoration: 'none',
+                background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.2)',
+                fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700,
+                letterSpacing: '0.06em', color: '#ff6b35',
+                transition: 'background 120ms, border-color 120ms',
+              }}
+            >
+              <DobberBallIcon size={14} />
+              SUPPORT DOBBER
+            </Link>
+          )}
           <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-ghost)', margin: '8px 0 0' }}>
             Keep free-to-play sports bingo alive
           </p>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { hapticSelection } from '../lib/haptics.js'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useHomeData } from '../hooks/useHomeData.js'
@@ -181,7 +182,7 @@ export default function LobbyPage() {
           return (
             <button
               key={s.key}
-              onClick={() => setActiveSport(s.key)}
+              onClick={() => { hapticSelection(); setActiveSport(s.key) }}
               style={{
                 padding: '6px 0 10px', marginRight: 24,
                 background: 'none', cursor: 'pointer',

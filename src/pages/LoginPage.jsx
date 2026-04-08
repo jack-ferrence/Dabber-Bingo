@@ -45,7 +45,7 @@ function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', position: 'relative', overflow: 'hidden', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
 
       {/* Background radial glow */}
       <div style={{

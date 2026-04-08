@@ -89,7 +89,7 @@ function RegisterPage() {
   const onBlur = (e, err) => { e.currentTarget.style.borderColor = err ? 'rgba(255,45,45,0.4)' : 'var(--db-border-default)'; e.currentTarget.style.background = 'var(--db-border-subtle)' }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', position: 'relative', overflow: 'hidden', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
 
       {/* Background glow */}
       <div style={{ position: 'absolute', top: '-5%', left: '-10%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 65%)', pointerEvents: 'none' }} />

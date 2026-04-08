@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { hapticMedium, hapticHeavy } from '../../lib/haptics.js'
 import { supabase } from '../../lib/supabase'
 import BingoBoard from './BingoBoard.jsx'
 import ShareCard from './ShareCard.jsx'
@@ -105,6 +106,20 @@ function GameRoom({
     }
     return Array.from(ids)
   }, [bingoResult.winningLines, flatSquares])
+
+  // Haptic on bingo
+  const prevHasBingoRef = useRef(bingoResult.hasBingo)
+  useEffect(() => {
+    if (bingoResult.hasBingo && !prevHasBingoRef.current) hapticMedium()
+    prevHasBingoRef.current = bingoResult.hasBingo
+  }, [bingoResult.hasBingo])
+
+  // Haptic on game finished
+  const prevRoomStatusRef = useRef(room?.status)
+  useEffect(() => {
+    if (room?.status === 'finished' && prevRoomStatusRef.current !== 'finished') hapticHeavy()
+    prevRoomStatusRef.current = room?.status
+  }, [room?.status])
 
   const playerSquares = useMemo(() => {
     if (!selectedSquare) return []
@@ -626,7 +641,7 @@ function GameRoom({
                         </p>
                       </div>
                       <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
-                        Sportsbooks haven&apos;t posted enough props for this matchup yet. We&apos;re checking every minute — your card will generate automatically once they appear.
+                        Not enough player props have been posted for this matchup yet. We&apos;re checking every minute — your card will generate automatically once they appear.
                       </p>
                     </>
                   ) : error === 'no_props_available' ? (
@@ -659,10 +674,10 @@ function GameRoom({
                     <>
                       <p style={{ fontFamily: 'var(--db-font-ui)', fontSize: 10, color: 'var(--db-text-muted)', lineHeight: 1.5, textAlign: 'center', maxWidth: 260, margin: '0 0 18px' }}>
                         {room?.odds_status === 'insufficient'
-                          ? 'Waiting for sportsbooks to post player props for this game...'
+                          ? 'Waiting for player props to be posted for this game...'
                           : room?.sport === 'mlb'
                             ? 'Your card will be generated once MLB lineups are posted — usually about an hour before first pitch.'
-                            : 'Waiting for odds to load. This usually takes a few minutes.'}
+                            : 'Waiting for player props to load. This usually takes a few minutes.'}
                       </p>
                       <button
                         type="button"
@@ -696,7 +711,7 @@ function GameRoom({
                       onClick={onRetryCard}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--db-font-mono)', fontSize: 9, color: 'var(--db-text-muted)', marginTop: 10, textDecoration: 'underline' }}
                     >
-                      Odds are available — tap to generate card
+                      Props are available — tap to generate card
                     </button>
                   )}
                 </div>
@@ -853,16 +868,18 @@ function GameRoom({
             <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px', flexShrink: 0 }}>
               <div style={{ width: 32, height: 3, background: 'var(--db-border-default)', borderRadius: 2 }} />
             </div>
-            <PlayerStatsPanel
-              playerId={selectedSquare.player_id}
-              playerName={selectedSquare.player_name}
-              playerSquares={playerSquares}
-              gameId={room?.game_id}
-              sport={room?.sport}
-              realtimeStatEvents={statEvents}
-              resetStatEvents={resetStatEvents}
-              onClose={handleCloseStatsMobile}
-            />
+            <div style={{ flex: 1, overflow: 'auto', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+              <PlayerStatsPanel
+                playerId={selectedSquare.player_id}
+                playerName={selectedSquare.player_name}
+                playerSquares={playerSquares}
+                gameId={room?.game_id}
+                sport={room?.sport}
+                realtimeStatEvents={statEvents}
+                resetStatEvents={resetStatEvents}
+                onClose={handleCloseStatsMobile}
+              />
+            </div>
           </div>
         </div>
       )}
@@ -879,7 +896,7 @@ function GameRoom({
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.1em', color: 'var(--db-text-secondary)' }}>STANDINGS</span>
               <button type="button" onClick={() => setMobileLeaderboardSheet(false)} style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 18, cursor: 'pointer', padding: '4px 8px', lineHeight: 1 }}>✕</button>
             </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 16px' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 16px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
               <Suspense fallback={<PanelFallback />}>
                 <Leaderboard
                   roomId={roomId}
@@ -906,7 +923,7 @@ function GameRoom({
               <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.1em', color: 'var(--db-text-secondary)' }}>CHAT</span>
               <button type="button" onClick={() => setMobileChatSheet(false)} style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 18, cursor: 'pointer', padding: '4px 8px', lineHeight: 1 }}>✕</button>
             </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px', paddingBottom: 'env(safe-area-inset-bottom, 0px)', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
               <Suspense fallback={<PanelFallback />}>
                 <LiveChat
                   roomId={roomId}

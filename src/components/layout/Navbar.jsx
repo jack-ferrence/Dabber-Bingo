@@ -23,6 +23,7 @@ export default function Navbar({ onMenuClick }) {
         borderBottom: '1px solid var(--db-border-subtle)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
       }}
     >
       <div className="flex h-12 items-center justify-between px-4">
