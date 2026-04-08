@@ -72,7 +72,6 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
       data-size={size}
       style={{
         flexShrink: 0,
-        width: cardWidth,
         borderRadius: 14,
         overflow: 'hidden',
         cursor: 'pointer',
