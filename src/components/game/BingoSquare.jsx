@@ -47,6 +47,7 @@ const BingoSquare = memo(function BingoSquare({
   const teamColor = opponentAbbr
     ? getSmartTeamColor(teamAbbr, sport, opponentAbbr)
     : getTeamColor(teamAbbr, sport)
+  const jerseyNum = square?.jersey_number || ''
   const { name: playerLabel, stat: statLabel } = parseDisplay(isFree ? '' : displayText)
   const statParts = statLabel.match(/^([\d.]+\+?)\s+(.+)$/)
   const statNum  = statParts ? statParts[1] : statLabel
@@ -136,24 +137,24 @@ const BingoSquare = memo(function BingoSquare({
   }
 
   // ══════════════════════════════════════════════
-  // COLORS
+  // COLORS — high contrast
   // ══════════════════════════════════════════════
   const bg = marked
-    ? 'rgba(255,107,53,0.08)'
-    : hexToRgba(teamColor, 0.05)
+    ? 'rgba(255,107,53,0.10)'
+    : hexToRgba(teamColor, 0.06)
 
   const borderClr = marked
-    ? 'rgba(255,107,53,0.55)'
+    ? 'rgba(255,107,53,0.6)'
     : isWinning
       ? 'rgba(255,107,53,0.45)'
-      : 'var(--db-border-subtle)'
+      : hexToRgba(teamColor, 0.18)
 
   const leftBorderClr = marked
     ? 'var(--db-primary)'
     : teamColor
 
   const shadow = marked
-    ? '0 0 8px rgba(255,107,53,0.15)'
+    ? '0 0 8px rgba(255,107,53,0.2)'
     : isWinning
       ? '0 0 10px rgba(255,107,53,0.15)'
       : 'none'
@@ -196,38 +197,49 @@ const BingoSquare = memo(function BingoSquare({
         <span className="sq-player" style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 800, lineHeight: 1.1,
-          color: marked ? 'var(--db-primary)' : 'var(--db-text-primary)',
+          color: marked ? 'var(--db-primary)' : '#e8e8f4',
           textTransform: 'uppercase', whiteSpace: 'nowrap',
           overflow: 'hidden', textOverflow: 'ellipsis',
           minWidth: 0, flex: 1,
         }}>{playerLabel}</span>
         <span style={{
           fontFamily: "'JetBrains Mono',monospace",
-          fontWeight: 600, lineHeight: 1, flexShrink: 0,
-          color: marked ? 'rgba(255,107,53,0.5)' : hexToRgba(teamColor, 0.7),
+          fontWeight: 700, lineHeight: 1, flexShrink: 0,
+          color: marked ? 'rgba(255,107,53,0.6)' : hexToRgba(teamColor, 0.85),
           letterSpacing: '0.02em',
         }} className="sq-team">{teamAbbr}</span>
       </div>
 
       {/* Row 2: Stat threshold + type */}
       <div style={{
-        display: 'flex', alignItems: 'baseline', gap: 3, marginTop: 1,
+        display: 'flex', alignItems: 'baseline', gap: 3, marginTop: 2,
       }}>
         <span className="sq-stat" style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'rgba(255,140,80,0.8)' : 'var(--db-text-secondary)',
+          color: marked ? 'rgba(255,150,90,0.9)' : '#c0c0d8',
           lineHeight: 1.1,
         }}>{statNum}</span>
         {statType && (
           <span className="sq-stat-type" style={{
             fontFamily: "'JetBrains Mono',monospace",
             fontWeight: 600, whiteSpace: 'nowrap',
-            color: marked ? 'rgba(255,140,80,0.5)' : 'var(--db-text-ghost)',
+            color: marked ? 'rgba(255,140,80,0.6)' : '#8888a8',
             lineHeight: 1,
           }}>{statType}</span>
         )}
       </div>
+
+      {/* Jersey number — bottom-right corner, only if available */}
+      {jerseyNum && (
+        <span className="sq-jersey" style={{
+          position: 'absolute', bottom: showProgress ? 6 : 4, right: 4,
+          fontFamily: "'Bebas Neue',sans-serif",
+          fontWeight: 400, lineHeight: 1,
+          color: marked ? 'rgba(255,107,53,0.25)' : hexToRgba(teamColor, 0.25),
+          pointerEvents: 'none',
+        }}>{jerseyNum}</span>
+      )}
 
       {/* ── Progress bar (bottom, full width) ── */}
       {showProgress && (
