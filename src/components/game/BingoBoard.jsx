@@ -95,8 +95,6 @@ function BingoBoard({
           borderRadius: 12,
           padding: 10,
           boxShadow: 'var(--db-shadow-md)',
-          display: 'flex',
-          flexDirection: 'column',
         }}
       >
         {/* B·I·N·G·O column headers */}
@@ -120,7 +118,7 @@ function BingoBoard({
         </div>
 
         {/* 5×5 Grid */}
-        <div className="grid grid-cols-5 bingo-grid" style={{ gap: 5, contain: 'layout style', gridTemplateRows: 'repeat(5, 1fr)', flex: 1 }}>
+        <div className="grid grid-cols-5 bingo-grid" style={{ gap: 5, contain: 'layout style' }}>
           {flat.slice(0, 25).map((square, index) => (
             <BingoSquare
               key={square?.id ?? index}

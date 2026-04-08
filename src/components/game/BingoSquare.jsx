@@ -106,7 +106,7 @@ const BingoSquare = memo(function BingoSquare({
         aria-label="Free square"
         className={`sq-free-glow ${isWinning ? 'sq-winning-square' : ''} ${isLineFlash ? 'sq-line-flash' : ''}`}
         style={{
-          width: '100%', height: '100%', borderRadius: 6,
+          width: '100%', aspectRatio: '1', borderRadius: 6,
           background: 'var(--db-primary)', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 0 12px rgba(255,107,53,0.3)',
@@ -126,7 +126,7 @@ const BingoSquare = memo(function BingoSquare({
   if (isSwapping) {
     return (
       <div style={{
-        width: '100%', height: '100%', borderRadius: 6, background: 'var(--db-bg-elevated)',
+        width: '100%', aspectRatio: '1', borderRadius: 6, background: 'var(--db-bg-elevated)',
         border: '1px solid rgba(255,107,53,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
@@ -172,7 +172,7 @@ const BingoSquare = memo(function BingoSquare({
       onContextMenu={(e) => { if (isLobby) e.preventDefault() }}
       className={`sq-cell ${marked ? 'sq-marked' : ''} ${isLineFlash ? 'sq-line-flash' : ''} ${justMarked ? 'sq-just-marked' : ''} ${isWinning ? 'sq-winning-square' : ''}`}
       style={{
-        width: '100%', height: '100%', borderRadius: 6,
+        width: '100%', aspectRatio: '1', borderRadius: 6,
         display: 'flex', flexDirection: 'column',
         justifyContent: 'center', alignItems: 'flex-start',
         overflow: 'hidden', position: 'relative',
