@@ -40,14 +40,12 @@ import { AuthProvider } from './hooks/useAuth.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
-// Apply saved theme immediately to prevent flash of wrong theme
+// Apply dark theme immediately to prevent flash
 ;(function () {
   try {
-    const saved = localStorage.getItem('dobber-theme') || 'system'
-    document.documentElement.setAttribute('data-theme', saved)
-    const isDark = saved === 'dark' || (saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    document.body.style.background = isDark ? '#0c0c14' : '#f2f2f7'
-    document.body.style.color = isDark ? '#e0e0f0' : '#1c1c28'
+    document.documentElement.setAttribute('data-theme', 'dark')
+    document.body.style.background = '#0c0c14'
+    document.body.style.color = '#e0e0f0'
   } catch {}
 })()
 
