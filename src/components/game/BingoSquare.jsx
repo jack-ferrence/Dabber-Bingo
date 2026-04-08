@@ -239,7 +239,8 @@ const BingoSquare = memo(function BingoSquare({
           position: 'absolute', bottom: showProgress ? 6 : 4, right: 4,
           fontFamily: "'Bebas Neue',sans-serif",
           fontWeight: 400, lineHeight: 1,
-          color: marked ? 'rgba(255,107,53,0.25)' : 'rgba(255,255,255,0.18)',
+          color: marked ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.4)',
+          textShadow: `0 0 4px ${marked ? 'rgba(255,107,53,0.4)' : hexToRgba(teamColor, 0.5)}, 0 0 8px ${marked ? 'rgba(255,107,53,0.2)' : hexToRgba(teamColor, 0.3)}`,
           pointerEvents: 'none',
         }}>#{jerseyNum}</span>
       )}
