@@ -259,7 +259,7 @@ export default function LobbyPage() {
               </span>
             </div>
           </div>
-          <CardRow games={sections.myGames} size="standard" isJoinedSection={true} />
+          <CardRow games={sections.myGames} size="live" isJoinedSection={true} />
         </div>
       )}
 

@@ -82,24 +82,26 @@ function App() {
       <div className="h-screen flex flex-col" style={{ background: 'var(--db-bg-page)' }}>
         {!isOnline && <OfflineBanner />}
         <header
-          className="flex h-12 shrink-0 items-center justify-between px-3"
-          style={{ background: 'var(--db-bg-overlay)', borderBottom: '1px solid var(--db-border-subtle)', backdropFilter: 'blur(12px)', paddingTop: 'env(safe-area-inset-top, 0px)' }}
+          className="shrink-0"
+          style={{ background: 'var(--db-bg-overlay)', borderBottom: '1px solid var(--db-border-subtle)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', paddingTop: 'env(safe-area-inset-top, 0px)' }}
         >
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-            <DobberLogo size={22} />
-            <span style={{
-              fontFamily: 'var(--db-font-display)',
-              fontSize: 'clamp(14px, 3vw, 20px)',
-              letterSpacing: '0.15em',
-              color: 'var(--db-text-primary)',
-              lineHeight: 1,
-            }}>DOBBER</span>
-          </Link>
-          {user && (
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-ghost)' }}>
-              {profileUsername ?? user.email}
-            </span>
-          )}
+          <div className="flex h-12 items-center justify-between px-3">
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+              <DobberLogo size={22} />
+              <span style={{
+                fontFamily: 'var(--db-font-display)',
+                fontSize: 'clamp(14px, 3vw, 20px)',
+                letterSpacing: '0.15em',
+                color: 'var(--db-text-primary)',
+                lineHeight: 1,
+              }}>DOBBER</span>
+            </Link>
+            {user && (
+              <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-ghost)' }}>
+                {profileUsername ?? user.email}
+              </span>
+            )}
+          </div>
         </header>
 
         <main className="flex-1 overflow-hidden">

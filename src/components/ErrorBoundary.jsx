@@ -14,7 +14,7 @@ function isChunkError(error) {
   )
 }
 
-function FallbackUI() {
+function FallbackUI({ errorMessage, errorStack }) {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--db-bg-page)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 16px', textAlign: 'center' }}>
       <div style={{ background: 'var(--db-bg-surface)', border: '1px solid rgba(255,45,45,0.2)', borderRadius: 12, padding: 32, maxWidth: 360, width: '100%' }}>
@@ -24,6 +24,11 @@ function FallbackUI() {
         <p style={{ marginTop: 8, fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-muted)' }}>
           An unexpected error occurred.
         </p>
+        {import.meta.env.DEV && errorMessage && (
+          <pre style={{ marginTop: 12, padding: 10, background: 'rgba(255,45,45,0.06)', border: '1px solid rgba(255,45,45,0.15)', borderRadius: 6, fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-live)', textAlign: 'left', whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 200, overflow: 'auto' }}>
+            {errorMessage}{'\n'}{errorStack}
+          </pre>
+        )}
         <button
           type="button"
           onClick={() => { window.location.href = '/' }}
@@ -73,7 +78,7 @@ class ErrorBoundary extends Component {
   static getDerivedStateFromError(error) {
     // Chunk errors: don't set hasError — we'll reload in componentDidCatch
     if (isChunkError(error)) return {}
-    return { hasError: true }
+    return { hasError: true, errorMessage: error?.message ?? 'Unknown error', errorStack: error?.stack ?? '' }
   }
 
   componentDidCatch(error, info) {
@@ -94,7 +99,7 @@ class ErrorBoundary extends Component {
   }
 
   render() {
-    if (this.state.hasError) return <FallbackUI />
+    if (this.state.hasError) return <FallbackUI errorMessage={this.state.errorMessage} errorStack={this.state.errorStack} />
     return this.props.children
   }
 }
