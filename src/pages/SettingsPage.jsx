@@ -64,7 +64,7 @@ function SkinPreview({ skinClass }) {
       case 'retro':
         return isMarked
           ? { background: '#2a1a10', border: '1px solid #ff6b35' }
-          : { background: 'var(--db-bg-page)', border: '1px solid var(--db-bg-active)', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,0.02) 1px,rgba(255,255,255,0.02) 2px)' }
+          : { background: 'var(--db-bg-page)', border: '1px solid var(--db-bg-active)', backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(128,128,128,0.03) 1px,rgba(128,128,128,0.03) 2px)' }
       case 'minimal':
         return isMarked
           ? { background: 'rgba(255,107,53,0.06)', border: '0.5px solid rgba(255,107,53,0.5)', borderRadius: 1 }
@@ -425,7 +425,7 @@ function ProfileTab() {
                 onClick={() => setShowDelete(true)}
                 style={{ background: 'none', border: 'none', fontFamily: 'var(--db-font-ui)', fontSize: 12, color: 'var(--db-text-muted)', cursor: 'pointer', padding: 0, transition: 'color 120ms ease' }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = '#ff5555' }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
               >
                 Delete Account
               </button>
@@ -1128,7 +1128,7 @@ export default function SettingsPage() {
               onClick={() => setTab(t.key)}
               style={{
                 fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600,
-                color: tab === t.key ? '#ff6b35' : 'rgba(255,255,255,0.3)',
+                color: tab === t.key ? '#ff6b35' : 'var(--db-text-muted)',
                 padding: '10px 18px', cursor: 'pointer',
                 background: 'none', border: 'none',
                 borderBottom: tab === t.key ? '2px solid #ff6b35' : '2px solid transparent',

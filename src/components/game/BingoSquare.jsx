@@ -137,7 +137,7 @@ const BingoSquare = memo(function BingoSquare({
         }}>
         <span style={{
           fontFamily: "'Bebas Neue',sans-serif",
-          fontSize: 20, fontWeight: 700, color: '#0c0c14',
+          fontSize: 20, fontWeight: 700, color: 'var(--db-free-text)',
           letterSpacing: '0.08em',
         }}>FREE</span>
       </button>

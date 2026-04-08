@@ -7,7 +7,7 @@ function ProtectedRoute() {
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Loading...</span>
+        <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'var(--db-text-muted)' }}>Loading...</span>
       </div>
     )
   }

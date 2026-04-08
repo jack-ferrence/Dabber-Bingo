@@ -88,9 +88,9 @@ export default function InstallPrompt() {
       <button
         type="button"
         onClick={handleDismiss}
-        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 16, cursor: 'pointer', padding: '4px', flexShrink: 0, lineHeight: 1, transition: 'color 120ms ease' }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.2)' }}
+        style={{ background: 'none', border: 'none', color: 'var(--db-text-muted)', fontSize: 16, cursor: 'pointer', padding: '4px', flexShrink: 0, lineHeight: 1, transition: 'color 120ms ease' }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--db-text-secondary)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--db-text-ghost)' }}
       >
         ✕
       </button>

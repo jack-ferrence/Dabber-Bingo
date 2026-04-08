@@ -31,7 +31,7 @@ function OfflineBanner() {
       <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 11, letterSpacing: '0.1em', color: '#fff', fontWeight: 800 }}>
         NO CONNECTION
       </div>
-      <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+      <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-secondary)', marginTop: 2 }}>
         Waiting for connection...
       </div>
     </div>
@@ -119,7 +119,7 @@ function App() {
         <Route
           path="*"
           element={
-            <div className="p-8 text-center" style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,255,255,0.4)' }}>
+            <div className="p-8 text-center" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-muted)' }}>
               Page not found
             </div>
           }

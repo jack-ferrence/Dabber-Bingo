@@ -72,12 +72,12 @@ function RecentEvents({ gameId }) {
 
   return (
     <div>
-      <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)' }}>
+      <h2 style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--db-text-muted)' }}>
         RECENT EVENTS
       </h2>
       <ul className="mt-2 space-y-1.5 overflow-hidden">
         {events.length === 0 ? (
-          <li style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>No events yet.</li>
+          <li style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, color: 'var(--db-text-muted)' }}>No events yet.</li>
         ) : (
           events.map((ev) => (
             <li

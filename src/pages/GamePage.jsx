@@ -371,7 +371,7 @@ function GamePage() {
   if (loadingRoom || authLoading) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center" style={{ background: 'var(--db-bg-page)' }}>
-        <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>Loading room...</span>
+        <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, color: 'var(--db-text-muted)' }}>Loading room...</span>
       </div>
     )
   }

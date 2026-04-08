@@ -218,7 +218,7 @@ export default function StoreItemCard({ item, owned, equipped, dobsBalance, isEm
     <div
       style={{
         background: equipped
-          ? 'linear-gradient(160deg, #1c1408 0%, #130e04 100%)'
+          ? 'var(--db-bg-marked)'
           : 'var(--db-bg-elevated)',
         border: `1px solid ${equipped ? 'rgba(255,107,53,0.4)' : 'var(--db-border-default)'}`,
         borderRadius: 10,

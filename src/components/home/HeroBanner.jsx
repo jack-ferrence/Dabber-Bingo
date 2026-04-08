@@ -7,7 +7,7 @@ export default function HeroBanner() {
     <div
       className="relative overflow-hidden rounded-xl p-8 md:p-10"
       style={{
-        background: 'linear-gradient(135deg, rgba(255,107,53,0.08) 0%, rgba(255,255,255,0.02) 50%, rgba(8,8,16,1) 100%)',
+        background: 'linear-gradient(135deg, rgba(255,107,53,0.08) 0%, transparent 50%, var(--db-bg-page) 100%)',
         border: '1px solid rgba(255,107,53,0.2)',
       }}
     >

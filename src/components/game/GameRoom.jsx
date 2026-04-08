@@ -14,7 +14,7 @@ import { useProfile } from '../../hooks/useProfile.js'
 import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, NCAA_TEAM_COLORS } from '../../constants/teamColors.js'
 
 function getRoomTeamColor(abbr, sport) {
-  if (!abbr) return 'rgba(255,255,255,0.5)'
+  if (!abbr) return 'var(--db-text-secondary)'
   if (sport === 'mlb') return MLB_TEAM_COLORS[abbr] ?? 'rgba(255,255,255,0.5)'
   if (sport === 'ncaa') return NCAA_TEAM_COLORS[abbr] ?? 'rgba(255,255,255,0.5)'
   return NBA_TEAM_COLORS[abbr] ?? 'rgba(255,255,255,0.5)'
@@ -510,7 +510,7 @@ function GameRoom({
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                style={{ marginTop: 8, background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '10px 20px', cursor: 'pointer' }}
+                style={{ marginTop: 8, background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '10px 20px', cursor: 'pointer' }}
               >
                 BACK TO LOBBY
               </button>
@@ -652,7 +652,7 @@ function GameRoom({
                       <button
                         type="button"
                         onClick={() => navigate('/')}
-                        style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                        style={{ background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
                       >
                         BACK TO LOBBY
                       </button>
@@ -665,7 +665,7 @@ function GameRoom({
                       <button
                         type="button"
                         onClick={() => navigate('/')}
-                        style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                        style={{ background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
                       >
                         BACK TO LOBBY
                       </button>
@@ -682,7 +682,7 @@ function GameRoom({
                       <button
                         type="button"
                         onClick={() => navigate('/')}
-                        style={{ background: '#ff6b35', color: '#0c0c14', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
+                        style={{ background: '#ff6b35', color: 'var(--db-text-on-primary)', border: 'none', borderRadius: 4, fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', padding: '11px 0', cursor: 'pointer', width: '100%' }}
                       >
                         BACK TO LOBBY
                       </button>
@@ -963,7 +963,7 @@ function GameRoom({
           onClick={(e) => { if (e.target === e.currentTarget) setGameOverDismissed(true) }}
         >
           <div
-            style={{ position: 'relative', width: '100%', maxWidth: 360, background: 'var(--db-bg-elevated)', border: '1px solid rgba(255,107,53,0.2)', borderRadius: 14, padding: '32px 24px 24px', boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04) inset' }}
+            style={{ position: 'relative', width: '100%', maxWidth: 360, background: 'var(--db-bg-elevated)', border: '1px solid rgba(255,107,53,0.2)', borderRadius: 14, padding: '32px 24px 24px', boxShadow: 'var(--db-shadow-lg)' }}
           >
             <button
               type="button"

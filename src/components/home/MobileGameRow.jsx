@@ -26,7 +26,7 @@ export default function MobileGameRow({ room, onOpenGame, isMyRoom = false }) {
         borderRadius: 8,
         background: isMyRoom && !isLive && !isFinished
           ? `linear-gradient(135deg, ${hexToRgba(awayColor, 0.1)} 0%, transparent 40%, ${hexToRgba(homeColor, 0.1)} 100%)`
-          : `linear-gradient(to right, ${hexToRgba(awayColor, 0.05)}, rgba(255,255,255,0.02) 30%, rgba(255,255,255,0.02) 70%, ${hexToRgba(homeColor, 0.05)})`,
+          : `linear-gradient(to right, ${hexToRgba(awayColor, 0.05)}, rgba(128,128,128,0.03) 30%, rgba(128,128,128,0.03) 70%, ${hexToRgba(homeColor, 0.05)})`,
         border: isMyRoom && !isLive && !isFinished
           ? `1px solid ${hexToRgba(homeColor, 0.18)}`
           : '1px solid var(--db-border-hover)',

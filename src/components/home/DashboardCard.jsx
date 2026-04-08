@@ -133,7 +133,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           {isFinished && rank > 0 && (
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: 14, fontWeight: 800,
-              color: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'rgba(255,255,255,0.3)',
+              color: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'var(--db-text-muted)',
             }}>
               {rank <= 3 ? ['\u{1F947}','\u{1F948}','\u{1F949}'][rank-1] : `#${rank}`}
             </span>
@@ -145,13 +145,13 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           <div style={{ display: 'flex', alignItems: 'baseline', gap: size === 'tiny' ? 6 : 10 }}>
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
-              color: isFinished ? 'var(--db-text-muted)' : '#fff',
+              color: isFinished ? 'var(--db-text-muted)' : 'var(--db-text-bright)',
               letterSpacing: '0.01em', lineHeight: 1,
             }}>{away}</span>
             <span style={{ fontSize: size === 'tiny' ? 9 : 11, color: 'var(--db-text-ghost)' }}>vs</span>
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
-              color: isFinished ? 'var(--db-text-muted)' : '#fff',
+              color: isFinished ? 'var(--db-text-muted)' : 'var(--db-text-bright)',
               letterSpacing: '0.01em', lineHeight: 1,
             }}>{home}</span>
           </div>
@@ -205,7 +205,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           )}
 
           {isFinished && (
-            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>
+            <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-muted)' }}>
               {sport.toUpperCase()} · Finished
             </span>
           )}
