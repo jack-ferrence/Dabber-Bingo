@@ -198,7 +198,7 @@ const BingoSquare = memo(function BingoSquare({
       onTouchEnd={handleTouchEnd}
       onTouchCancel={cancelLongPress}
       onContextMenu={(e) => { if (isLobby) e.preventDefault() }}
-      className={`${isLineFlash ? 'sq-line-flash' : ''} ${justMarked ? 'sq-just-marked' : ''} ${isWinning ? 'sq-winning-square' : ''}`}
+      className={`${marked ? 'sq-marked' : ''} ${isLineFlash ? 'sq-line-flash' : ''} ${justMarked ? 'sq-just-marked' : ''} ${isWinning ? 'sq-winning-square' : ''}`}
       style={{
         width: '100%', aspectRatio: '1', borderRadius: 6,
         display: 'flex', overflow: 'hidden', position: 'relative',

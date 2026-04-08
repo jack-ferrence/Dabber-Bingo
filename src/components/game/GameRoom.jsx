@@ -304,7 +304,7 @@ function GameRoom({
   const winningLines = bingoResult.winningLines ?? []
 
   return (
-    <div className="game-room-root flex h-[calc(100vh-4rem)] flex-col bg-bg-primary">
+    <div className="game-room-root flex h-[calc(100vh-4rem)] flex-col" style={{ background: 'var(--db-bg-page)' }}>
       {/* ── Header ── */}
       <header className="game-room-header flex h-12 shrink-0 items-center justify-between px-3 md:px-4" style={{ background: 'var(--db-bg-overlay)', borderBottom: '1px solid var(--db-border-subtle)', backdropFilter: 'blur(12px)' }}>
         <div className="flex items-center gap-3 min-w-0">

@@ -937,46 +937,84 @@
    CSS-only overrides so component files stay untouched.
    ============================================================ */
 
-/* ── Bingo squares: white cards, dark text ── */
+/* ── Bingo squares: cool gray cards, dark text ── */
 [data-theme="light"] .bingo-grid button,
 [data-theme="system"] .bingo-grid button {
-  background: #ffffff !important;
-  border-color: #e0e0e8 !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  background: #f8f8fb !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
-/* Number panel: light gray bg in light mode */
+/* Number panel: slightly darker gray in light mode */
 [data-theme="light"] .bingo-grid button > div:first-child,
 [data-theme="system"] .bingo-grid button > div:first-child {
-  background: #f2f2f7 !important;
-  border-right-color: #e0e0e8 !important;
+  background: #f0f0f5 !important;
+  border-right-color: rgba(0,0,0,0.08) !important;
 }
 
 /* Player name in light mode */
 [data-theme="light"] .bingo-grid button .sq-player,
 [data-theme="system"] .bingo-grid button .sq-player {
-  color: #111118 !important;
+  color: #1c1c28 !important;
 }
 
-/* Stat line in light mode: orange pops on white */
+/* Stat number in light mode */
 [data-theme="light"] .bingo-grid button .sq-stat,
 [data-theme="system"] .bingo-grid button .sq-stat {
-  color: var(--db-primary) !important;
+  color: #2a2a3e !important;
 }
+/* Stat type label in light mode */
 [data-theme="light"] .bingo-grid button .sq-stat-type,
 [data-theme="system"] .bingo-grid button .sq-stat-type {
-  color: rgba(255,107,53,0.65) !important;
+  color: #6e6e82 !important;
 }
 
-/* Marked square: warm bg, orange border */
-[data-theme="light"] .sq-winning-square,
-[data-theme="light"] .sq-just-marked,
-[data-theme="system"] .sq-winning-square,
-[data-theme="system"] .sq-just-marked {
+/* Marked square in light mode: warm tint */
+[data-theme="light"] .bingo-grid button.sq-marked,
+[data-theme="system"] .bingo-grid button.sq-marked {
+  background: rgba(255,107,53,0.10) !important;
+  border-color: rgba(255,107,53,0.30) !important;
+}
+[data-theme="light"] .bingo-grid button.sq-winning-square,
+[data-theme="system"] .bingo-grid button.sq-winning-square {
+  background: rgba(255,107,53,0.10) !important;
   border-color: rgba(255,107,53,0.5) !important;
 }
 
+/* Marked square number panel */
+[data-theme="light"] .bingo-grid button.sq-marked > div:first-child,
+[data-theme="system"] .bingo-grid button.sq-marked > div:first-child {
+  background: rgba(255,107,53,0.12) !important;
+  border-right-color: rgba(255,107,53,0.15) !important;
+}
+
+/* FREE square: keep orange in both modes */
+[data-theme="light"] .bingo-grid button.sq-free-glow,
+[data-theme="system"] .bingo-grid button.sq-free-glow {
+  background: #ff6b35 !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 12px rgba(255,107,53,0.3) !important;
+}
+
 /* FREE square stays orange in both modes — no override needed */
+
+/* ── Game card: readable text on gradient backgrounds ── */
+[data-theme="light"] .game-card,
+[data-theme="system"] .game-card {
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+[data-theme="light"] .game-card .team-abbr,
+[data-theme="system"] .game-card .team-abbr {
+  text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+[data-theme="light"] .game-card .vs-text,
+[data-theme="system"] .game-card .vs-text {
+  color: var(--db-text-muted);
+}
+[data-theme="light"] .game-card:hover,
+[data-theme="system"] .game-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 0 0 1px var(--team-glow, rgba(255, 107, 53, 0.15));
+}
 
 /* ── Scrollbar ── */
 [data-theme="light"] ::-webkit-scrollbar-track,
