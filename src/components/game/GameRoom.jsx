@@ -496,7 +496,7 @@ function GameRoom({
       <div className="game-room-main flex flex-1 overflow-hidden">
 
         {/* LEFT: Bingo Board */}
-        <div className={`game-room-board flex shrink-0 flex-col items-center justify-center p-2 md:p-4 gap-3 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[50%]' : 'w-full lg:w-[65%]'}`} style={{ overflowX: 'visible', overflowY: 'auto' }}>
+        <div className={`game-room-board flex flex-col items-center justify-center p-2 md:p-4 gap-2 transition-all duration-200 ${selectedSquare ? 'w-full lg:w-[50%]' : 'w-full lg:w-[65%]'}`} style={{ overflow: 'hidden', flex: '1 1 0', minHeight: 0 }}>
           {room?.status === 'finished' && !card && !loadingCard ? (
             // Finished game — user didn't have a card
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '40px 0' }}>
