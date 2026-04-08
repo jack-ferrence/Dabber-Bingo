@@ -640,12 +640,9 @@ html, body {
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-/* ═══ Dashboard card responsive widths ═══ */
-.dashboard-card { width: 260px; min-width: 200px; }
-.dashboard-card[data-size="large"]  { width: 280px; }
-.dashboard-card[data-size="medium"] { width: 260px; }
-.dashboard-card[data-size="small"]  { width: 240px; }
-.dashboard-card[data-size="tiny"]   { width: 200px; }
+/* ═══ Dashboard card responsive widths (2-tier: live / standard) ═══ */
+.dashboard-card                       { width: 220px; min-width: 180px; }
+.dashboard-card[data-size="live"]     { width: 300px; min-width: 260px; }
 
 /* Desktop: card rows wrap into a grid instead of horizontal scroll */
 @media (min-width: 1024px) {
@@ -654,20 +651,14 @@ html, body {
     overflow-x: visible !important;
     scroll-snap-type: none !important;
   }
-  .dashboard-card { width: auto; min-width: 240px; max-width: 320px; flex: 1 1 260px; }
-  .dashboard-card[data-size="large"]  { min-width: 260px; flex-basis: 280px; width: auto; }
-  .dashboard-card[data-size="medium"] { min-width: 240px; flex-basis: 260px; width: auto; }
-  .dashboard-card[data-size="small"]  { min-width: 220px; flex-basis: 240px; width: auto; }
-  .dashboard-card[data-size="tiny"]   { min-width: 180px; flex-basis: 200px; width: auto; max-width: 260px; }
+  .dashboard-card                     { width: auto; min-width: 220px; max-width: 300px; flex: 1 1 240px; }
+  .dashboard-card[data-size="live"]   { min-width: 280px; max-width: 380px; flex: 1 1 320px; width: auto; }
 }
 
-/* Mobile: shrink cards to show 1.5 (hint to scroll) */
+/* Mobile: standard shows ~2 cards, live shows ~1.3 */
 @media (max-width: 767px) {
-  .dashboard-card { width: 200px; min-width: 160px; }
-  .dashboard-card[data-size="large"]  { width: 220px; }
-  .dashboard-card[data-size="medium"] { width: 200px; }
-  .dashboard-card[data-size="small"]  { width: 180px; }
-  .dashboard-card[data-size="tiny"]   { width: 160px; }
+  .dashboard-card                     { width: 170px; min-width: 150px; }
+  .dashboard-card[data-size="live"]   { width: 260px; min-width: 220px; }
 }
 
 /* ═══ Small phones (iPhone SE, 375px and below) ═══ */

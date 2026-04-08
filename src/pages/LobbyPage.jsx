@@ -259,7 +259,7 @@ export default function LobbyPage() {
               </span>
             </div>
           </div>
-          <CardRow games={sections.myGames} size="large" isJoinedSection={true} />
+          <CardRow games={sections.myGames} size="standard" isJoinedSection={true} />
         </div>
       )}
 
@@ -273,7 +273,7 @@ export default function LobbyPage() {
             </div>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.liveNotJoined.length} games</span>
           </div>
-          <CardRow games={sections.liveNotJoined} size="medium" />
+          <CardRow games={sections.liveNotJoined} size="live" />
         </div>
       )}
 
@@ -284,7 +284,7 @@ export default function LobbyPage() {
             <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Tonight</h2>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.todayLobby.length} games</span>
           </div>
-          <CardRow games={sections.todayLobby} size="small" />
+          <CardRow games={sections.todayLobby} size="standard" />
         </div>
       )}
 
@@ -295,7 +295,7 @@ export default function LobbyPage() {
             <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Today's results</h2>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.finished.length} games</span>
           </div>
-          <CardRow games={sections.finished} size="small" />
+          <CardRow games={sections.finished} size="standard" />
         </div>
       )}
 
@@ -306,7 +306,7 @@ export default function LobbyPage() {
             <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-secondary)', margin: 0 }}>Tomorrow</h2>
             <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)' }}>{sections.tomorrowLobby.length} games</span>
           </div>
-          <CardRow games={sections.tomorrowLobby} size="small" />
+          <CardRow games={sections.tomorrowLobby} size="standard" />
         </div>
       )}
 
@@ -316,7 +316,7 @@ export default function LobbyPage() {
           <div style={{ display: 'flex', alignItems: 'center', padding: '0 20px', marginBottom: 12 }}>
             <h2 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--db-text-ghost)', margin: 0 }}>Recently finished</h2>
           </div>
-          <CardRow games={sections.finished} size="tiny" />
+          <CardRow games={sections.finished} size="standard" />
         </div>
       )}
 

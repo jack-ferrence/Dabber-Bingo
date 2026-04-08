@@ -56,10 +56,10 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
     && msUntilStart < 2 * 60 * 60 * 1000
     && msUntilStart > 0
 
-  const cardWidth = undefined // responsive — controlled by CSS grid/flex parent
-  const teamFontSize = size === 'large' ? 'clamp(22px, 5vw, 28px)' : size === 'medium' ? 'clamp(20px, 4.5vw, 25px)' : size === 'small' ? 'clamp(18px, 4vw, 22px)' : 'clamp(16px, 3.5vw, 18px)'
-  const scoreFontSize = size === 'large' ? 'clamp(20px, 4.5vw, 24px)' : size === 'medium' ? 'clamp(18px, 4vw, 20px)' : 'clamp(16px, 3.5vw, 18px)'
-  const baseOpacity = isFinished ? 0.2 : size === 'small' || size === 'tiny' ? 0.35 : 0.5
+  const isLiveSize = size === 'live'
+  const teamFontSize = isLiveSize ? 'clamp(22px, 5vw, 28px)' : 'clamp(18px, 4vw, 22px)'
+  const scoreFontSize = isLiveSize ? 'clamp(20px, 4.5vw, 24px)' : 'clamp(16px, 3.5vw, 18px)'
+  const baseOpacity = isFinished ? 0.2 : isLiveSize ? 0.5 : 0.35
   const gradientOpacity = baseOpacity
 
   const clockLabel = isLive ? getClock(room) : ''
@@ -84,8 +84,8 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
       <div
         style={{
           background: `linear-gradient(145deg, ${hexToRgba(awayColor, gradientOpacity)} 0%, var(--db-bg-surface) 50%, ${hexToRgba(homeColor, gradientOpacity)} 100%)`,
-          padding: size === 'tiny' ? '12px 14px 10px' : '16px 18px 14px',
-          minHeight: size === 'large' ? 150 : size === 'medium' ? 135 : size === 'small' ? 115 : 95,
+          padding: isLiveSize ? '16px 18px 14px' : '14px 16px 12px',
+          minHeight: isLiveSize ? 150 : 120,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -103,7 +103,7 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
           opacity: isFinished ? 0.3 : 0.7,
         }} />
         {/* Top row: status + joined badge */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: size === 'tiny' ? 6 : 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isLiveSize ? 10 : 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             {isLive && (
               <>
@@ -152,14 +152,14 @@ export default function DashboardCard({ room, onOpenGame, isJoined = false, size
         </div>
 
         {/* Team names */}
-        <div style={{ marginBottom: size === 'tiny' ? 4 : 8 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: size === 'tiny' ? 6 : 10 }}>
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: isLiveSize ? 10 : 8 }}>
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
               color: isFinished ? 'var(--db-text-muted)' : 'var(--db-text-bright)',
               letterSpacing: '0.01em', lineHeight: 1,
             }}>{away}</span>
-            <span style={{ fontSize: size === 'tiny' ? 9 : 11, color: 'var(--db-text-ghost)' }}>vs</span>
+            <span style={{ fontSize: 11, color: 'var(--db-text-ghost)' }}>vs</span>
             <span style={{
               fontFamily: 'var(--db-font-display)', fontSize: teamFontSize, fontWeight: 900,
               color: isFinished ? 'var(--db-text-muted)' : 'var(--db-text-bright)',
