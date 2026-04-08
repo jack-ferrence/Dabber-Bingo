@@ -1,12 +1,12 @@
-const sectionStyle = { fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.08em', color: 'var(--db-text-primary, #e8e8f4)', marginTop: 28, marginBottom: 12 }
-const bodyStyle = { fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-text-secondary, rgba(255,255,255,0.55))', lineHeight: 1.8 }
+const sectionStyle = { fontFamily: 'var(--db-font-display)', fontSize: 14, letterSpacing: '0.08em', color: 'var(--db-text-primary)', marginTop: 28, marginBottom: 12 }
+const bodyStyle = { fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-text-secondary)', lineHeight: 1.8 }
 
 export default function TermsPage() {
   return (
-    <div style={{ minHeight: '100%', background: 'var(--db-bg-page, #0c0c14)', padding: '24px 20px 80px' }}>
+    <div style={{ minHeight: '100%', background: 'var(--db-bg-page)', padding: '24px 20px 80px' }}>
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
         <h1 style={{ fontFamily: 'var(--db-font-display)', fontSize: 'clamp(24px, 5vw, 36px)', color: '#ff6b35', letterSpacing: '0.06em', marginBottom: 6 }}>TERMS OF SERVICE</h1>
-        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted, rgba(255,255,255,0.35))', marginBottom: 32 }}>Last updated: April 2026</p>
+        <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 12, color: 'var(--db-text-muted)', marginBottom: 32 }}>Last updated: April 2026</p>
 
         <h2 style={sectionStyle}>ACCEPTANCE OF TERMS</h2>
         <p style={bodyStyle}>By using Dobber, you agree to these terms. If you do not agree, do not use the app.</p>

@@ -145,7 +145,7 @@ function LightningDaub({ animated }) {
       {/* Jagged lightning bolt diagonally across the square */}
       <polyline
         points="70,10 45,45 58,45 30,90"
-        stroke="#8b5cf6"
+        stroke="#ff6b35"
         strokeWidth="2.5"
         strokeLinejoin="round"
         strokeLinecap="round"

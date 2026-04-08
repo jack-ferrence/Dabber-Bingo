@@ -34,7 +34,7 @@ function progressBarColor(current, threshold, marked) {
   if (marked) return 'bg-accent-green'
   const pct = threshold > 0 ? current / threshold : 0
   if (pct >= 0.75) return 'bg-accent-gold'
-  if (pct >= 0.5) return 'bg-accent-purple'
+  if (pct >= 0.5) return 'bg-accent-gold'
   return 'bg-text-muted'
 }
 

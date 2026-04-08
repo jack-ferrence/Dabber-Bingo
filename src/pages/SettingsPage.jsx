@@ -59,7 +59,7 @@ function SkinPreview({ skinClass }) {
     switch (skinClass) {
       case 'neon':
         return isMarked
-          ? { background: '#1a1a2e', border: '1px solid rgba(255,107,53,0.7)', boxShadow: '0 0 6px rgba(255,107,53,0.3)' }
+          ? { background: 'var(--db-bg-elevated)', border: '1px solid rgba(255,107,53,0.7)', boxShadow: '0 0 6px rgba(255,107,53,0.3)' }
           : { background: 'var(--db-bg-page)', border: '1px solid rgba(255,107,53,0.35)' }
       case 'retro':
         return isMarked
@@ -68,7 +68,7 @@ function SkinPreview({ skinClass }) {
       case 'minimal':
         return isMarked
           ? { background: 'rgba(255,107,53,0.06)', border: '0.5px solid rgba(255,107,53,0.5)', borderRadius: 1 }
-          : { background: 'transparent', border: '0.5px solid #2a2a44', borderRadius: 1 }
+          : { background: 'transparent', border: '0.5px solid var(--db-border-default)', borderRadius: 1 }
       case 'gold':
         return isMarked
           ? { background: 'rgba(245,158,11,0.08)', border: '1px solid #f59e0b' }

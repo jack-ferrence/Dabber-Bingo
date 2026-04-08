@@ -143,12 +143,12 @@ export default function GameCard({ game, onOpenGame, rank = 0, isPlaying = false
         style={{ padding: '18px 20px 12px' }}
       >
         <div className="flex flex-col items-center gap-1">
-          <span className="team-abbr" style={{ color: awayColor, opacity: 0.8 }}>{away}</span>
+          <span className="team-abbr" style={{ color: awayColor, opacity: 0.8, textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>{away}</span>
           <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', color: 'var(--db-text-muted)', textTransform: 'uppercase' }}>Away</span>
         </div>
         <span className="vs-text" style={{ marginBottom: 16 }}>VS</span>
         <div className="flex flex-col items-center gap-1">
-          <span className="team-abbr" style={{ color: homeColor }}>{home}</span>
+          <span className="team-abbr" style={{ color: homeColor, textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>{home}</span>
           <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 9, fontWeight: 500, letterSpacing: '0.06em', color: 'var(--db-text-muted)', textTransform: 'uppercase' }}>Home</span>
         </div>
       </div>

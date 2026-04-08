@@ -50,7 +50,7 @@ function SkinPreview({ skinClass }) {
           : {
               background: 'var(--db-bg-page)',
               border: '1px solid var(--db-bg-active)',
-              backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,0.02) 1px,rgba(255,255,255,0.02) 2px)',
+              backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(128,128,128,0.03) 1px,rgba(128,128,128,0.03) 2px)',
             }
       case 'minimal':
         return isMarked
@@ -67,7 +67,7 @@ function SkinPreview({ skinClass }) {
       case 'courtside':
         return isMarked
           ? { background: 'rgba(90,58,18,0.8)', border: '2px solid rgba(255,255,255,0.35)', borderRadius: '50%' }
-          : { background: 'rgba(61,37,8,0.6)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 2 }
+          : { background: 'rgba(61,37,8,0.6)', border: '1px solid var(--db-border-default)', borderRadius: 2 }
       case 'scoreboard':
         return isMarked
           ? { background: '#0c0c0c', border: '1px solid #1a1a1a', boxShadow: '0 0 4px rgba(255,45,45,0.4)', borderRadius: 1 }

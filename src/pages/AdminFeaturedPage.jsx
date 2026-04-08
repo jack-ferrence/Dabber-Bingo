@@ -316,7 +316,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
         <input type="datetime-local" style={inputStyle} value={form.starts_at} onChange={(e) => set('starts_at', e.target.value)} />
       </Field>
 
-      <div style={{ borderTop: '1px solid #2a2a44', marginTop: 20, paddingTop: 20 }}>
+      <div style={{ borderTop: '1px solid var(--db-border-default)', marginTop: 20, paddingTop: 20 }}>
         <h4 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.08em', marginBottom: 16 }}>
           PRIZE DETAILS
         </h4>
@@ -332,7 +332,7 @@ function FeaturedGameForm({ game, onSave, onCancel, userId }) {
         <ImageUploader label="Prize Image" value={form.prize_image_url} onChange={(url) => set('prize_image_url', url)} />
       </div>
 
-      <div style={{ borderTop: '1px solid #2a2a44', marginTop: 20, paddingTop: 20 }}>
+      <div style={{ borderTop: '1px solid var(--db-border-default)', marginTop: 20, paddingTop: 20 }}>
         <h4 style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, fontWeight: 700, color: '#ff6b35', letterSpacing: '0.08em', marginBottom: 16 }}>
           ENTRY CONFIG
         </h4>

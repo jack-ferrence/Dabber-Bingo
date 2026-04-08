@@ -155,21 +155,21 @@ export default function ContributePage() {
         {/* iOS: no Stripe, show URL as plain text */}
         {isIOS() ? (
           <div style={{
-            background: 'var(--db-bg-surface, #12121e)', border: '1px solid var(--db-border-subtle, rgba(255,255,255,0.05))',
+            background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
             borderRadius: 10, padding: 20,
           }}>
-            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--db-text-ghost, rgba(255,255,255,0.25))', margin: '0 0 14px' }}>
+            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--db-text-ghost)', margin: '0 0 14px' }}>
               HOW TO SUPPORT
             </p>
-            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-text-secondary, rgba(255,255,255,0.55))', lineHeight: 1.7, margin: '0 0 14px' }}>
+            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 13, color: 'var(--db-text-secondary)', lineHeight: 1.7, margin: '0 0 14px' }}>
               To contribute, visit us in your browser:
             </p>
-            <div style={{ background: 'var(--db-bg-elevated, #1a1a2e)', borderLeft: '3px solid #ff6b35', borderRadius: 6, padding: '12px 16px' }}>
+            <div style={{ background: 'var(--db-bg-elevated)', borderLeft: '3px solid #ff6b35', borderRadius: 6, padding: '12px 16px' }}>
               <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: '#ff6b35' }}>
                 bingo-v04.netlify.app/contribute
               </span>
             </div>
-            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted, rgba(255,255,255,0.35))', marginTop: 12, lineHeight: 1.6 }}>
+            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 11, color: 'var(--db-text-muted)', marginTop: 12, lineHeight: 1.6 }}>
               Open Safari, type the address above, and you can support Dobber from there.
             </p>
           </div>

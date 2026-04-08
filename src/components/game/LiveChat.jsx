@@ -10,7 +10,7 @@ const MAX_CHARS = 280
 const RATE_LIMIT_MS = 2000
 const SCROLL_THROTTLE_MS = 200
 
-const USER_COLORS = ['#ff6b35', '#8b5cf6', '#22c55e', '#3b82f6', '#f59e0b', '#c0c0d8', '#ff8855', '#8888aa']
+const USER_COLORS = ['#ff6b35', '#3b82f6', '#22c55e', '#e05520', '#f59e0b', '#c0c0d8', '#ff8855', '#0ea5e9']
 
 function userColor(userId) {
   let hash = 0
@@ -301,14 +301,14 @@ function LiveChat({ roomId, userId, username, realtimeMessages, initChatMessages
             onKeyDown={handleKeyDown}
             disabled={sending}
             placeholder="Send a message..."
-            className="min-w-0 flex-1 rounded-md border border-border-subtle bg-bg-card px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent-purple focus:outline-none focus:ring-1 focus:ring-accent-purple disabled:opacity-50"
+            className="min-w-0 flex-1 rounded-md border border-border-subtle bg-bg-card px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent-gold focus:outline-none focus:ring-1 focus:ring-accent-gold disabled:opacity-50"
           />
           <EmotePicker userId={userId} onQuickReact={handleQuickReact} />
           <button
             type="button"
             onClick={handleSend}
             disabled={sending || !input.trim()}
-            className="shrink-0 rounded-md bg-accent-purple px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-accent-purple/80 disabled:cursor-not-allowed disabled:opacity-40"
+            className="shrink-0 rounded-md bg-accent-gold px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-accent-gold/80 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Send
           </button>
