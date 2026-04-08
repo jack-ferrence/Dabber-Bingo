@@ -197,15 +197,15 @@ const BingoSquare = memo(function BingoSquare({
         <span className="sq-player" style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 800, lineHeight: 1.1,
-          color: marked ? 'var(--db-primary)' : '#e8e8f4',
+          color: marked ? 'var(--db-primary)' : '#eeeef6',
           textTransform: 'uppercase', whiteSpace: 'nowrap',
           overflow: 'hidden', textOverflow: 'ellipsis',
           minWidth: 0, flex: 1,
         }}>{playerLabel}</span>
         <span style={{
           fontFamily: "'JetBrains Mono',monospace",
-          fontWeight: 700, lineHeight: 1, flexShrink: 0,
-          color: marked ? 'rgba(255,107,53,0.6)' : hexToRgba(teamColor, 0.85),
+          fontWeight: 600, lineHeight: 1, flexShrink: 0,
+          color: marked ? 'rgba(255,107,53,0.45)' : '#7a7a96',
           letterSpacing: '0.02em',
         }} className="sq-team">{teamAbbr}</span>
       </div>
@@ -217,14 +217,14 @@ const BingoSquare = memo(function BingoSquare({
         <span className="sq-stat" style={{
           fontFamily: "'JetBrains Mono',monospace",
           fontWeight: 700, whiteSpace: 'nowrap',
-          color: marked ? 'rgba(255,150,90,0.9)' : '#c0c0d8',
+          color: marked ? 'var(--db-primary)' : '#eeeef6',
           lineHeight: 1.1,
         }}>{statNum}</span>
         {statType && (
           <span className="sq-stat-type" style={{
             fontFamily: "'JetBrains Mono',monospace",
             fontWeight: 600, whiteSpace: 'nowrap',
-            color: marked ? 'rgba(255,140,80,0.6)' : '#8888a8',
+            color: marked ? 'rgba(255,107,53,0.45)' : '#7a7a96',
             lineHeight: 1,
           }}>{statType}</span>
         )}
@@ -236,9 +236,10 @@ const BingoSquare = memo(function BingoSquare({
           position: 'absolute', bottom: showProgress ? 6 : 4, right: 4,
           fontFamily: "'Bebas Neue',sans-serif",
           fontWeight: 400, lineHeight: 1,
-          color: marked ? 'rgba(255,107,53,0.25)' : hexToRgba(teamColor, 0.25),
+          color: marked ? 'rgba(255,107,53,0.2)' : '#7a7a96',
+          opacity: 0.4,
           pointerEvents: 'none',
-        }}>{jerseyNum}</span>
+        }}>#{jerseyNum}</span>
       )}
 
       {/* ── Progress bar (bottom, full width) ── */}
