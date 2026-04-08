@@ -479,6 +479,10 @@ html, body {
   button, a, [role="button"] {
     min-height: 44px;
   }
+  /* Exempt toggle switches — parent row handles the touch target */
+  button[role="switch"] {
+    min-height: unset;
+  }
 
   /* ── Prevent iOS input zoom (font-size must be ≥ 16px) ── */
   input, select, textarea {

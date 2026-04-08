@@ -892,7 +892,6 @@ function PreferencesTab() {
   const [soundEffects,    setSoundEffects]    = useState(() => getPref('sound_effects', true))
   const [markAnimations,  setMarkAnimations]  = useState(() => getPref('mark_animations', true))
   const [autoScroll,      setAutoScroll]      = useState(() => getPref('auto_scroll_stats', true))
-  const [defaultSport,    setDefaultSport]    = useState(() => getPref('default_sport', 'all'))
   const [isAdmin,         setIsAdmin]         = useState(false)
 
   // Notification prefs (persisted in profiles)
@@ -925,11 +924,6 @@ function PreferencesTab() {
     setPref(key, val)
   }
 
-  const handleSportChange = (val) => {
-    setDefaultSport(val)
-    setPref('default_sport', val)
-  }
-
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     navigate('/login')
@@ -955,33 +949,6 @@ function PreferencesTab() {
         <PrefRow label="Sound effects" control={<Toggle value={soundEffects} onChange={handleToggle('sound_effects', setSoundEffects)} />} />
         <PrefRow label="Square mark animations" control={<Toggle value={markAnimations} onChange={handleToggle('mark_animations', setMarkAnimations)} />} />
         <PrefRow label="Auto-scroll to latest stat event" control={<Toggle value={autoScroll} onChange={handleToggle('auto_scroll_stats', setAutoScroll)} />} />
-      </div>
-
-      {/* Default Sport */}
-      <div>
-        <SectionLabel>Default Sport</SectionLabel>
-        {[
-          { val: 'all',  label: 'All Sports' },
-          { val: 'nba',  label: 'NBA Only' },
-          { val: 'ncaa', label: 'NCAA Only' },
-        ].map((opt) => (
-          <div
-            key={opt.val}
-            onClick={() => handleSportChange(opt.val)}
-            style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '10px 0', borderBottom: '1px solid var(--db-border-subtle)', cursor: 'pointer',
-            }}
-          >
-            <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 13, fontWeight: 400, color: 'var(--db-text-secondary)' }}>{opt.label}</span>
-            <span style={{
-              width: 16, height: 16, borderRadius: '50%', display: 'block',
-              border: `2px solid ${defaultSport === opt.val ? 'var(--db-primary)' : 'var(--db-border-active)'}`,
-              background: defaultSport === opt.val ? 'var(--db-primary)' : 'none',
-              flexShrink: 0,
-            }} />
-          </div>
-        ))}
       </div>
 
       {/* Notifications */}
