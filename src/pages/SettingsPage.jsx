@@ -120,7 +120,7 @@ function Toggle({ value, onChange, disabled = false }) {
 
 function ProfileTab() {
   const { user } = useAuth()
-  const { dobsBalance: dabsBalance, username } = useProfile()
+  const { dobsBalance, username } = useProfile()
   const navigate = useNavigate()
   const [stats, setStats] = useState({ gamesPlayed: null, totalLines: null, totalSquares: null })
   const [txns, setTxns] = useState([])
@@ -233,7 +233,7 @@ function ProfileTab() {
   }
 
   const statCards = [
-    { label: 'DOBS BALANCE', value: dabsBalance !== null ? dabsBalance.toLocaleString() + ' ◈' : '—', accent: true },
+    { label: 'DOBS BALANCE', value: dobsBalance !== null ? dobsBalance.toLocaleString() + ' ◈' : '—', accent: true },
     { label: 'GAMES PLAYED', value: stats.gamesPlayed !== null ? stats.gamesPlayed : '—' },
     { label: 'TOTAL LINES', value: stats.totalLines !== null ? stats.totalLines : '—' },
     { label: 'SQUARES MARKED', value: stats.totalSquares !== null ? stats.totalSquares : '—' },
@@ -1087,35 +1087,20 @@ export default function SettingsPage() {
 
         {/* Contribute footer */}
         <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid var(--db-border-subtle)', textAlign: 'center' }}>
-          {isIOS() ? (
-            <div style={{
-              display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-              padding: '10px 22px', borderRadius: 8,
+          <Link
+            to="/contribute"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 22px', borderRadius: 8, textDecoration: 'none',
               background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.2)',
-            }}>
-              <span style={{ fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: 'var(--db-primary)' }}>
-                Support Dobber
-              </span>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-primary)' }}>
-                bingo-v04.netlify.app/contribute
-              </span>
-            </div>
-          ) : (
-            <Link
-              to="/contribute"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '10px 22px', borderRadius: 8, textDecoration: 'none',
-                background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.2)',
-                fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700,
-                letterSpacing: '0.06em', color: 'var(--db-primary)',
-                transition: 'background 120ms, border-color 120ms',
-              }}
-            >
-              <DobberBallIcon size={14} />
-              SUPPORT DOBBER
-            </Link>
-          )}
+              fontFamily: 'var(--db-font-display)', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.06em', color: 'var(--db-primary)',
+              transition: 'background 120ms, border-color 120ms',
+            }}
+          >
+            <DobberBallIcon size={14} />
+            SUPPORT DOBBER
+          </Link>
           <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 10, color: 'var(--db-text-ghost)', margin: '8px 0 0' }}>
             Keep free-to-play sports bingo alive
           </p>

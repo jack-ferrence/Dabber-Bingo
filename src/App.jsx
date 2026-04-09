@@ -4,13 +4,13 @@ import { useAuth } from './hooks/useAuth.jsx'
 import { useNetworkStatus } from './hooks/useNetworkStatus.js'
 import { useProfile } from './hooks/useProfile.js'
 import { lazyRetry } from './lib/lazyRetry.js'
-import { isIOS } from './lib/platform.js'
 import SplashScreen from './components/ui/SplashScreen.jsx'
 import DobberLogo from './components/ui/DobberLogo.jsx'
 import ProtectedRoute from './pages/ProtectedRoute.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 
 // Route-level code splitting — each page loads on demand
+const HomePage = lazy(() => lazyRetry(() => import('./pages/HomePage.jsx')))
 const LobbyPage = lazy(() => lazyRetry(() => import('./pages/LobbyPage.jsx')))
 const GamePage = lazy(() => lazyRetry(() => import('./pages/GamePage.jsx')))
 const LoginPage = lazy(() => lazyRetry(() => import('./pages/LoginPage.jsx')))
@@ -21,6 +21,10 @@ const AdminFeaturedPage = lazy(() => lazyRetry(() => import('./pages/AdminFeatur
 const ContributePage = lazy(() => lazyRetry(() => import('./pages/ContributePage.jsx')))
 const PrivacyPage = lazy(() => lazyRetry(() => import('./pages/PrivacyPage.jsx')))
 const TermsPage = lazy(() => lazyRetry(() => import('./pages/TermsPage.jsx')))
+const DailyPicksPage = lazy(() => lazyRetry(() => import('./pages/DailyPicksPage.jsx')))
+const DailyTriviaPage = lazy(() => lazyRetry(() => import('./pages/DailyTriviaPage.jsx')))
+const DailyGamePage = lazy(() => lazyRetry(() => import('./pages/DailyGamePage.jsx')))
+const RankPage = lazy(() => lazyRetry(() => import('./pages/RankPage.jsx')))
 
 function OfflineBanner() {
   return (
@@ -125,11 +129,16 @@ function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<LobbyPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/games" element={<LobbyPage />} />
+          <Route path="/daily/picks" element={<DailyPicksPage />} />
+          <Route path="/daily/trivia" element={<DailyTriviaPage />} />
+          <Route path="/daily/game" element={<DailyGamePage />} />
+          <Route path="/rank" element={<RankPage />} />
           <Route path="/store" element={<StorePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/admin/featured" element={<AdminFeaturedPage />} />
-          {!isIOS() && <Route path="/contribute" element={<ContributePage />} />}
+          <Route path="/contribute" element={<ContributePage />} />
         </Route>
         <Route
           path="*"

@@ -5,6 +5,16 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 const TABS = [
   {
     path: '/',
+    label: 'Home',
+    icon: (active) => (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 10l7-7 7 7" stroke={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 8.5V16a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V8.5" stroke={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    path: '/games',
     label: 'Games',
     icon: (active) => (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -17,15 +27,11 @@ const TABS = [
     ),
   },
   {
-    path: '/store',
-    label: 'Store',
+    path: '/rank',
+    label: 'Rank',
     icon: (active) => (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 5h14l-1.5 8H4.5L3 5Z" stroke={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M3 5l-.8-2H1" stroke={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinecap="round" />
-        <circle cx="7" cy="16.5" r="1" fill={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} />
-        <circle cx="13" cy="16.5" r="1" fill={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} />
-        <path d="M7.5 9l1.5 2 3-3" stroke={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M10 2l2.5 5.5H18l-4.5 3.5 1.5 6L10 14l-5 3 1.5-6L2 7.5h5.5L10 2z" stroke={active ? 'var(--db-primary)' : 'var(--db-text-ghost)'} strokeWidth="1.5" strokeLinejoin="round" fill={active ? 'rgba(255,107,53,0.15)' : 'none'} />
       </svg>
     ),
   },
@@ -87,7 +93,7 @@ export default function MobileTabBar() {
               flexDirection: 'column',
               alignItems: 'center',
               gap: 3,
-              padding: '8px 20px',
+              padding: '8px 12px',
               textDecoration: 'none',
               minHeight: 44,
               minWidth: 60,

@@ -542,7 +542,7 @@ export async function handler() {
         .update({ status: 'finished' })
         .eq('game_id', gameId)
         .eq('status', 'live')
-        .select('id')
+        .select('id, name, home_score, away_score')
 
       if (finishErr) {
         log.push(`auto-finish failed for game ${gameId}: ${finishErr.message}`)
@@ -609,6 +609,62 @@ export async function handler() {
             }
           } catch (pushErr) {
             console.warn('poll-stats: finish push failed:', pushErr.message)
+          }
+
+          // ── Resolve daily picks for this room ──
+          try {
+            const { data: pendingPicks } = await supabase
+              .from('daily_picks')
+              .select('id, user_id, picked_team, pick_date')
+              .eq('room_id', room.id)
+              .is('is_correct', null)
+
+            if (pendingPicks?.length) {
+              // Determine winner from final scores
+              const parts = (room.name ?? '').split(' vs ')
+              const awayTeam = parts[0]?.trim()
+              const homeTeam = parts[1]?.trim()
+              const winner = (room.home_score ?? 0) > (room.away_score ?? 0) ? homeTeam : awayTeam
+
+              for (const pick of pendingPicks) {
+                const isCorrect = pick.picked_team === winner
+                await supabase.from('daily_picks')
+                  .update({ is_correct: isCorrect, dobs_earned: isCorrect ? 5 : 0 })
+                  .eq('id', pick.id)
+
+                if (isCorrect) {
+                  await supabase.rpc('award_daily_dobs', {
+                    p_user_id: pick.user_id,
+                    p_amount: 5,
+                    p_reason: 'daily_pick_correct',
+                  })
+                }
+              }
+
+              // Check for all-3-correct bonus per user
+              const userIds = [...new Set(pendingPicks.map(p => p.user_id))]
+              for (const userId of userIds) {
+                const { data: allUserPicks } = await supabase
+                  .from('daily_picks')
+                  .select('is_correct')
+                  .eq('user_id', userId)
+                  .eq('pick_date', pendingPicks[0]?.pick_date ?? new Date().toISOString().slice(0, 10))
+
+                if (allUserPicks?.length === 3 && allUserPicks.every(p => p.is_correct === true)) {
+                  // 2x bonus: they earned 15 from individual picks, award 15 more for 30 total
+                  await supabase.rpc('award_daily_dobs', {
+                    p_user_id: userId,
+                    p_amount: 15,
+                    p_reason: 'daily_pick_perfect_bonus',
+                  })
+                  log.push(`Daily picks perfect bonus awarded to ${userId}`)
+                }
+              }
+
+              log.push(`Resolved ${pendingPicks.length} daily pick(s) for room ${room.id} (winner: ${winner})`)
+            }
+          } catch (pickErr) {
+            console.warn('poll-stats: daily pick resolution failed:', pickErr.message)
           }
         }
       }
