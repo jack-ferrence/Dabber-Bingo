@@ -34,6 +34,7 @@ export default function DailyPicksPage() {
   const [selections, setSelections] = useState({}) // roomId → teamAbbr
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [confirming, setConfirming] = useState(false)
 
   const alreadyPicked = userPicks.length > 0 || activity?.picks_completed
 
@@ -83,14 +84,21 @@ export default function DailyPicksPage() {
     reloadActivity()
   }
 
+  const handleLockIn = () => {
+    if (confirming) {
+      handleSubmit()
+    } else {
+      hapticSelection()
+      setConfirming(true)
+      setTimeout(() => setConfirming(false), 3000)
+    }
+  }
+
   return (
-    <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+    <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ padding: '20px 20px 0' }}>
-        <Link to="/" style={{
-          fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-          color: 'var(--db-text-muted)', textDecoration: 'none',
-        }}>
+        <Link to="/" className="back-btn" aria-label="Back to home">
           ← Back
         </Link>
         <h1 style={{
@@ -197,7 +205,7 @@ export default function DailyPicksPage() {
         )}
 
         {!loading && games.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="pick-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {games.map((game) => {
               const { away, home } = parseTeams(game.name)
               const sport = game.sport ?? 'nba'
@@ -255,12 +263,18 @@ export default function DailyPicksPage() {
                           <button
                             key={team}
                             type="button"
+                            className="daily-btn btn-press"
                             disabled={isDisabled}
+                            aria-label={`Pick ${team} ${idx === 0 ? 'away' : 'home'}${isPicked ? ' (selected)' : ''}`}
+                            aria-pressed={isPicked}
                             onClick={() => handleSelect(game.id, team)}
                             style={{
                               flex: 1, padding: '14px 8px', borderRadius: 10,
-                              background: isPicked ? hexToRgba(teamColor, 0.2) : 'var(--db-bg-elevated)',
+                              background: isPicked
+                                ? `linear-gradient(180deg, ${hexToRgba(teamColor, 0.25)} 0%, ${hexToRgba(teamColor, 0.12)} 100%)`
+                                : 'var(--db-bg-elevated)',
                               border: `2px solid ${isPicked ? teamColor : 'var(--db-border-subtle)'}`,
+                              boxShadow: isPicked ? `0 0 12px ${hexToRgba(teamColor, 0.3)}, inset 0 1px 0 ${hexToRgba(teamColor, 0.2)}` : 'none',
                               cursor: isDisabled ? 'default' : 'pointer',
                               transition: 'all 150ms ease',
                               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
@@ -299,27 +313,32 @@ export default function DailyPicksPage() {
         <div style={{ padding: '20px 20px 0' }}>
           <button
             type="button"
-            onClick={handleSubmit}
+            className="daily-btn"
+            onClick={handleLockIn}
             disabled={!allSelected || submitting}
             style={{
               width: '100%', padding: '16px', borderRadius: 10, border: 'none',
-              background: allSelected && !submitting ? 'var(--db-gradient-primary)' : 'var(--db-bg-elevated)',
+              background: confirming
+                ? 'linear-gradient(135deg, var(--db-live) 0%, var(--db-primary-dark) 100%)'
+                : allSelected && !submitting ? 'var(--db-gradient-primary)' : 'var(--db-bg-elevated)',
               color: allSelected && !submitting ? '#fff' : 'var(--db-text-ghost)',
               fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
               fontWeight: 'var(--db-weight-extrabold)', letterSpacing: 'var(--db-tracking-wide)',
               cursor: allSelected && !submitting ? 'pointer' : 'not-allowed',
-              boxShadow: allSelected ? '0 4px 16px rgba(255,107,53,0.3)' : 'none',
+              boxShadow: confirming
+                ? '0 4px 20px rgba(255,45,45,0.4)'
+                : allSelected ? '0 4px 16px rgba(255,107,53,0.3)' : 'none',
               transition: 'all 200ms ease',
             }}
           >
-            {submitting ? 'LOCKING IN...' : allSelected ? 'LOCK IN PICKS' : `SELECT ALL ${games.length} WINNERS`}
+            {submitting ? 'LOCKING IN...' : confirming ? 'TAP AGAIN TO CONFIRM' : allSelected ? 'LOCK IN PICKS' : `SELECT ALL ${games.length} WINNERS`}
           </button>
         </div>
       )}
 
       {/* Submitted confirmation */}
       {(alreadyPicked || submitted) && (
-        <div style={{
+        <div className="celebrate-pop" style={{
           margin: '20px 20px 0', padding: '16px', borderRadius: 10,
           background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
           textAlign: 'center',

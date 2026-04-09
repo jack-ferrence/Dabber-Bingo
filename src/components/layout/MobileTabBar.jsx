@@ -63,6 +63,8 @@ export default function MobileTabBar() {
   return (
     <nav
       className="md:hidden"
+      role="navigation"
+      aria-label="Main navigation"
       style={{
         position: 'fixed',
         bottom: 0,
@@ -86,6 +88,8 @@ export default function MobileTabBar() {
           <Link
             key={tab.path}
             to={tab.path}
+            aria-label={tab.label}
+            aria-current={isActive ? 'page' : undefined}
             onMouseDown={() => handleTap(tab.path)}
             onTouchStart={() => handleTap(tab.path)}
             style={{
@@ -99,6 +103,7 @@ export default function MobileTabBar() {
               minWidth: 60,
               justifyContent: 'center',
               position: 'relative',
+              outline: 'none',
             }}
           >
             {/* Active indicator bar */}

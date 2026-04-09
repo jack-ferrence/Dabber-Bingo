@@ -23,18 +23,19 @@ export default function DailyGamePage() {
   const [shots, setShots] = useState([]) // { id, x, made, animating }
   const [finalDobs, setFinalDobs] = useState(0)
   const [doubled, setDoubled] = useState(false)
+  const [streak, setStreak] = useState(0)
+  const [bestStreak, setBestStreak] = useState(0)
+  const [scoreFlash, setScoreFlash] = useState(false)
+  const [rimGlow, setRimGlow] = useState(false)
   const timerRef = useRef(null)
   const shotIdRef = useRef(0)
 
   // If already done, show results
   if (alreadyDone && gameState === 'ready') {
     return (
-      <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+      <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
         <div style={{ padding: '20px 20px 0' }}>
-          <Link to="/" style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-            color: 'var(--db-text-muted)', textDecoration: 'none',
-          }}>← Back</Link>
+          <Link to="/" className="back-btn" aria-label="Back to home">← Back</Link>
           <h1 style={{
             fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
             fontWeight: 'var(--db-weight-normal)', letterSpacing: 'var(--db-tracking-wide)',
@@ -86,7 +87,7 @@ export default function DailyGamePage() {
   const shoot = useCallback(() => {
     if (gameState !== 'playing') return
 
-    // ~60% make rate — slightly skill-gated by timing feel
+    // ~55% make rate
     const made = Math.random() < 0.55
     const shotX = randomBetween(30, 70)
     const id = ++shotIdRef.current
@@ -94,13 +95,23 @@ export default function DailyGamePage() {
     if (made) {
       hapticMedium()
       setScore((s) => s + 1)
+      setStreak((s) => {
+        const next = s + 1
+        setBestStreak((b) => Math.max(b, next))
+        return next
+      })
+      // Visual feedback
+      setScoreFlash(true)
+      setRimGlow(true)
+      setTimeout(() => setScoreFlash(false), 350)
+      setTimeout(() => setRimGlow(false), 500)
     } else {
       hapticLight()
+      setStreak(0)
     }
 
     setShots((prev) => [...prev.slice(-8), { id, x: shotX, made, animating: true }])
 
-    // Clean up animation after it completes
     setTimeout(() => {
       setShots((prev) => prev.filter((s) => s.id !== id))
     }, 1200)
@@ -130,12 +141,9 @@ export default function DailyGamePage() {
   // ── Ready screen ──
   if (gameState === 'ready') {
     return (
-      <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+      <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
         <div style={{ padding: '20px 20px 0' }}>
-          <Link to="/" style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-            color: 'var(--db-text-muted)', textDecoration: 'none',
-          }}>← Back</Link>
+          <Link to="/" className="back-btn" aria-label="Back to home">← Back</Link>
           <h1 style={{
             fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
             fontWeight: 'var(--db-weight-normal)', letterSpacing: 'var(--db-tracking-wide)',
@@ -195,14 +203,28 @@ export default function DailyGamePage() {
           padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{
-              fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-2xl)',
-              color: 'var(--db-primary)', lineHeight: 1,
-            }}>{score}</span>
+            <span
+              key={scoreFlash ? `s-${score}` : 's'}
+              className={scoreFlash ? 'score-flash' : ''}
+              style={{
+                fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-2xl)',
+                color: 'var(--db-primary)', lineHeight: 1,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >{score}</span>
             <span style={{
               fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
               color: 'var(--db-text-muted)',
             }}>◈</span>
+            {streak >= 3 && (
+              <span style={{
+                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                fontWeight: 'var(--db-weight-bold)', color: 'var(--db-success)',
+                background: 'rgba(34,197,94,0.12)', padding: '2px 6px', borderRadius: 4,
+              }}>
+                {streak}x STREAK
+              </span>
+            )}
           </div>
           <div style={{
             fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xl)',
@@ -217,25 +239,49 @@ export default function DailyGamePage() {
         {/* Court — tap to shoot */}
         <div
           onClick={shoot}
+          role="button"
+          aria-label={`Shoot basketball. Score: ${score}. Time: ${timeLeft} seconds`}
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); shoot() } }}
           style={{
             margin: '0 20px', borderRadius: 14, overflow: 'hidden',
-            background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
+            background: 'linear-gradient(180deg, #0f1528 0%, #162040 50%, #1a2848 100%)',
             border: '1px solid var(--db-border-subtle)',
             height: 360, position: 'relative', cursor: 'pointer',
             userSelect: 'none', WebkitUserSelect: 'none',
             touchAction: 'manipulation',
           }}
         >
-          {/* Court lines */}
+          {/* Court floor grain */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 9px)',
+            pointerEvents: 'none',
+          }} />
+
+          {/* Three-point arc */}
           <div style={{
             position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: '80%', height: '60%', border: '1px solid rgba(255,255,255,0.08)',
-            borderBottom: 'none', borderRadius: '40% 40% 0 0',
+            width: '80%', height: '55%', border: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: 'none', borderRadius: '50% 50% 0 0',
+          }} />
+
+          {/* Free throw line */}
+          <div style={{
+            position: 'absolute', bottom: '35%', left: '25%', right: '25%',
+            height: 1, background: 'rgba(255,255,255,0.06)',
+          }} />
+
+          {/* Lane / key */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: '35%', right: '35%',
+            height: '35%', border: '1px solid rgba(255,255,255,0.05)',
+            borderBottom: 'none',
           }} />
 
           {/* Hoop */}
           <div style={{ position: 'absolute', top: HOOP_Y, left: '50%', transform: 'translateX(-50%)' }}>
-            <Hoop />
+            <Hoop glowing={rimGlow} />
           </div>
 
           {/* Shot animations */}
@@ -288,7 +334,7 @@ export default function DailyGamePage() {
 
   // ── End / Submitted screen ──
   return (
-    <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+    <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
       <div style={{ padding: '20px 20px 0' }}>
         <h1 style={{
           fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
@@ -299,7 +345,7 @@ export default function DailyGamePage() {
       </div>
 
       {/* Score card */}
-      <div style={{
+      <div className="celebrate-pop" style={{
         margin: '16px 20px 0', padding: '32px 24px', borderRadius: 14, textAlign: 'center',
         background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
       }}>
@@ -311,13 +357,23 @@ export default function DailyGamePage() {
         <span style={{
           fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-4xl)',
           color: 'var(--db-primary)', display: 'block', lineHeight: 1,
+          fontVariantNumeric: 'tabular-nums',
         }}>
           {score}
         </span>
+        {bestStreak >= 3 && (
+          <span style={{
+            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+            color: 'var(--db-success)', display: 'block', marginTop: 8,
+          }}>
+            Best streak: {bestStreak} in a row
+          </span>
+        )}
         <span style={{
           fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xl)',
           color: doubled ? 'var(--db-success)' : 'var(--db-text-secondary)',
           display: 'block', marginTop: 12,
+          fontVariantNumeric: 'tabular-nums',
         }}>
           {doubled ? `${score * 2} ◈ (2x!)` : `${score} ◈`}
         </span>
@@ -377,7 +433,7 @@ function Basketball({ size = 32 }) {
   )
 }
 
-function Hoop() {
+function Hoop({ glowing = false }) {
   return (
     <div style={{ position: 'relative', width: 60, height: 50 }}>
       {/* Backboard */}
@@ -387,11 +443,15 @@ function Hoop() {
         borderRadius: 2, background: 'rgba(255,255,255,0.05)',
       }} />
       {/* Rim */}
-      <div style={{
-        position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)',
-        width: 36, height: 4, borderRadius: 2,
-        background: '#ff4444', boxShadow: '0 2px 8px rgba(255,68,68,0.4)',
-      }} />
+      <div
+        key={glowing ? 'glow' : 'no'}
+        className={glowing ? 'rim-glow' : ''}
+        style={{
+          position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)',
+          width: 36, height: 4, borderRadius: 2,
+          background: '#ff4444', boxShadow: '0 2px 8px rgba(255,68,68,0.4)',
+        }}
+      />
       {/* Net lines */}
       <div style={{
         position: 'absolute', top: 32, left: '50%', transform: 'translateX(-50%)',

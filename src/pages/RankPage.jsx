@@ -130,7 +130,7 @@ export default function RankPage() {
   }, [activeTab, user])
 
   return (
-    <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+    <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ padding: '20px 20px 0' }}>
         <h1 style={{
@@ -143,7 +143,7 @@ export default function RankPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{
+      <div role="tablist" aria-label="Leaderboard time period" style={{
         display: 'flex', gap: 0, padding: '12px 20px 0',
         borderBottom: '1px solid var(--db-border-subtle)',
       }}>
@@ -152,6 +152,9 @@ export default function RankPage() {
           return (
             <button
               key={tab.key}
+              role="tab"
+              aria-selected={isActive}
+              className="daily-btn"
               onClick={() => setActiveTab(tab.key)}
               style={{
                 padding: '6px 0 10px', marginRight: 20,
@@ -162,7 +165,7 @@ export default function RankPage() {
                 fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)',
                 fontWeight: isActive ? 'var(--db-weight-semibold)' : 'var(--db-weight-medium)',
                 letterSpacing: 'var(--db-tracking-normal)',
-                transition: 'color 120ms ease',
+                transition: 'color 120ms ease, border-color 120ms ease',
               }}
             >
               {tab.label}
@@ -173,7 +176,7 @@ export default function RankPage() {
 
       {/* My rank banner */}
       {myRank && (
-        <div style={{
+        <div className="celebrate-pop" style={{
           margin: '16px 20px 0', padding: '14px 16px', borderRadius: 10,
           background: 'rgba(255,107,53,0.06)', border: '1px solid rgba(255,107,53,0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -231,7 +234,7 @@ export default function RankPage() {
               </span>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="rank-stagger" style={{ display: 'flex', flexDirection: 'column' }}>
               {players.map((player) => {
                 const isMe = user && player.user_id === user.id
                 const badge = player.equipped_badge ? getBadge(player.equipped_badge) : null
@@ -240,9 +243,10 @@ export default function RankPage() {
 
                 let rankDisplay = `${rankNum}`
                 let rankColor = 'var(--db-text-ghost)'
-                if (rankNum === 1) { rankDisplay = '🥇'; rankColor = 'var(--db-primary)' }
-                else if (rankNum === 2) { rankDisplay = '🥈'; rankColor = 'var(--db-text-primary)' }
-                else if (rankNum === 3) { rankDisplay = '🥉'; rankColor = 'var(--db-text-primary)' }
+                let rowBg = 'transparent'
+                if (rankNum === 1) { rankDisplay = '🥇'; rankColor = 'var(--db-primary)'; rowBg = 'rgba(255,107,53,0.05)' }
+                else if (rankNum === 2) { rankDisplay = '🥈'; rankColor = 'var(--db-text-primary)'; rowBg = 'rgba(255,255,255,0.02)' }
+                else if (rankNum === 3) { rankDisplay = '🥉'; rankColor = 'var(--db-text-primary)'; rowBg = 'rgba(255,255,255,0.02)' }
 
                 return (
                   <div
@@ -250,7 +254,7 @@ export default function RankPage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       height: 44, padding: '0 8px', borderRadius: 6,
-                      background: isMe ? 'rgba(34,197,94,0.06)' : 'transparent',
+                      background: isMe ? 'rgba(34,197,94,0.06)' : rowBg,
                       borderLeft: isMe ? '3px solid var(--db-success)' : '3px solid transparent',
                       transition: 'background 0.1s ease',
                     }}

@@ -68,8 +68,34 @@ export default function HomePage() {
   const allComplete = completedCount === 3
   const currentStreak = streak?.current_streak ?? 0
 
+  // Loading state — show skeleton first, not after content
+  if (loading) {
+    return (
+      <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+        <div style={{ padding: '20px 20px 0' }}>
+          <div style={{ height: 32, width: 100, borderRadius: 6, background: 'var(--db-bg-elevated)', marginBottom: 8 }} />
+          <div style={{ height: 14, width: 180, borderRadius: 4, background: 'var(--db-bg-elevated)' }} />
+        </div>
+        <div style={{ padding: '16px 20px 0', display: 'flex', gap: 12 }}>
+          <div style={{ flex: 1, height: 80, borderRadius: 12, background: 'var(--db-bg-elevated)', animation: 'pulse 1.8s ease-in-out infinite' }} />
+          <div style={{ width: 120, height: 80, borderRadius: 12, background: 'var(--db-bg-elevated)', animation: 'pulse 1.8s ease-in-out infinite' }} />
+        </div>
+        <div style={{ padding: '20px' }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} style={{
+              height: 72, borderRadius: 12, marginBottom: 10,
+              background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)',
+              animation: 'pulse 1.8s ease-in-out infinite',
+              animationDelay: `${i * 100}ms`,
+            }} />
+          ))}
+        </div>
+      </main>
+    )
+  }
+
   return (
-    <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+    <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
       {/* ── Header ── */}
       <div style={{ padding: '20px 20px 0' }}>
         <h1 style={{
@@ -128,7 +154,7 @@ export default function HomePage() {
             {currentStreak}
           </span>
           {multiplier > 1 && (
-            <span style={{
+            <span className="streak-pulse" aria-label={`${multiplier} times bonus multiplier active`} style={{
               fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
               color: 'var(--db-success)', fontWeight: 'var(--db-weight-bold)',
               marginTop: 4, display: 'block',
@@ -162,14 +188,22 @@ export default function HomePage() {
           {[0, 1, 2].map((i) => (
             <div key={i} style={{
               flex: 1, height: 4, borderRadius: 2,
-              background: i < completedCount ? 'var(--db-primary)' : 'var(--db-bg-active)',
-              transition: 'background 300ms ease',
-            }} />
+              background: 'var(--db-bg-active)',
+              position: 'relative', overflow: 'hidden',
+            }}>
+              {i < completedCount && (
+                <div className="progress-fill" style={{
+                  position: 'absolute', inset: 0, borderRadius: 2,
+                  background: 'var(--db-primary)',
+                  animationDelay: `${i * 120}ms`,
+                }} />
+              )}
+            </div>
           ))}
         </div>
 
         {/* Activity cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="activity-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {ACTIVITIES.map((act) => {
             const done = activity?.[act.field] ?? false
             const dobsEarned = activity?.[act.dobsField] ?? 0
@@ -178,6 +212,8 @@ export default function HomePage() {
               <button
                 key={act.key}
                 type="button"
+                className="daily-btn btn-press"
+                aria-label={done ? `${act.label} — completed, earned ${dobsEarned} dobs` : `${act.label} — ${act.desc}`}
                 onClick={() => { hapticSelection(); navigate(act.path) }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 14,
@@ -244,44 +280,32 @@ export default function HomePage() {
 
         {/* All-three bonus indicator */}
         {allComplete && (
-          <div style={{
-            marginTop: 12, padding: '12px 16px', borderRadius: 10,
-            background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.2)',
+          <div className="banner-celebrate" style={{
+            marginTop: 12, padding: '14px 16px', borderRadius: 10,
+            background: 'linear-gradient(135deg, rgba(255,107,53,0.10) 0%, rgba(34,197,94,0.08) 100%)',
+            border: '1px solid rgba(255,107,53,0.25)',
             textAlign: 'center',
           }}>
             <span style={{
-              fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)',
+              fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
               letterSpacing: 'var(--db-tracking-wide)', color: 'var(--db-primary)',
             }}>
               ALL ACTIVITIES COMPLETE
             </span>
-            {activity?.all_three_bonus_awarded && (
-              <span style={{
-                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-                color: 'var(--db-text-secondary)', display: 'block', marginTop: 4,
-              }}>
-                +30 ◈ completion bonus earned!
-              </span>
-            )}
+            <span style={{
+              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+              color: 'var(--db-text-secondary)', display: 'block', marginTop: 6,
+            }}>
+              {activity?.all_three_bonus_awarded
+                ? '+30 ◈ completion bonus earned!'
+                : 'Come back tomorrow to keep your streak!'}
+            </span>
           </div>
         )}
       </div>
 
       {/* ── Featured Banner ── */}
       <FeaturedBanner />
-
-      {/* ── Loading skeleton ── */}
-      {loading && (
-        <div style={{ padding: '20px' }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} style={{
-              height: 72, borderRadius: 12, marginBottom: 10,
-              background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)',
-              animation: 'pulse 1.8s ease-in-out infinite',
-            }} />
-          ))}
-        </div>
-      )}
     </main>
   )
 }

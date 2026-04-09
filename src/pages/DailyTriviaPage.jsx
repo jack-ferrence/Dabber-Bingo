@@ -31,12 +31,9 @@ export default function DailyTriviaPage() {
   if (!loading && alreadyDone && !showSummary) {
     const totalDobs = answers.reduce((sum, a) => sum + (a.dobs_earned ?? 0), 0)
     return (
-      <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+      <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
         <div style={{ padding: '20px 20px 0' }}>
-          <Link to="/" style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-            color: 'var(--db-text-muted)', textDecoration: 'none',
-          }}>← Back</Link>
+          <Link to="/" className="back-btn" aria-label="Back to home">← Back</Link>
           <h1 style={{
             fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
             fontWeight: 'var(--db-weight-normal)', letterSpacing: 'var(--db-tracking-wide)',
@@ -104,13 +101,10 @@ export default function DailyTriviaPage() {
   const isLastQuestion = currentIndex === questions.length - 1
 
   return (
-    <main style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
+    <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ padding: '20px 20px 0' }}>
-        <Link to="/" style={{
-          fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-          color: 'var(--db-text-muted)', textDecoration: 'none',
-        }}>← Back</Link>
+        <Link to="/" className="back-btn" aria-label="Back to home">← Back</Link>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '8px 0 4px' }}>
           <h1 style={{
             fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
@@ -217,7 +211,9 @@ export default function DailyTriviaPage() {
                 <button
                   key={key}
                   type="button"
+                  className={`daily-btn btn-press${revealed ? ' answer-reveal' : ''}`}
                   disabled={revealed}
+                  aria-label={`Option ${OPTION_LABELS[key]}: ${text}`}
                   onClick={() => handleAnswer(key)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
@@ -226,6 +222,7 @@ export default function DailyTriviaPage() {
                     cursor: revealed ? 'default' : 'pointer',
                     textAlign: 'left', width: '100%',
                     transition: 'all 150ms ease',
+                    ...(revealed ? { animationDelay: `${OPTION_KEYS.indexOf(key) * 60}ms` } : {}),
                   }}
                 >
                   <span style={{
@@ -253,7 +250,7 @@ export default function DailyTriviaPage() {
           {revealed && (
             <div style={{ marginTop: 20 }}>
               {question.fun_fact && (
-                <div style={{
+                <div className="fact-slide-in" style={{
                   padding: '12px 14px', borderRadius: 10, marginBottom: 16,
                   background: 'rgba(255,107,53,0.05)', border: '1px solid rgba(255,107,53,0.15)',
                 }}>
@@ -298,7 +295,7 @@ function CompletedSummary({ questions, answers, totalDobs }) {
   return (
     <div style={{ padding: '24px 20px 0' }}>
       {/* Score card */}
-      <div style={{
+      <div className="celebrate-pop" style={{
         padding: '24px', borderRadius: 14, textAlign: 'center',
         background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
         marginBottom: 20,
@@ -353,7 +350,7 @@ function CompletedSummary({ questions, answers, totalDobs }) {
         })}
       </div>
 
-      <Link to="/" style={{
+      <Link to="/" className="daily-btn" style={{
         display: 'block', marginTop: 20, padding: '14px', borderRadius: 10,
         background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
         textAlign: 'center', textDecoration: 'none',
