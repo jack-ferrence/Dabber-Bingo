@@ -6,6 +6,7 @@ import { useProfile } from '../hooks/useProfile.js'
 import { useDailyActivity } from '../hooks/useDailyActivity.js'
 import { hapticSelection } from '../lib/haptics.js'
 import FeaturedBanner from '../components/home/FeaturedBanner.jsx'
+import { NBA_TEAM_COLORS, MLB_TEAM_COLORS, hexToRgba } from '../constants/teamColors.js'
 
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
@@ -55,6 +56,16 @@ const ACTIVITIES = [
     ),
   },
 ]
+
+function getTeamColor(abbr, sport) {
+  if (sport === 'mlb') return MLB_TEAM_COLORS[abbr] ?? '#475569'
+  return NBA_TEAM_COLORS[abbr] ?? '#475569'
+}
+
+function parseTeams(name) {
+  const parts = (name ?? '').split(' vs ')
+  return { away: parts[0]?.trim() || '???', home: parts[1]?.trim() || '???' }
+}
 
 function formatGameTime(startsAt) {
   if (!startsAt) return ''
@@ -408,7 +419,9 @@ export default function HomePage() {
               {myGames.map((room) => {
                 const isLive = room.status === 'live'
                 const sport = room.sport ?? 'nba'
-
+                const { away, home } = parseTeams(room.name)
+                const awayColor = getTeamColor(away, sport)
+                const homeColor = getTeamColor(home, sport)
                 const clock = formatClock(room)
                 const marked = room.squares_marked ?? 0
 
@@ -420,15 +433,27 @@ export default function HomePage() {
                     onClick={() => { hapticSelection(); navigate(`/room/${room.id}`) }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 14,
-                      padding: '14px 16px', borderRadius: 12,
-                      background: 'var(--db-bg-surface)',
+                      padding: '0', borderRadius: 12,
+                      background: `linear-gradient(135deg, ${hexToRgba(awayColor, 0.12)} 0%, var(--db-bg-surface) 45%, ${hexToRgba(homeColor, 0.12)} 100%)`,
                       border: isLive
                         ? '1px solid rgba(255,45,45,0.2)'
                         : '1px solid var(--db-border-subtle)',
                       cursor: 'pointer', textAlign: 'left', width: '100%',
                       transition: 'all 150ms ease',
+                      overflow: 'hidden',
+                      position: 'relative',
                     }}
                   >
+                    {/* Top accent bar with team colors */}
+                    <div style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+                      background: `linear-gradient(90deg, ${awayColor}, ${homeColor})`,
+                      opacity: isLive ? 0.8 : 0.5,
+                    }} />
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      padding: '16px 16px 14px', width: '100%',
+                    }}>
                     {/* Left: game info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{
@@ -489,6 +514,7 @@ export default function HomePage() {
                         </div>
                       )}
                     </div>
+                    </div>
                   </button>
                 )
               })}
@@ -509,7 +535,7 @@ export default function HomePage() {
             fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
             letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-ghost)',
             display: 'block', marginBottom: 10,
-          }}>YOUR STANDING</span>
+          }}>STANDINGS</span>
 
           <button
             type="button"
@@ -535,7 +561,7 @@ export default function HomePage() {
                 fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
                 color: 'var(--db-text-muted)', marginTop: 4, display: 'block',
               }}>
-                Season leaderboard
+                Season standings
               </span>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -551,7 +577,7 @@ export default function HomePage() {
                   fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
                   color: 'var(--db-success)', display: 'block', marginTop: 4,
                 }}>
-                  View rankings →
+                  View standings →
                 </span>
               )}
             </div>
