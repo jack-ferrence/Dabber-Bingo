@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import DobberBallIcon from '../components/ui/DobberBallIcon.jsx'
 import { isIOS } from '../lib/platform.js'
+import { getTipProducts, purchaseTip, restorePurchases, isPurchasesReady } from '../lib/purchases.js'
 
 const PRESETS = [
   { cents: 300,  label: '$3',  tag: 'Buy us a coffee' },
@@ -28,7 +29,14 @@ export default function ContributePage() {
   const [error, setError] = useState(null)
   const [isSupporter, setIsSupporter] = useState(false)
 
+  // iOS IAP state
+  const [iapProducts, setIapProducts] = useState([])
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [iapLoading, setIapLoading] = useState(false)
+  const [iapSuccess, setIapSuccess] = useState(false)
+
   const status = params.get('status')
+  const onIOS = isIOS()
 
   // Check supporter status
   useEffect(() => {
@@ -42,6 +50,25 @@ export default function ContributePage() {
       .then(({ data }) => { if (data) setIsSupporter(true) })
   }, [user])
 
+  // Fetch IAP products on iOS
+  useEffect(() => {
+    if (!onIOS) return
+    let cancelled = false
+    const load = async () => {
+      // Wait briefly for RevenueCat to init
+      await new Promise((r) => setTimeout(r, 500))
+      if (!isPurchasesReady()) return
+      const products = await getTipProducts()
+      if (!cancelled && products.length > 0) {
+        setIapProducts(products)
+        setSelectedProduct(products[0])
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [onIOS])
+
+  // ── Stripe flow (web) ──
   const amountCents = useCustom
     ? Math.round(parseFloat(customValue || '0') * 100)
     : selectedCents
@@ -68,6 +95,36 @@ export default function ContributePage() {
     } catch (err) {
       setError(err.message)
       setLoading(false)
+    }
+  }
+
+  // ── IAP flow (iOS) ──
+  const handleIAPPurchase = async () => {
+    if (!selectedProduct?.rcPackage) return
+    setIapLoading(true)
+    setError(null)
+    const result = await purchaseTip(selectedProduct.rcPackage)
+    setIapLoading(false)
+    if (result.success) {
+      setIapSuccess(true)
+      setIsSupporter(true)
+    } else if (result.cancelled) {
+      // User cancelled — do nothing
+    } else {
+      setError(result.error || 'Purchase failed. Please try again.')
+    }
+  }
+
+  const handleRestore = async () => {
+    setIapLoading(true)
+    setError(null)
+    const info = await restorePurchases()
+    setIapLoading(false)
+    if (info) {
+      setIsSupporter(true)
+      setIapSuccess(true)
+    } else {
+      setError('No previous purchases found.')
     }
   }
 
@@ -152,26 +209,110 @@ export default function ContributePage() {
           ))}
         </div>
 
-        {/* iOS: no Stripe, show URL as plain text */}
-        {isIOS() ? (
-          <div style={{
-            background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
-            borderRadius: 10, padding: 20,
-          }}>
-            <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xs)', letterSpacing: '0.1em', color: 'var(--db-text-ghost)', margin: '0 0 14px' }}>
-              HOW TO SUPPORT
-            </p>
-            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-base)', color: 'var(--db-text-secondary)', lineHeight: 1.7, margin: '0 0 14px' }}>
-              To contribute, visit us in your browser:
-            </p>
-            <div style={{ background: 'var(--db-bg-elevated)', borderLeft: '3px solid var(--db-primary)', borderRadius: 6, padding: '12px 16px' }}>
-              <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-md)', fontWeight: 'var(--db-weight-bold)', color: 'var(--db-primary)' }}>
-                bingo-v04.netlify.app/contribute
-              </span>
-            </div>
-            <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)', marginTop: 12, lineHeight: 1.6 }}>
-              Open Safari, type the address above, and you can support Dobber from there.
-            </p>
+        {/* iOS: In-App Purchase flow */}
+        {onIOS ? (
+          <div>
+            {iapSuccess ? (
+              <div style={{
+                padding: '14px 16px', borderRadius: 8, marginBottom: 20,
+                background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
+              }}>
+                <p style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)', fontWeight: 'var(--db-weight-bold)', letterSpacing: '0.06em', color: 'var(--db-success)', margin: 0 }}>
+                  🎉 THANK YOU FOR SUPPORTING DOBBER!
+                </p>
+                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)', margin: '4px 0 0' }}>
+                  Your supporter badge will appear shortly.
+                </p>
+              </div>
+            ) : iapProducts.length > 0 ? (
+              <>
+                <p style={{
+                  fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xs)', letterSpacing: '0.1em',
+                  color: 'var(--db-text-ghost)', margin: '0 0 10px',
+                }}>
+                  CHOOSE AMOUNT
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 20 }}>
+                  {iapProducts.map((product) => {
+                    const active = selectedProduct?.id === product.id
+                    return (
+                      <button
+                        key={product.id}
+                        type="button"
+                        onClick={() => setSelectedProduct(product)}
+                        style={{
+                          padding: '14px 8px', borderRadius: 8, cursor: 'pointer',
+                          background: active ? 'rgba(255,107,53,0.12)' : 'var(--db-bg-surface)',
+                          border: active ? '1.5px solid rgba(255,107,53,0.5)' : '1px solid var(--db-border-subtle)',
+                          transition: 'background 120ms, border-color 120ms',
+                        }}
+                      >
+                        <div style={{ fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xl)', fontWeight: 900, color: active ? 'var(--db-primary)' : 'var(--db-text-primary)' }}>
+                          {product.priceString}
+                        </div>
+                        <div style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)', color: active ? 'rgba(255,107,53,0.7)' : 'var(--db-text-ghost)', marginTop: 3 }}>
+                          {product.title}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {error && (
+                  <p style={{
+                    fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-danger)',
+                    margin: '0 0 16px',
+                  }}>{error}</p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleIAPPurchase}
+                  disabled={iapLoading || !selectedProduct}
+                  style={{
+                    width: '100%', padding: '15px', borderRadius: 8, border: 'none',
+                    background: iapLoading ? 'rgba(255,107,53,0.25)' : 'var(--db-gradient-primary)',
+                    fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)', fontWeight: 900,
+                    letterSpacing: '0.05em', color: iapLoading ? 'var(--db-text-muted)' : '#fff',
+                    cursor: iapLoading ? 'not-allowed' : 'pointer',
+                    boxShadow: iapLoading ? 'none' : '0 4px 20px rgba(255,107,53,0.35)',
+                    transition: 'background 150ms, box-shadow 150ms',
+                  }}
+                >
+                  {iapLoading ? 'PROCESSING…' : `SUPPORT ${selectedProduct?.priceString ?? ''}`}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleRestore}
+                  disabled={iapLoading}
+                  style={{
+                    width: '100%', padding: '12px', marginTop: 10, borderRadius: 8,
+                    background: 'none', border: '1px solid var(--db-border-default)',
+                    fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                    color: 'var(--db-text-ghost)', cursor: 'pointer',
+                  }}
+                >
+                  Restore previous purchase
+                </button>
+
+                <p style={{
+                  fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                  color: 'var(--db-text-ghost)', textAlign: 'center', marginTop: 12,
+                }}>
+                  One-time purchase via Apple. Payment charged to your Apple ID.
+                </p>
+              </>
+            ) : (
+              <div style={{
+                background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
+                borderRadius: 10, padding: 20, textAlign: 'center',
+              }}>
+                <p style={{ fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)', color: 'var(--db-text-muted)' }}>
+                  Loading support options…
+                </p>
+              </div>
+            )}
           </div>
         ) : (
         <>

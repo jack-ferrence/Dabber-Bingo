@@ -5,7 +5,6 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { useProfile } from '../../hooks/useProfile.js'
 import MyGameItem from '../home/MyGameItem.jsx'
 import DobberBallIcon from '../ui/DobberBallIcon.jsx'
-import { isIOS } from '../../lib/platform.js'
 
 function SidebarContent({ onClose }) {
   const { user } = useAuth()
@@ -148,19 +147,17 @@ function SidebarContent({ onClose }) {
           </Link>
         )}
 
-        {!isIOS() && (
-          <Link
-            to="/contribute"
-            onClick={() => onClose?.()}
-            className="flex items-center gap-2 text-xs"
-            style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,107,53,0.55)', textDecoration: 'none', transition: 'color 120ms ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,107,53,0.9)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,107,53,0.55)' }}
-          >
-            <DobberBallIcon size={12} />
-            Support Dobber
-          </Link>
-        )}
+        <Link
+          to="/contribute"
+          onClick={() => onClose?.()}
+          className="flex items-center gap-2 text-xs"
+          style={{ fontFamily: 'var(--db-font-ui)', color: 'rgba(255,107,53,0.55)', textDecoration: 'none', transition: 'color 120ms ease' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,107,53,0.9)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,107,53,0.55)' }}
+        >
+          <DobberBallIcon size={12} />
+          Support Dobber
+        </Link>
 
         <p className="text-[10px]" style={{ fontFamily: 'var(--db-font-ui)', color: 'var(--db-text-ghost)' }}>Dobber v1.0</p>
       </div>

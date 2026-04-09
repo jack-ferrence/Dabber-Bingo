@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { initPurchases, identifyUser } from '../lib/purchases.js'
 
 const AuthContext = createContext(null)
 
@@ -16,8 +17,13 @@ export function AuthProvider({ children }) {
       if (!isMounted) return
       if (error) console.error('Error getting session', error)
       initializing = false
-      setSession(data?.session ?? null)
+      const s = data?.session ?? null
+      setSession(s)
       setLoading(false)
+      // Init RevenueCat for iOS IAP (no-op on web)
+      if (s?.user?.id) {
+        initPurchases(s.user.id)
+      }
     }
 
     const {
@@ -26,6 +32,7 @@ export function AuthProvider({ children }) {
       if (initializing) return
       setSession(newSession)
       setLoading(false)
+      if (newSession?.user?.id) identifyUser(newSession.user.id)
     })
 
     init()

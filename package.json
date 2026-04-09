@@ -20,6 +20,7 @@
     "@capacitor/push-notifications": "^8.0.3",
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
+    "@revenuecat/purchases-capacitor": "^12.3.2",
     "@sentry/react": "^10.40.0",
     "@supabase/supabase-js": "^2.97.0",
     "react": "^19.2.0",
