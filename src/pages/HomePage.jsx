@@ -1,65 +1,142 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useProfile } from '../hooks/useProfile.js'
 import { useDailyActivity } from '../hooks/useDailyActivity.js'
 import { hapticSelection } from '../lib/haptics.js'
 import FeaturedBanner from '../components/home/FeaturedBanner.jsx'
 
+const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+
 const ACTIVITIES = [
   {
     key: 'picks',
-    label: 'DAILY PICKS',
-    desc: 'Pick 3 winners',
+    label: 'Daily Pick',
+    desc: 'Up to 20 Dobs',
     path: '/daily/picks',
-    dobs: '5 per pick',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="11" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M10 14.5L13 17.5L18.5 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
     field: 'picks_completed',
     dobsField: 'picks_dobs_earned',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8.5 12.5L11 15L16 9.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
   },
   {
     key: 'trivia',
-    label: 'TRIVIA',
-    desc: '3 questions',
+    label: 'Trivia',
+    desc: '5 Dobs',
     path: '/daily/trivia',
-    dobs: '5 per correct',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="11" stroke="currentColor" strokeWidth="1.5" />
-        <text x="14" y="19" textAnchor="middle" fill="currentColor" fontSize="16" fontWeight="700" fontFamily="var(--db-font-display)">?</text>
-      </svg>
-    ),
     field: 'trivia_completed',
     dobsField: 'trivia_dobs_earned',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.5" />
+        <text x="12" y="17" textAnchor="middle" fill="currentColor" fontSize="14" fontWeight="700" fontFamily="var(--db-font-display)">?</text>
+      </svg>
+    ),
   },
   {
     key: 'game',
-    label: 'STREAK SHOT',
-    desc: 'Basketball shootout',
+    label: 'Streak Shot',
+    desc: '1-50 Dobs',
     path: '/daily/game',
-    dobs: '1 per make',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="11" stroke="currentColor" strokeWidth="1.5" />
-        <circle cx="14" cy="14" r="5" stroke="currentColor" strokeWidth="1.2" />
-        <line x1="14" y1="3" x2="14" y2="25" stroke="currentColor" strokeWidth="1" />
-        <line x1="3" y1="14" x2="25" y2="14" stroke="currentColor" strokeWidth="1" />
-      </svg>
-    ),
     field: 'game_completed',
     dobsField: 'game_dobs_earned',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1" />
+        <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="currentColor" strokeWidth="0.8" />
+        <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="currentColor" strokeWidth="0.8" />
+      </svg>
+    ),
   },
 ]
+
+function formatGameTime(startsAt) {
+  if (!startsAt) return ''
+  return new Date(startsAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
+
+function formatClock(room) {
+  if (room.status === 'live') {
+    const period = room.game_period ?? 0
+    const clock = room.game_clock ?? ''
+    const sport = room.sport ?? 'nba'
+    if (sport === 'mlb') return period > 0 ? `${period > 9 ? 'Extra' : ''} Inn ${period}` : 'Live'
+    if (sport === 'nhl') return period > 0 ? `P${period} ${clock}` : 'Live'
+    return period > 0 ? `Q${period} ${clock}` : 'Live'
+  }
+  return formatGameTime(room.starts_at)
+}
 
 export default function HomePage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { dobsBalance, username } = useProfile()
+  const { dobsBalance } = useProfile()
   const { activity, streak, loading, multiplier } = useDailyActivity()
+
+  // Fetch user's active games + rank
+  const [myGames, setMyGames] = useState([])
+  const [myRank, setMyRank] = useState(null)
+  const [dataLoading, setDataLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadExtra() {
+      if (!user) { setMyGames([]); setMyRank(null); setDataLoading(false); return }
+
+      const [participantsRes, roomsRes, rankRes] = await Promise.all([
+        supabase.from('room_participants').select('room_id').eq('user_id', user.id),
+        supabase
+          .from('rooms_with_counts')
+          .select('*')
+          .in('status', ['lobby', 'live'])
+          .order('starts_at', { ascending: true }),
+        supabase
+          .from('all_time_leaderboard')
+          .select('user_id, username, total_dobs_earned, rank')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+      ])
+
+      if (cancelled) return
+
+      if (rankRes.data) setMyRank(rankRes.data)
+
+      const joined = new Set((participantsRes.data ?? []).map((p) => p.room_id))
+      const myRooms = (roomsRes.data ?? []).filter((r) => joined.has(r.id))
+
+      if (myRooms.length > 0) {
+        const { data: cards } = await supabase
+          .from('cards')
+          .select('room_id, squares_marked')
+          .eq('user_id', user.id)
+          .in('room_id', myRooms.map((r) => r.id))
+
+        if (cancelled) return
+
+        const cardMap = {}
+        for (const c of cards ?? []) cardMap[c.room_id] = c
+
+        setMyGames(
+          myRooms.slice(0, 3).map((r) => ({
+            ...r,
+            squares_marked: cardMap[r.id]?.squares_marked ?? 0,
+          }))
+        )
+      }
+
+      setDataLoading(false)
+    }
+
+    loadExtra()
+    return () => { cancelled = true }
+  }, [user])
 
   const completedCount = activity
     ? [activity.picks_completed, activity.trivia_completed, activity.game_completed].filter(Boolean).length
@@ -68,26 +145,42 @@ export default function HomePage() {
   const allComplete = completedCount === 3
   const currentStreak = streak?.current_streak ?? 0
 
-  // Loading state — show skeleton first, not after content
-  if (loading) {
+  // Build streak day visualization
+  const today = new Date()
+  const todayDow = today.getDay() // 0=Sun
+  const streakDays = []
+  for (let i = 0; i < 7; i++) {
+    const daysSinceMonday = (todayDow + 6) % 7 // 0=Mon
+    const offset = i - daysSinceMonday
+    const isToday = offset === 0
+    const isPast = offset < 0
+    const isFuture = offset > 0
+    // If streak covers this past day, it's "completed"
+    const completed = isPast && currentStreak > Math.abs(offset) - 1
+    const todayCompleted = isToday && allComplete
+    streakDays.push({
+      label: DAY_LABELS[(1 + i) % 7], // M T W T F S S
+      isToday,
+      isPast,
+      isFuture,
+      completed: completed || todayCompleted,
+    })
+  }
+
+  // Loading skeleton
+  if (loading && dataLoading) {
     return (
-      <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ padding: '20px 20px 0' }}>
-          <div style={{ height: 32, width: 100, borderRadius: 6, background: 'var(--db-bg-elevated)', marginBottom: 8 }} />
-          <div style={{ height: 14, width: 180, borderRadius: 4, background: 'var(--db-bg-elevated)' }} />
-        </div>
-        <div style={{ padding: '16px 20px 0', display: 'flex', gap: 12 }}>
-          <div style={{ flex: 1, height: 80, borderRadius: 12, background: 'var(--db-bg-elevated)', animation: 'pulse 1.8s ease-in-out infinite' }} />
-          <div style={{ width: 120, height: 80, borderRadius: 12, background: 'var(--db-bg-elevated)', animation: 'pulse 1.8s ease-in-out infinite' }} />
-        </div>
+      <main className="page-enter" style={{ paddingBottom: 100, maxWidth: 600, margin: '0 auto' }}>
         <div style={{ padding: '20px' }}>
-          {[1, 2, 3].map((i) => (
-            <div key={i} style={{
-              height: 72, borderRadius: 12, marginBottom: 10,
-              background: 'var(--db-bg-elevated)', border: '1px solid var(--db-border-subtle)',
-              animation: 'pulse 1.8s ease-in-out infinite',
-              animationDelay: `${i * 100}ms`,
-            }} />
+          <div style={{ height: 28, width: 80, borderRadius: 6, background: 'var(--db-bg-elevated)', marginBottom: 20 }} />
+          <div style={{ height: 110, borderRadius: 14, background: 'var(--db-bg-elevated)', marginBottom: 16, animation: 'pulse 1.8s ease-in-out infinite' }} />
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+            {[1, 2, 3].map((i) => (
+              <div key={i} style={{ flex: 1, height: 90, borderRadius: 12, background: 'var(--db-bg-elevated)', animation: 'pulse 1.8s ease-in-out infinite', animationDelay: `${i * 80}ms` }} />
+            ))}
+          </div>
+          {[1, 2].map((i) => (
+            <div key={i} style={{ height: 68, borderRadius: 12, marginBottom: 10, background: 'var(--db-bg-elevated)', animation: 'pulse 1.8s ease-in-out infinite' }} />
           ))}
         </div>
       </main>
@@ -95,217 +188,376 @@ export default function HomePage() {
   }
 
   return (
-    <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
-      {/* ── Header ── */}
+    <main className="page-enter" style={{ paddingBottom: 100, maxWidth: 600, margin: '0 auto' }}>
       <div style={{ padding: '20px 20px 0' }}>
-        <h1 style={{
-          fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
-          fontWeight: 'var(--db-weight-normal)', letterSpacing: 'var(--db-tracking-wide)',
-          color: 'var(--db-text-primary)', lineHeight: 'var(--db-leading-none)', margin: 0,
-        }}>
-          HOME
-        </h1>
-        {username && (
-          <p style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)',
-            color: 'var(--db-text-muted)', marginTop: 4,
-          }}>
-            Welcome back, {username}
-          </p>
-        )}
-      </div>
 
-      {/* ── Dobs Balance + Streak ── */}
-      <div style={{ padding: '16px 20px 0', display: 'flex', gap: 12 }}>
-        {/* Balance card */}
+        {/* ════ DAILY STREAK ════ */}
         <div style={{
-          flex: 1, padding: '16px', borderRadius: 12,
-          background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
+          padding: '18px 20px', borderRadius: 14,
+          background: 'var(--db-bg-surface)',
+          border: '1px solid var(--db-border-subtle)',
+          marginBottom: 20,
+          position: 'relative',
+          overflow: 'hidden',
         }}>
-          <span style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
-            letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)',
-            display: 'block', marginBottom: 6,
-          }}>DOBS BALANCE</span>
-          <span style={{
-            fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-2xl)',
-            color: 'var(--db-primary)', lineHeight: 1,
-          }}>
-            {dobsBalance !== null ? dobsBalance.toLocaleString() : '—'} <span style={{ fontSize: 'var(--db-text-lg)' }}>◈</span>
-          </span>
-        </div>
+          {/* Subtle gradient accent along top */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+            background: currentStreak > 0
+              ? 'linear-gradient(90deg, var(--db-primary), rgba(255,107,53,0.3))'
+              : 'var(--db-border-subtle)',
+          }} />
 
-        {/* Streak card */}
-        <div style={{
-          width: 120, padding: '16px', borderRadius: 12,
-          background: 'var(--db-bg-surface)', border: '1px solid var(--db-border-subtle)',
-          textAlign: 'center',
-        }}>
-          <span style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
-            letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)',
-            display: 'block', marginBottom: 6,
-          }}>STREAK</span>
-          <span style={{
-            fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-2xl)',
-            color: currentStreak > 0 ? 'var(--db-primary)' : 'var(--db-text-ghost)',
-            lineHeight: 1, display: 'block',
-          }}>
-            {currentStreak}
-          </span>
-          {multiplier > 1 && (
-            <span className="streak-pulse" aria-label={`${multiplier} times bonus multiplier active`} style={{
-              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
-              color: 'var(--db-success)', fontWeight: 'var(--db-weight-bold)',
-              marginTop: 4, display: 'block',
-            }}>
-              {multiplier}x BONUS
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* ── Daily Progress ── */}
-      <div style={{ padding: '20px 20px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{
-              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-              letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)',
-            }}>TODAY'S ACTIVITIES</span>
-          </div>
-          <span style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)',
-            fontWeight: 'var(--db-weight-bold)',
-            color: allComplete ? 'var(--db-success)' : 'var(--db-text-secondary)',
-          }}>
-            {completedCount}/3
-          </span>
-        </div>
-
-        {/* Progress dots */}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} style={{
-              flex: 1, height: 4, borderRadius: 2,
-              background: 'var(--db-bg-active)',
-              position: 'relative', overflow: 'hidden',
-            }}>
-              {i < completedCount && (
-                <div className="progress-fill" style={{
-                  position: 'absolute', inset: 0, borderRadius: 2,
-                  background: 'var(--db-primary)',
-                  animationDelay: `${i * 120}ms`,
-                }} />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Activity cards */}
-        <div className="activity-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {ACTIVITIES.map((act) => {
-            const done = activity?.[act.field] ?? false
-            const dobsEarned = activity?.[act.dobsField] ?? 0
-
-            return (
-              <button
-                key={act.key}
-                type="button"
-                className="daily-btn btn-press"
-                aria-label={done ? `${act.label} — completed, earned ${dobsEarned} dobs` : `${act.label} — ${act.desc}`}
-                onClick={() => { hapticSelection(); navigate(act.path) }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 14,
-                  padding: '16px', borderRadius: 12,
-                  background: done ? 'rgba(34,197,94,0.06)' : 'var(--db-bg-surface)',
-                  border: `1px solid ${done ? 'rgba(34,197,94,0.2)' : 'var(--db-border-subtle)'}`,
-                  cursor: 'pointer', textAlign: 'left', width: '100%',
-                  transition: 'all 150ms ease',
-                }}
-              >
-                {/* Icon */}
-                <div style={{
-                  color: done ? 'var(--db-success)' : 'var(--db-primary)',
-                  flexShrink: 0, opacity: done ? 0.7 : 1,
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div>
+              <span style={{
+                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)',
+                display: 'block', marginBottom: 6,
+              }}>DAILY STREAK</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                <span style={{
+                  fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
+                  color: currentStreak > 0 ? 'var(--db-text-bright)' : 'var(--db-text-ghost)',
+                  lineHeight: 0.85,
                 }}>
-                  {done ? (
-                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                      <circle cx="14" cy="14" r="11" fill="rgba(34,197,94,0.15)" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M10 14.5L13 17.5L18.5 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  ) : act.icon}
-                </div>
+                  {currentStreak}
+                </span>
+                <span style={{
+                  fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
+                  color: 'var(--db-text-muted)', lineHeight: 1,
+                }}>
+                  {currentStreak === 1 ? 'day' : 'days'}
+                </span>
+                {currentStreak >= 3 && (
+                  <span style={{ fontSize: 18, marginLeft: 2 }}>🔥</span>
+                )}
+              </div>
+            </div>
 
-                {/* Text */}
-                <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Multiplier / Bonus badge */}
+            {multiplier > 1 ? (
+              <div className="streak-pulse" style={{
+                padding: '6px 12px', borderRadius: 8,
+                background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.25)',
+              }}>
+                <span style={{
+                  fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
+                  color: 'var(--db-primary)', letterSpacing: 'var(--db-tracking-wide)',
+                }}>
+                  {multiplier}x
+                </span>
+              </div>
+            ) : currentStreak > 0 ? (
+              <div style={{
+                padding: '6px 12px', borderRadius: 8,
+                background: 'rgba(255,107,53,0.08)', border: '1px solid rgba(255,107,53,0.15)',
+              }}>
+                <span style={{
+                  fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                  color: 'var(--db-primary)', fontWeight: 'var(--db-weight-bold)',
+                  letterSpacing: 'var(--db-tracking-wide)',
+                }}>
+                  +5 DOBS
+                </span>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Week day circles */}
+          <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between' }}>
+            {streakDays.map((day, i) => {
+              const filled = day.completed
+              const isToday = day.isToday
+              return (
+                <div key={i} style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1,
+                }}>
+                  <div style={{
+                    width: 34, height: 34, borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: filled
+                      ? 'var(--db-primary)'
+                      : isToday
+                        ? 'rgba(255,107,53,0.15)'
+                        : 'var(--db-bg-elevated)',
+                    border: isToday && !filled
+                      ? '2px solid var(--db-primary)'
+                      : filled
+                        ? '2px solid var(--db-primary)'
+                        : '2px solid transparent',
+                    transition: 'all 200ms ease',
+                    boxShadow: filled ? '0 0 10px rgba(255,107,53,0.3)' : 'none',
+                  }}>
+                    {filled ? (
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M3 7.5L5.5 10L11 4" stroke="#0c0c14" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : (
+                      <span style={{
+                        fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                        fontWeight: 'var(--db-weight-bold)',
+                        color: isToday ? 'var(--db-primary)' : 'var(--db-text-ghost)',
+                      }}>
+                        {day.label}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ════ EARN DOBS — horizontal compact tiles ════ */}
+        <div style={{ marginBottom: 20 }}>
+          <span style={{
+            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+            letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-ghost)',
+            display: 'block', marginBottom: 10,
+          }}>EARN DOBS</span>
+
+          <div className="activity-stagger" style={{ display: 'flex', gap: 10 }}>
+            {ACTIVITIES.map((act) => {
+              const done = activity?.[act.field] ?? false
+              return (
+                <button
+                  key={act.key}
+                  type="button"
+                  className="daily-btn btn-press"
+                  aria-label={`${act.label} — ${done ? 'completed' : act.desc}`}
+                  onClick={() => { hapticSelection(); navigate(act.path) }}
+                  style={{
+                    flex: 1, padding: '14px 8px 12px', borderRadius: 12,
+                    background: done ? 'rgba(34,197,94,0.06)' : 'var(--db-bg-surface)',
+                    border: done
+                      ? '1.5px solid rgba(34,197,94,0.25)'
+                      : '1.5px solid var(--db-primary)',
+                    cursor: 'pointer', textAlign: 'center',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                    transition: 'all 150ms ease',
+                  }}
+                >
+                  <div style={{
+                    color: done ? 'var(--db-success)' : 'var(--db-primary)',
+                    opacity: done ? 0.6 : 1,
+                  }}>
+                    {done ? (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9.5" fill="rgba(34,197,94,0.15)" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M8.5 12.5L11 15L16 9.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : act.icon}
+                  </div>
                   <span style={{
                     fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)',
                     letterSpacing: 'var(--db-tracking-wide)',
-                    color: done ? 'var(--db-success)' : 'var(--db-text-primary)',
-                    display: 'block',
+                    color: done ? 'var(--db-text-muted)' : 'var(--db-text-primary)',
+                    lineHeight: 'var(--db-leading-tight)',
                   }}>
                     {act.label}
                   </span>
                   <span style={{
-                    fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-                    color: 'var(--db-text-muted)',
+                    fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                    color: done ? 'var(--db-success)' : 'var(--db-primary)',
+                    fontWeight: 'var(--db-weight-semibold)',
                   }}>
-                    {done ? `Earned ${dobsEarned} ◈` : act.desc}
+                    {done ? 'DONE' : 'READY'}
                   </span>
-                </div>
+                </button>
+              )
+            })}
+          </div>
 
-                {/* Right side */}
-                <div style={{ flexShrink: 0, textAlign: 'right' }}>
-                  {done ? (
-                    <span style={{
-                      fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)',
-                      fontWeight: 'var(--db-weight-bold)', color: 'var(--db-success)',
-                    }}>
-                      +{dobsEarned} ◈
-                    </span>
-                  ) : (
-                    <span style={{
-                      fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
-                      color: 'var(--db-primary)', fontWeight: 'var(--db-weight-semibold)',
-                    }}>
-                      {act.dobs} →
-                    </span>
-                  )}
-                </div>
-              </button>
-            )
-          })}
+          {/* All complete banner */}
+          {allComplete && (
+            <div className="banner-celebrate" style={{
+              marginTop: 10, padding: '10px 14px', borderRadius: 10,
+              background: 'linear-gradient(135deg, rgba(255,107,53,0.10) 0%, rgba(34,197,94,0.08) 100%)',
+              border: '1px solid rgba(255,107,53,0.25)',
+              textAlign: 'center',
+            }}>
+              <span style={{
+                fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)',
+                letterSpacing: 'var(--db-tracking-wide)', color: 'var(--db-primary)',
+              }}>
+                ALL ACTIVITIES COMPLETE
+              </span>
+              {activity?.all_three_bonus_awarded && (
+                <span style={{
+                  fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                  color: 'var(--db-text-secondary)', display: 'block', marginTop: 4,
+                }}>
+                  +30 ◈ completion bonus earned!
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* All-three bonus indicator */}
-        {allComplete && (
-          <div className="banner-celebrate" style={{
-            marginTop: 12, padding: '14px 16px', borderRadius: 10,
-            background: 'linear-gradient(135deg, rgba(255,107,53,0.10) 0%, rgba(34,197,94,0.08) 100%)',
-            border: '1px solid rgba(255,107,53,0.25)',
-            textAlign: 'center',
-          }}>
+        {/* ════ YOUR GAMES ════ */}
+        {myGames.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
             <span style={{
-              fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
-              letterSpacing: 'var(--db-tracking-wide)', color: 'var(--db-primary)',
-            }}>
-              ALL ACTIVITIES COMPLETE
-            </span>
-            <span style={{
-              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-              color: 'var(--db-text-secondary)', display: 'block', marginTop: 6,
-            }}>
-              {activity?.all_three_bonus_awarded
-                ? '+30 ◈ completion bonus earned!'
-                : 'Come back tomorrow to keep your streak!'}
-            </span>
+              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+              letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-ghost)',
+              display: 'block', marginBottom: 10,
+            }}>YOUR GAMES</span>
+
+            <div className="pick-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {myGames.map((room) => {
+                const isLive = room.status === 'live'
+                const sport = room.sport ?? 'nba'
+
+                const clock = formatClock(room)
+                const marked = room.squares_marked ?? 0
+
+                return (
+                  <button
+                    key={room.id}
+                    type="button"
+                    className="daily-btn btn-press"
+                    onClick={() => { hapticSelection(); navigate(`/room/${room.id}`) }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      padding: '14px 16px', borderRadius: 12,
+                      background: 'var(--db-bg-surface)',
+                      border: isLive
+                        ? '1px solid rgba(255,45,45,0.2)'
+                        : '1px solid var(--db-border-subtle)',
+                      cursor: 'pointer', textAlign: 'left', width: '100%',
+                      transition: 'all 150ms ease',
+                    }}
+                  >
+                    {/* Left: game info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
+                        letterSpacing: 'var(--db-tracking-wide)',
+                        color: 'var(--db-text-primary)', display: 'block',
+                        lineHeight: 'var(--db-leading-tight)',
+                      }}>
+                        {room.name}
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                        color: 'var(--db-text-muted)', marginTop: 2, display: 'block',
+                      }}>
+                        {sport.toUpperCase()} · {clock}
+                      </span>
+                    </div>
+
+                    {/* Right: status */}
+                    <div style={{ flexShrink: 0, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                      {isLive ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                            fontWeight: 'var(--db-weight-bold)', color: 'var(--db-live)',
+                            letterSpacing: 'var(--db-tracking-wide)',
+                          }}>
+                            <span style={{
+                              width: 5, height: 5, borderRadius: '50%',
+                              background: 'var(--db-live)',
+                              animation: 'pulse-live 1.5s ease-in-out infinite',
+                            }} />
+                            LIVE
+                          </span>
+                          <span style={{
+                            fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xl)',
+                            color: 'var(--db-text-bright)', lineHeight: 1,
+                            fontVariantNumeric: 'tabular-nums',
+                          }}>
+                            {marked}
+                          </span>
+                          <span style={{
+                            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                            color: 'var(--db-text-ghost)',
+                          }}>marked</span>
+                        </div>
+                      ) : (
+                        <div>
+                          <span style={{
+                            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                            color: 'var(--db-text-ghost)',
+                          }}>Upcoming</span>
+                          <span style={{
+                            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                            color: 'var(--db-text-ghost)', display: 'block', marginTop: 1,
+                          }}>card ready</span>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
           </div>
         )}
+
+        {/* ════ FEATURED ════ */}
       </div>
 
-      {/* ── Featured Banner ── */}
       <FeaturedBanner />
+
+      <div style={{ padding: '0 20px' }}>
+
+        {/* ════ YOUR STANDING ════ */}
+        <div style={{ marginTop: 20, marginBottom: 8 }}>
+          <span style={{
+            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+            letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-ghost)',
+            display: 'block', marginBottom: 10,
+          }}>YOUR STANDING</span>
+
+          <button
+            type="button"
+            className="daily-btn btn-press"
+            onClick={() => { hapticSelection(); navigate('/rank') }}
+            style={{
+              width: '100%', padding: '18px 20px', borderRadius: 14,
+              background: 'var(--db-bg-surface)',
+              border: '1px solid var(--db-border-subtle)',
+              cursor: 'pointer', textAlign: 'left',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              transition: 'all 150ms ease',
+            }}
+          >
+            <div>
+              <span style={{
+                fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-3xl)',
+                color: 'var(--db-text-bright)', lineHeight: 0.9, display: 'block',
+              }}>
+                #{myRank?.rank ?? '—'}
+              </span>
+              <span style={{
+                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                color: 'var(--db-text-muted)', marginTop: 4, display: 'block',
+              }}>
+                Season leaderboard
+              </span>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{
+                fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xl)',
+                color: 'var(--db-primary)', display: 'block', lineHeight: 1,
+                fontVariantNumeric: 'tabular-nums',
+              }}>
+                {dobsBalance !== null ? dobsBalance.toLocaleString() : '—'} <span style={{ fontSize: 'var(--db-text-md)' }}>◈</span>
+              </span>
+              {myRank?.rank && (
+                <span style={{
+                  fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                  color: 'var(--db-success)', display: 'block', marginTop: 4,
+                }}>
+                  View rankings →
+                </span>
+              )}
+            </div>
+          </button>
+        </div>
+      </div>
     </main>
   )
 }
