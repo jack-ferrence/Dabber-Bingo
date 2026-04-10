@@ -1120,6 +1120,8 @@ function GameRoom({
                 totalPlayers={dobsSummary.totalPlayers}
                 roomName={room?.name}
                 sport={room?.sport}
+                roomId={roomId}
+                userId={user?.id}
               />
             </div>
 

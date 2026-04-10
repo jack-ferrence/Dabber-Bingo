@@ -53,7 +53,6 @@ export default function DailyPicksPage() {
 
     const tomorrow = tomorrowDateStr()
     const picks = games.map((g) => {
-      const { away, home } = parseTeams(g.name)
       const picked = selections[g.id]
       return {
         user_id: user.id,
@@ -94,6 +93,10 @@ export default function DailyPicksPage() {
     }
   }
 
+  const yesterdayCorrect = yesterdayPicks.filter((p) => p.is_correct === true).length
+  const yesterdayPending = yesterdayPicks.filter((p) => p.is_correct === null).length
+  const yesterdayDobs = yesterdayPicks.reduce((sum, p) => sum + (p.dobs_earned ?? 0), 0)
+
   return (
     <main className="page-enter" style={{ paddingBottom: 20, maxWidth: 600, margin: '0 auto' }}>
       {/* Header */}
@@ -113,56 +116,158 @@ export default function DailyPicksPage() {
           fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-sm)',
           color: 'var(--db-text-muted)', margin: 0,
         }}>
-          {alreadyPicked
-            ? 'Your picks are locked in. Results after games finish.'
-            : 'Pick the winner for each game. 5 ◈ per correct pick.'}
+          Pick game winners for tomorrow. 5 ◈ per correct pick.
         </p>
       </div>
 
-      {/* Yesterday's Results */}
+      {/* ════ DASHBOARD SUMMARY ════ */}
+      <div style={{ padding: '16px 20px 0' }}>
+        <div style={{
+          display: 'grid', gridTemplateColumns: yesterdayPicks.length > 0 ? '1fr 1fr' : '1fr', gap: 10,
+          marginBottom: 16,
+        }}>
+          {/* Today's status */}
+          <div style={{
+            padding: '14px 16px', borderRadius: 12,
+            background: alreadyPicked ? 'rgba(34,197,94,0.06)' : 'rgba(255,107,53,0.06)',
+            border: `1px solid ${alreadyPicked ? 'rgba(34,197,94,0.2)' : 'rgba(255,107,53,0.15)'}`,
+          }}>
+            <span style={{
+              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+              letterSpacing: 'var(--db-tracking-widest)',
+              color: 'var(--db-text-ghost)', display: 'block', marginBottom: 6,
+            }}>TODAY'S PICKS</span>
+            <span style={{
+              fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xl)',
+              color: alreadyPicked ? 'var(--db-success)' : 'var(--db-primary)',
+              display: 'block', lineHeight: 1,
+            }}>
+              {alreadyPicked ? '✓ LOCKED' : 'NOT YET'}
+            </span>
+            <span style={{
+              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+              color: 'var(--db-text-ghost)', display: 'block', marginTop: 4,
+            }}>
+              {alreadyPicked ? 'Results after games finish' : 'Pick winners below'}
+            </span>
+          </div>
+
+          {/* Yesterday's summary */}
+          {yesterdayPicks.length > 0 && (
+            <div style={{
+              padding: '14px 16px', borderRadius: 12,
+              background: 'var(--db-bg-surface)',
+              border: '1px solid var(--db-border-subtle)',
+            }}>
+              <span style={{
+                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                letterSpacing: 'var(--db-tracking-widest)',
+                color: 'var(--db-text-ghost)', display: 'block', marginBottom: 6,
+              }}>YESTERDAY</span>
+              <span style={{
+                fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-xl)',
+                color: yesterdayPending > 0 ? 'var(--db-text-muted)' : yesterdayCorrect > 0 ? 'var(--db-success)' : 'var(--db-text-muted)',
+                display: 'block', lineHeight: 1,
+              }}>
+                {yesterdayPending > 0
+                  ? `${yesterdayPending} PENDING`
+                  : `${yesterdayCorrect}/${yesterdayPicks.length}`}
+              </span>
+              <span style={{
+                fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+                color: yesterdayDobs > 0 ? 'var(--db-success)' : 'var(--db-text-ghost)',
+                display: 'block', marginTop: 4,
+              }}>
+                {yesterdayDobs > 0 ? `+${yesterdayDobs} ◈ earned` : yesterdayPending > 0 ? 'Waiting on results' : 'No dobs earned'}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ════ YESTERDAY'S RESULTS DETAIL ════ */}
       {yesterdayPicks.length > 0 && (
-        <div style={{ padding: '16px 20px 0' }}>
+        <div style={{ padding: '0 20px' }}>
           <span style={{
-            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-            letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)',
-            display: 'block', marginBottom: 10,
+            fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+            letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-ghost)',
+            display: 'block', marginBottom: 8,
           }}>YESTERDAY'S RESULTS</span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
             {yesterdayPicks.map((pick) => {
               const room = pick.rooms
+              const sport = room?.sport ?? 'nba'
               const { away, home } = parseTeams(room?.name)
+              const awayColor = getTeamColor(away, sport)
+              const homeColor = getTeamColor(home, sport)
               const isCorrect = pick.is_correct
               const pending = isCorrect === null
 
               return (
                 <div key={pick.id} style={{
-                  padding: '12px 14px', borderRadius: 10,
-                  background: pending ? 'var(--db-bg-surface)' : isCorrect ? 'rgba(34,197,94,0.06)' : 'rgba(255,45,45,0.06)',
-                  border: `1px solid ${pending ? 'var(--db-border-subtle)' : isCorrect ? 'rgba(34,197,94,0.2)' : 'rgba(255,45,45,0.2)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: 0, borderRadius: 12, overflow: 'hidden',
+                  background: pending
+                    ? 'var(--db-bg-surface)'
+                    : isCorrect
+                      ? 'rgba(34,197,94,0.05)'
+                      : 'rgba(255,45,45,0.05)',
+                  border: `1px solid ${pending ? 'var(--db-border-subtle)' : isCorrect ? 'rgba(34,197,94,0.2)' : 'rgba(255,45,45,0.15)'}`,
+                  position: 'relative',
                 }}>
-                  <div>
-                    <span style={{
-                      fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)',
-                      color: 'var(--db-text-primary)',
-                    }}>
-                      {away} vs {home}
-                    </span>
-                    <span style={{
-                      fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-                      color: 'var(--db-text-muted)', display: 'block', marginTop: 2,
-                    }}>
-                      Picked: {pick.picked_team_display}
-                      {room?.home_score != null && ` · ${room.away_score}–${room.home_score}`}
-                    </span>
-                  </div>
-                  <span style={{
-                    fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)',
-                    color: pending ? 'var(--db-text-ghost)' : isCorrect ? 'var(--db-success)' : 'var(--db-live)',
+                  {/* Team color accent */}
+                  <div style={{
+                    height: 3,
+                    background: `linear-gradient(90deg, ${awayColor}, ${homeColor})`,
+                    opacity: 0.5,
+                  }} />
+                  <div style={{
+                    padding: '12px 14px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   }}>
-                    {pending ? '⏳' : isCorrect ? '✓ +5 ◈' : '✗'}
-                  </span>
+                    <div>
+                      <span style={{
+                        fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-md)',
+                        letterSpacing: 'var(--db-tracking-wide)',
+                        color: 'var(--db-text-primary)',
+                      }}>
+                        {away} vs {home}
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                        color: 'var(--db-text-muted)', display: 'block', marginTop: 2,
+                      }}>
+                        Picked: <span style={{ color: isCorrect ? 'var(--db-success)' : pending ? 'var(--db-text-secondary)' : 'var(--db-live)' }}>{pick.picked_team_display}</span>
+                        {room?.home_score != null && (
+                          <span style={{ color: 'var(--db-text-ghost)' }}> · Final {room.away_score}–{room.home_score}</span>
+                        )}
+                      </span>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      {pending ? (
+                        <span style={{
+                          fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+                          color: 'var(--db-text-ghost)', display: 'flex', alignItems: 'center', gap: 4,
+                        }}>
+                          <span style={{ fontSize: 14 }}>⏳</span> Pending
+                        </span>
+                      ) : isCorrect ? (
+                        <span style={{
+                          fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
+                          color: 'var(--db-success)',
+                        }}>
+                          ✓ +5 ◈
+                        </span>
+                      ) : (
+                        <span style={{
+                          fontFamily: 'var(--db-font-display)', fontSize: 'var(--db-text-lg)',
+                          color: 'var(--db-live)',
+                        }}>
+                          ✗
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )
             })}
@@ -170,11 +275,11 @@ export default function DailyPicksPage() {
         </div>
       )}
 
-      {/* Tomorrow's Games */}
-      <div style={{ padding: '20px 20px 0' }}>
+      {/* ════ TOMORROW'S MATCHUPS ════ */}
+      <div style={{ padding: '0 20px' }}>
         <span style={{
-          fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
-          letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-muted)',
+          fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
+          letterSpacing: 'var(--db-tracking-widest)', color: 'var(--db-text-ghost)',
           display: 'block', marginBottom: 12,
         }}>TOMORROW'S MATCHUPS</span>
 

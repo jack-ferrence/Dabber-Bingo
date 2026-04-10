@@ -1,28 +1,4 @@
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "case \"$CLAUDE_FILE_PATH\" in *.env) echo 'BLOCKED: .env contains secrets' >&2; exit 2;; esac"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "case \"$CLAUDE_FILE_PATH\" in *.js|*.jsx) /Users/jackferrence/Desktop/Dabber-Bingo-main/node_modules/.bin/eslint --fix \"$CLAUDE_FILE_PATH\" 2>/dev/null || true;; esac"
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "Bash(ls /Users/jackferrence/Desktop/bingov2/sports-bingo/src/styles/ && ls /Users/jackferrence/Desktop/bingov2/sports-bingo/tailwind.config.* 2>/dev/null; ls /Users/jackferrence/Desktop/bingov2/sports-bingo/*.config.* 2>/dev/null)",
@@ -56,7 +32,51 @@
       "Bash(git status:*)",
       "Bash(git restore:*)",
       "Bash(grep -m3 'bg-card\\\\|bg-primary\\\\|color-bg' dist/assets/index-*.css)",
-      "Bash(grep -o '\\\\-\\\\-color-text-primary[^;]*;' dist/assets/index-*.css)"
+      "Bash(grep -o '\\\\-\\\\-color-text-primary[^;]*;' dist/assets/index-*.css)",
+      "Bash(npx vitest:*)",
+      "Bash(python3:*)",
+      "Bash(ls -la /Users/jackferrence/Desktop/Dabber-Bingo-main/public/*.png /Users/jackferrence/Desktop/Dabber-Bingo-main/public/*.ico /Users/jackferrence/Desktop/Dabber-Bingo-main/public/*.svg)",
+      "Bash(grep -r \"CREATE OR REPLACE FUNCTION\" /Users/jackferrence/Desktop/Dabber-Bingo-main/supabase/migrations/*.sql)",
+      "Bash(grep -r \"\\\\.rpc\\(\" /Users/jackferrence/Desktop/Dabber-Bingo-main/supabase/migrations/*.sql)",
+      "Bash(grep -r \"featured\\\\|donate\" /Users/jackferrence/Desktop/Dabber-Bingo-main/supabase/migrations/*.sql)",
+      "Bash(grep:*)",
+      "Bash(xargs ls:*)",
+      "Bash(wait /private/tmp/claude-501/-Users-jackferrence-Desktop-Dabber-Bingo-main/d91b931b-3748-46d8-b965-6a9055b2a96f/tasks/bho4c320c.output)",
+      "Bash(find:*)",
+      "Bash(curl -s http://localhost:5174/)",
+      "Bash(lsof -ti:5174)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_resize",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5175/)",
+      "Bash(npx eslint:*)",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "Bash(pkill -f \"mcp-chrome\")",
+      "mcp__plugin_playwright_playwright__browser_snapshot"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$CLAUDE_FILE_PATH\" in *.env) echo 'BLOCKED: .env contains secrets' >&2; exit 2;; esac"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$CLAUDE_FILE_PATH\" in *.js|*.jsx) /Users/jackferrence/Desktop/Dabber-Bingo-main/node_modules/.bin/eslint --fix \"$CLAUDE_FILE_PATH\" 2>/dev/null || true;; esac"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {

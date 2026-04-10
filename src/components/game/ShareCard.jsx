@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
+import { supabase } from '../../lib/supabase'
 
 /**
  * Renders the player's bingo card result to a canvas and shares/downloads it.
@@ -191,8 +192,48 @@ async function renderShareCard({ flatSquares, markedCount, linesCount, rank, tot
   return canvas
 }
 
-export default function ShareCard({ flatSquares, markedCount, linesCount, rank, totalPlayers, roomName, sport }) {
+export default function ShareCard({ flatSquares, markedCount, linesCount, rank, totalPlayers, roomName, sport, roomId, userId, onBonusClaimed }) {
   const [sharing, setSharing] = useState(false)
+  const [bonusClaimed, setBonusClaimed] = useState(false)
+  const [bonusAmount, setBonusAmount] = useState(0)
+  const [showBonusBanner, setShowBonusBanner] = useState(false)
+
+  // Check if share bonus was already claimed for this card
+  useEffect(() => {
+    if (!userId || !roomId) return
+    let cancelled = false
+    async function check() {
+      const { data } = await supabase
+        .from('dabs_transactions')
+        .select('id, amount')
+        .eq('user_id', userId)
+        .eq('reason', 'share_bonus')
+        .eq('room_id', roomId)
+        .maybeSingle()
+      if (!cancelled && data) {
+        setBonusClaimed(true)
+        setBonusAmount(data.amount)
+      }
+    }
+    check()
+    return () => { cancelled = true }
+  }, [userId, roomId])
+
+  const claimShareBonus = useCallback(async () => {
+    if (!roomId || bonusClaimed) return
+
+    const { data, error } = await supabase.rpc('claim_share_bonus', { p_room_id: roomId })
+    if (error) {
+      console.warn('[ShareCard] share bonus RPC failed', error)
+      return
+    }
+    if (!data?.success) return
+
+    setBonusClaimed(true)
+    setBonusAmount(data.bonus)
+    setShowBonusBanner(true)
+    onBonusClaimed?.(data.bonus)
+  }, [roomId, bonusClaimed, onBonusClaimed])
 
   const handleShare = useCallback(async () => {
     if (sharing) return
@@ -201,6 +242,7 @@ export default function ShareCard({ flatSquares, markedCount, linesCount, rank, 
       const canvas = await renderShareCard({ flatSquares, markedCount, linesCount, rank, totalPlayers, roomName, sport })
       canvas.toBlob(async (blob) => {
         const filename = `dobber-bingo-${Date.now()}.png`
+        let shared = false
         if (navigator.share && navigator.canShare?.({ files: [new File([blob], filename, { type: 'image/png' })] })) {
           try {
             await navigator.share({
@@ -208,39 +250,94 @@ export default function ShareCard({ flatSquares, markedCount, linesCount, rank, 
               text: `${markedCount}/25 squares • ${linesCount} line${linesCount !== 1 ? 's' : ''} — bingo-v04.netlify.app`,
               files: [new File([blob], filename, { type: 'image/png' })],
             })
+            shared = true
           } catch (e) {
-            if (e.name !== 'AbortError') fallbackDownload(blob, filename)
+            if (e.name !== 'AbortError') {
+              fallbackDownload(blob, filename)
+              shared = true // download counts as sharing
+            }
           }
         } else {
           fallbackDownload(blob, filename)
+          shared = true
         }
+
+        // Claim share bonus after successful share
+        if (shared && !bonusClaimed) {
+          await claimShareBonus()
+        }
+
         setSharing(false)
       }, 'image/png')
     } catch (e) {
       console.warn('[ShareCard] render failed', e)
       setSharing(false)
     }
-  }, [flatSquares, markedCount, linesCount, rank, totalPlayers, roomName, sport, sharing])
+  }, [flatSquares, markedCount, linesCount, rank, totalPlayers, roomName, sport, sharing, bonusClaimed, claimShareBonus])
 
   return (
-    <button
-      type="button"
-      onClick={handleShare}
-      disabled={sharing}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '10px 20px', borderRadius: 8,
-        background: 'rgba(255,107,53,0.1)',
-        border: '1px solid rgba(255,107,53,0.25)',
-        fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600,
-        color: sharing ? 'rgba(255,107,53,0.4)' : ORANGE,
-        cursor: sharing ? 'wait' : 'pointer',
-        transition: 'background 120ms ease, border-color 120ms ease',
-      }}
-    >
-      <span style={{ fontSize: 14 }}>{sharing ? '⏳' : '↗'}</span>
-      {sharing ? 'Generating...' : 'Share Card'}
-    </button>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      {/* Share bonus banner — shown after claiming */}
+      {showBonusBanner && (
+        <div
+          className="celebrate-pop"
+          style={{
+            width: '100%', padding: '10px 14px', borderRadius: 8,
+            background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 12, fontWeight: 600, color: 'var(--db-success)' }}>
+            Share bonus claimed!
+          </span>
+          <span style={{ fontFamily: 'var(--db-font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--db-success)' }}>
+            +{bonusAmount} ◈
+          </span>
+        </div>
+      )}
+
+      {/* Already claimed indicator */}
+      {bonusClaimed && !showBonusBanner && (
+        <div style={{
+          width: '100%', padding: '6px 12px', borderRadius: 6,
+          background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)',
+          textAlign: 'center',
+        }}>
+          <span style={{ fontFamily: 'var(--db-font-ui)', fontSize: 11, fontWeight: 500, color: 'var(--db-text-muted)' }}>
+            ✓ Share bonus earned (+{bonusAmount} ◈)
+          </span>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={handleShare}
+        disabled={sharing}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: bonusClaimed ? '10px 20px' : '12px 24px',
+          borderRadius: 8,
+          background: bonusClaimed
+            ? 'rgba(255,107,53,0.1)'
+            : 'linear-gradient(135deg, rgba(255,107,53,0.15), rgba(255,107,53,0.08))',
+          border: bonusClaimed
+            ? '1px solid rgba(255,107,53,0.25)'
+            : '1px solid rgba(255,107,53,0.35)',
+          fontFamily: 'var(--db-font-mono)', fontSize: 12, fontWeight: 600,
+          color: sharing ? 'rgba(255,107,53,0.4)' : ORANGE,
+          cursor: sharing ? 'wait' : 'pointer',
+          transition: 'background 120ms ease, border-color 120ms ease, transform 100ms ease',
+          boxShadow: bonusClaimed ? 'none' : '0 2px 12px rgba(255,107,53,0.2)',
+        }}
+      >
+        <span style={{ fontSize: 14 }}>{sharing ? '⏳' : '↗'}</span>
+        {sharing
+          ? 'Generating...'
+          : bonusClaimed
+            ? 'Share Again'
+            : `Share & Earn 1.8× Dobs`}
+      </button>
+    </div>
   )
 }
 

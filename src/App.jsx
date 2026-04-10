@@ -24,6 +24,10 @@ const TermsPage = lazy(() => lazyRetry(() => import('./pages/TermsPage.jsx')))
 const DailyPicksPage = lazy(() => lazyRetry(() => import('./pages/DailyPicksPage.jsx')))
 const DailyTriviaPage = lazy(() => lazyRetry(() => import('./pages/DailyTriviaPage.jsx')))
 const DailyGamePage = lazy(() => lazyRetry(() => import('./pages/DailyGamePage.jsx')))
+const HomeRunDerbyPage = lazy(() => lazyRetry(() => import('./pages/HomeRunDerbyPage.jsx')))
+const PocketPasserPage = lazy(() => lazyRetry(() => import('./pages/PocketPasserPage.jsx')))
+const FlickToScorePage = lazy(() => lazyRetry(() => import('./pages/FlickToScorePage.jsx')))
+const MiniGamesDashboardPage = lazy(() => lazyRetry(() => import('./pages/MiniGamesDashboardPage.jsx')))
 const RankPage = lazy(() => lazyRetry(() => import('./pages/RankPage.jsx')))
 
 function OfflineBanner() {
@@ -134,6 +138,10 @@ function App() {
           <Route path="/daily/picks" element={<DailyPicksPage />} />
           <Route path="/daily/trivia" element={<DailyTriviaPage />} />
           <Route path="/daily/game" element={<DailyGamePage />} />
+          <Route path="/daily/games" element={<MiniGamesDashboardPage />} />
+          <Route path="/daily/derby" element={<HomeRunDerbyPage />} />
+          <Route path="/daily/passer" element={<PocketPasserPage />} />
+          <Route path="/daily/flick" element={<FlickToScorePage />} />
           <Route path="/rank" element={<RankPage />} />
           <Route path="/store" element={<StorePage />} />
           <Route path="/settings" element={<SettingsPage />} />

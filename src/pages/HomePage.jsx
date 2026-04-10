@@ -40,18 +40,17 @@ const ACTIVITIES = [
     ),
   },
   {
-    key: 'game',
-    label: 'Streak Shot',
-    desc: '1-50 Dobs',
-    path: '/daily/game',
-    field: 'game_completed',
-    dobsField: 'game_dobs_earned',
+    key: 'games',
+    label: 'Mini Games',
+    desc: 'Up to 100+ Dobs',
+    path: '/daily/games',
+    // "done" when all 3 mini-games are complete
+    field: '_games_composite',
+    dobsField: '_games_composite_dobs',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.5" />
-        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1" />
-        <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="currentColor" strokeWidth="0.8" />
-        <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="currentColor" strokeWidth="0.8" />
+        <text x="12" y="17" textAnchor="middle" fill="currentColor" fontSize="13" fontWeight="700">🎮</text>
       </svg>
     ),
   },
@@ -149,11 +148,20 @@ export default function HomePage() {
     return () => { cancelled = true }
   }, [user])
 
+  const gamesAllDone = activity
+    ? (activity.derby_completed && activity.passer_completed && activity.flick_completed)
+    : false
+  const gamesSomeDone = activity
+    ? (activity.derby_completed || activity.passer_completed || activity.flick_completed)
+    : false
+  const gamesCount = activity
+    ? [activity.derby_completed, activity.passer_completed, activity.flick_completed].filter(Boolean).length
+    : 0
   const completedCount = activity
-    ? [activity.picks_completed, activity.trivia_completed, activity.game_completed].filter(Boolean).length
+    ? [activity.picks_completed, activity.trivia_completed, activity.derby_completed, activity.passer_completed, activity.flick_completed].filter(Boolean).length
     : 0
 
-  const allComplete = completedCount === 3
+  const allComplete = completedCount === 5
   const currentStreak = streak?.current_streak ?? 0
 
   // Build streak day visualization
@@ -320,7 +328,25 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ════ EARN DOBS — horizontal compact tiles ════ */}
+        {/* ════ STREAK EXPLANATION ════ */}
+        {!allComplete && (
+          <div style={{
+            marginBottom: 16, padding: '10px 14px', borderRadius: 10,
+            background: 'var(--db-bg-surface)',
+            border: '1px solid var(--db-border-subtle)',
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+          }}>
+            <span style={{ fontSize: 16, lineHeight: 1.4, flexShrink: 0 }}>💡</span>
+            <span style={{
+              fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-xs)',
+              color: 'var(--db-text-muted)', lineHeight: 1.5,
+            }}>
+              Complete all daily activities — picks, trivia, and all 3 mini games — to keep your streak going and earn the completion bonus.
+            </span>
+          </div>
+        )}
+
+        {/* ════ EARN DOBS — grid tiles ════ */}
         <div style={{ marginBottom: 20 }}>
           <span style={{
             fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
@@ -328,9 +354,16 @@ export default function HomePage() {
             display: 'block', marginBottom: 10,
           }}>EARN DOBS</span>
 
-          <div className="activity-stagger" style={{ display: 'flex', gap: 10 }}>
+          <div className="activity-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
             {ACTIVITIES.map((act) => {
-              const done = activity?.[act.field] ?? false
+              // Composite "games" tile: done only when all 3 games complete
+              const isGamesTile = act.key === 'games'
+              const done = isGamesTile ? gamesAllDone : (activity?.[act.field] ?? false)
+              const partial = isGamesTile && gamesSomeDone && !gamesAllDone
+              const statusLabel = isGamesTile
+                ? (gamesAllDone ? 'DONE' : gamesSomeDone ? `${gamesCount}/3` : 'PLAY')
+                : (done ? 'DONE' : 'READY')
+
               return (
                 <button
                   key={act.key}
@@ -339,11 +372,13 @@ export default function HomePage() {
                   aria-label={`${act.label} — ${done ? 'completed' : act.desc}`}
                   onClick={() => { hapticSelection(); navigate(act.path) }}
                   style={{
-                    flex: 1, padding: '14px 8px 12px', borderRadius: 12,
+                    padding: '14px 8px 12px', borderRadius: 12,
                     background: done ? 'rgba(34,197,94,0.06)' : 'var(--db-bg-surface)',
                     border: done
                       ? '1.5px solid rgba(34,197,94,0.25)'
-                      : '1.5px solid var(--db-primary)',
+                      : partial
+                        ? '1.5px solid rgba(255,107,53,0.5)'
+                        : '1.5px solid var(--db-primary)',
                     cursor: 'pointer', textAlign: 'center',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
                     transition: 'all 150ms ease',
@@ -370,10 +405,10 @@ export default function HomePage() {
                   </span>
                   <span style={{
                     fontFamily: 'var(--db-font-mono)', fontSize: 'var(--db-text-2xs)',
-                    color: done ? 'var(--db-success)' : 'var(--db-primary)',
+                    color: done ? 'var(--db-success)' : partial ? 'var(--db-primary)' : 'var(--db-primary)',
                     fontWeight: 'var(--db-weight-semibold)',
                   }}>
-                    {done ? 'DONE' : 'READY'}
+                    {statusLabel}
                   </span>
                 </button>
               )
